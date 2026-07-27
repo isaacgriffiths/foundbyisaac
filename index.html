@@ -629,7 +629,7 @@
   .pad.running { background: #FFD75E; box-shadow: 0 0 0 4px rgb(255 215 94 / 0.45), 3px 4px 0 rgb(20 42 85 / 0.35); }
 
   /* ---------- plain links panel + upgrades shop + game intro ---------- */
-  #linksPanel, #shopPanel, #introPanel, #rewardPanel, #goalsPanel, #laptopPanel, #packPanel {
+  #linksPanel, #shopPanel, #introPanel, #rewardPanel, #goalsPanel, #laptopPanel, #packPanel, #miniPanel {
     position: fixed; inset: 0;
     z-index: 30;
     display: none;
@@ -638,7 +638,8 @@
     background: rgb(13 27 54 / 0.55);
     padding: 20px;
   }
-  #linksPanel.open, #shopPanel.open, #introPanel.open, #rewardPanel.open, #goalsPanel.open, #laptopPanel.open, #packPanel.open { display: flex; }
+  #linksPanel.open, #shopPanel.open, #introPanel.open, #rewardPanel.open, #goalsPanel.open, #laptopPanel.open, #packPanel.open, #miniPanel.open { display: flex; }
+  #miniPanel { z-index: 32; } /* sits over the bench it was launched from */
   .panel-card {
     width: 100%;
     max-width: 380px;
@@ -883,6 +884,144 @@
   .whposter.blue { background: #4B7BE5; }
   .whposter.blue b { color: #FFFFFF; }
   .whposter.blue span { color: #D5E4FF; }
+
+  /* ---------- bench mini-games: ten seconds, then back to work ---------- */
+  .mini-card { max-width: 420px; text-align: center; }
+  .mini-head b {
+    display: block;
+    font-family: var(--display); font-weight: 700; font-size: 22px; color: #142A55;
+  }
+  .mini-head span { display: block; font-size: 12px; font-weight: 800; color: var(--ink-soft); margin-top: 3px; }
+  .mini-timer {
+    height: 10px; margin: 12px 0 14px;
+    background: #E4E8EF; border: 2px solid var(--outline); border-radius: 999px; overflow: hidden;
+  }
+  .mini-timer i { display: block; height: 100%; width: 100%; background: #1F8A3B; }
+  .mini-timer i.low { background: #E5484D; }
+  #miniSkip {
+    margin-top: 14px; width: 100%;
+    font-family: var(--display); font-weight: 600; font-size: 13px; color: var(--ink-soft);
+    background: #F1F6FE; border: 2px dashed var(--outline); border-radius: 12px;
+    padding: 9px; cursor: pointer;
+  }
+  .mini-stage { position: relative; user-select: none; -webkit-user-select: none; touch-action: none; }
+  .mini-stage.bad { animation: miniShake 0.2s; }
+  @keyframes miniShake { 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+
+  /* fold: tap the flaps in order */
+  .fold-box {
+    position: relative; width: 200px; height: 200px; margin: 0 auto;
+    background: #C89B66; border: 3px solid var(--outline); border-radius: 10px;
+  }
+  .fold-mid { position: absolute; inset: 0; display: grid; place-items: center; font-size: 44px; }
+  .flap {
+    position: absolute;
+    width: 62px; height: 62px;
+    font-family: var(--display); font-weight: 700; font-size: 22px; color: #142A55;
+    background: #FFD75E; border: 3px solid var(--outline); border-radius: 9px;
+    cursor: pointer; -webkit-tap-highlight-color: transparent;
+  }
+  .flap.ok { background: #9BE3B0; color: #1F8A3B; }
+  .f0 { top: -12px; left: 69px; } .f1 { right: -12px; top: 69px; }
+  .f2 { bottom: -12px; left: 69px; } .f3 { left: -12px; top: 69px; }
+
+  /* pick the right box */
+  .pick-need { font-size: 14px; font-weight: 800; color: #142A55; margin-bottom: 12px; }
+  .pick-row { display: flex; align-items: flex-end; justify-content: center; gap: 14px; min-height: 130px; }
+  .pbox {
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    background: none; border: 0; cursor: pointer; padding: 0;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .pbox i { display: block; width: 56px; background: #C89B66; border: 3px solid var(--outline); border-radius: 6px; }
+  .pbox span { font-family: var(--display); font-weight: 700; font-size: 13px; color: #3D5688; }
+  .pbox.ok i { background: #9BE3B0; }
+  .pbox.no i { background: #F3A9AC; }
+
+  /* weigh: the bands under the needle */
+  .weigh-tags { display: flex; justify-content: space-between; font-size: 10px; font-weight: 800; color: var(--ink-soft); margin: -12px 2px 14px; }
+
+  /* stick the label: drag it onto the patch */
+  .dlabel { position: relative; height: 230px; }
+  .dbox {
+    position: absolute; left: 50%; top: 6px; transform: translateX(-50%);
+    width: 190px; height: 150px;
+    background: #C89B66; border: 3px solid var(--outline); border-radius: 10px;
+  }
+  .dtarget {
+    position: absolute; width: 62px; height: 42px; margin: -21px 0 0 -31px;
+    border: 3px dashed #8A6238; border-radius: 5px;
+  }
+  .dlab {
+    position: absolute; left: 50%; bottom: 6px; transform: translateX(-50%);
+    width: 62px; height: 42px;
+    display: grid; place-items: center; font-size: 24px;
+    background: #F6EFE3; border: 3px solid var(--outline); border-radius: 5px;
+    cursor: grab; touch-action: none;
+  }
+  .dlab.held { cursor: grabbing; box-shadow: 3px 5px 0 rgb(20 42 85 / 0.3); }
+
+  /* write the listing: monkeytype-ish */
+  .tw {
+    font-family: ui-monospace, "Cascadia Mono", Menlo, Consolas, monospace;
+    font-size: 17px; line-height: 1.7; letter-spacing: 0.02em;
+    color: #8A97B2; text-align: left;
+    background: #F1F6FE; border: 2.5px solid var(--outline); border-radius: 10px;
+    padding: 12px 14px; min-height: 84px;
+    word-break: break-word;
+  }
+  .tw .tok { color: #1F8A3B; }
+  .tw .tno { color: #FFFFFF; background: #E5484D; border-radius: 2px; }
+  .tw .tcur { box-shadow: inset 2px 0 0 #4B7BE5; }
+  .ti {
+    width: 100%; margin-top: 10px;
+    font-family: inherit; font-size: 16px; color: #142A55;
+    background: #FFFFFF; border: 2.5px solid var(--outline); border-radius: 10px;
+    padding: 10px 12px;
+  }
+  .ti:focus { outline: 3px solid #4B7BE5; outline-offset: 2px; }
+
+  /* tape: drag the head along the seam */
+  .tape { height: 150px; display: grid; place-items: center; }
+  .seam {
+    position: relative; width: 100%; height: 46px;
+    background: #C89B66; border: 3px solid var(--outline); border-radius: 8px; overflow: hidden;
+  }
+  .seam::after {
+    content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 0;
+    border-top: 3px dashed #8A6238;
+  }
+  .seam-fill { position: absolute; left: 0; top: 0; bottom: 0; width: 0; background: #E4E8EF; }
+  /* drawn, not an emoji — the film-reel glyph renders as tofu on Windows */
+  .tape-head {
+    position: absolute; top: 50%; left: 0;
+    transform: translate(-50%, -50%);
+    width: 26px; height: 34px;
+    background: #E5484D;
+    border: 3px solid var(--outline);
+    border-radius: 5px;
+    box-shadow: inset 0 0 0 4px #FFFFFF;
+    pointer-events: none;
+  }
+  .tape.slip .seam { border-color: #E5484D; }
+
+  /* label + focus: stop it in the right place */
+  .lbar {
+    position: relative; height: 44px; margin: 20px 0;
+    background: #E4E8EF; border: 3px solid var(--outline); border-radius: 8px; overflow: hidden;
+  }
+  .lzone { position: absolute; top: 0; bottom: 0; background: #9BE3B0; }
+  .lmark { position: absolute; top: -4px; bottom: -4px; width: 8px; margin-left: -4px; background: #E5484D; border: 2px solid var(--outline); border-radius: 4px; }
+  .fring { position: relative; height: 210px; display: grid; place-items: center; overflow: hidden; }
+  .fring i { position: absolute; border-radius: 50%; }
+  .ftarget { width: 88px; height: 88px; border: 3px dashed #8A97B2; }
+  .fmove { width: 160px; height: 160px; border: 4px solid #4B7BE5; }
+  .lstop {
+    width: 100%; margin-top: 6px;
+    font-family: var(--display); font-weight: 600; font-size: 16px; color: #142A55;
+    background: #FFD75E; border: 2.5px solid var(--outline); border-radius: 12px;
+    padding: 12px; cursor: pointer; -webkit-tap-highlight-color: transparent;
+  }
 
   /* the laptop's little internet */
   .laptop-card { max-width: 470px; padding: 0 0 14px; overflow: hidden; }
@@ -1752,6 +1891,15 @@
   </div>
 </div>
 
+<div id="miniPanel" role="dialog" aria-label="Bench task">
+  <div class="panel-card mini-card">
+    <div class="mini-head"><b id="miniTitle"></b><span id="miniHint"></span></div>
+    <div class="mini-timer"><i id="miniBar"></i></div>
+    <div id="miniStage"></div>
+    <button id="miniSkip" type="button">Skip it (no bonus)</button>
+  </div>
+</div>
+
 <script>
 (function () {
   var P = 3720, SPEED = 300, NEAR = 195; // the field repeats every P px — walk forever either way
@@ -2202,7 +2350,7 @@
       if (sv.inv) sv.inv.forEach(function (e) { if (okItem(e)) inv.push({ i: +e.i, paid: +e.paid, cond: +e.cond || 1 }); });
       if (sv.li) sv.li.forEach(function (e) { if (okItem(e)) listings.push(e); });
       if (sv.or) sv.or.forEach(function (e) {
-        if (okItem(e)) orders.push({ i: +e.i, paid: +e.paid, soldFor: +e.soldFor || 0, plat: e.plat === "ebay" ? "ebay" : "vinted", tr: !!e.tr, by: e.by || pickFrom(BUYERS), to: e.to || pickFrom(TOWNS), step: 0 });
+        if (okItem(e)) orders.push({ i: +e.i, paid: +e.paid, soldFor: +e.soldFor || 0, plat: e.plat === "ebay" ? "ebay" : "vinted", tr: !!e.tr, by: e.by || pickFrom(BUYERS), to: e.to || pickFrom(TOWNS), step: 0, q: 0, mg: e.mg });
       });
     }
   } catch (err) {}
@@ -2728,7 +2876,10 @@
     var b = e.target.closest ? e.target.closest("button[data-act]") : null;
     if (!b || b.disabled) return;
     var act = b.getAttribute("data-act"), i = +b.getAttribute("data-i");
-    if (act === "ebay" || act === "vinted") listItem(i, act);
+    // writing a listing takes a photo or some copy — either way, doing it well pays
+    if (act === "ebay" || act === "vinted") {
+      playMini(pickFrom(LIST_POOL)(), function (score) { listItem(i, act, score); });
+    }
     else if (act === "acc") {
       var L = listings[i];
       if (L && L.offer) soldListing(L, L.offer);
@@ -2743,32 +2894,37 @@
     }
   });
 
-  function listItem(invIdx, plat) {
+  function listItem(invIdx, plat, photo) {
     if (listings.length >= maxListings()) return;
     var e = inv.splice(invIdx, 1)[0];
     if (!e) return;
     var gp = guidePrice(e);
+    // a blurry photo costs you a tenth, a sharp one gains you a fifth
+    var shot = 0.9 + (photo || 0) * 0.3;
+    var g = r5g(gp.g * shot);
     var L = { id: uid++, i: e.i, paid: e.paid, cond: e.cond, plat: plat, tr: gp.tr };
     if (plat === "ebay") {
       L.endAt = Date.now() + Math.round((55000 + Math.random() * 20000) / deskSpeed());
-      L.target = r5g(gp.g * (0.85 + Math.random() * 0.45));
-      L.price = r5g(gp.g * 0.2);
+      L.target = r5g(g * (0.85 + Math.random() * 0.45));
+      L.price = r5g(g * 0.2);
       L.bids = 0; L.bidder = "";
       L.nextBid = Date.now() + 3000 + Math.random() * 5000;
     } else {
-      L.price = gp.g;
+      L.price = g;
       L.sellAt = Date.now() + Math.round((25000 + Math.random() * 35000) / deskSpeed());
       L.offerAt = Math.random() < 0.55 ? Date.now() + 6000 + Math.random() * 14000 : 0;
       L.offer = 0; L.offerBy = "";
     }
     listings.push(L);
+    if (photo >= 0.85) banner("✨ Cracking listing — that'll fetch more. Live at " + fmtC(L.price), 5000);
+    else if (photo < 0.3) banner("😬 Scrappy listing, that one. Live at " + fmtC(L.price), 5000);
     save(); buildLaptop(); updBadges();
   }
 
   function soldListing(L, price) {
     var ix = listings.indexOf(L);
     if (ix >= 0) listings.splice(ix, 1);
-    orders.push({ i: L.i, paid: L.paid, soldFor: price, plat: L.plat, tr: L.tr, by: L.bidder || L.offerBy || pickFrom(BUYERS), to: pickFrom(TOWNS), step: 0 });
+    orders.push({ i: L.i, paid: L.paid, soldFor: price, plat: L.plat, tr: L.tr, by: L.bidder || L.offerBy || pickFrom(BUYERS), to: pickFrom(TOWNS), step: 0, q: 0, mg: pickTasks() });
     if (L.plat === "ebay") questEvent("auction");
     banner((L.plat === "ebay" ? "🔨 Auction ended: " : "👗 Sold on Vinted: ") + items[L.i].n + " went for " + fmtC(price) + "! Pack it at the bench 📦", 7000);
     save(); updBadges();
@@ -2808,10 +2964,314 @@
     else if (touched) { save(); updBadges(); }
   }, 1000);
 
-  // ---- the packing bench: fold, wrap, tape, label — THEN you get paid ----
+  // ---- bench mini-games ----
+  // Ten seconds each, and they never block you: running out of time or hitting Skip
+  // still completes the step, you just forfeit the bonus. Frustration has no place in
+  // the loop you repeat most.
+  var miniPanel = document.getElementById("miniPanel");
+  var miniStage = document.getElementById("miniStage");
+  var miniTitle = document.getElementById("miniTitle");
+  var miniHint = document.getElementById("miniHint");
+  var miniBar = document.getElementById("miniBar");
+  var MINI_MS = 10000;
+  var miniCb = null, miniRaf = 0, miniEndAt = 0;
+
+  function miniFinish(score) {
+    if (!miniCb) return;
+    var cb = miniCb;
+    miniCb = null;
+    cancelAnimationFrame(miniRaf);
+    miniPanel.classList.remove("open");
+    miniStage.innerHTML = ""; // drops the game's nodes and its listeners with them
+    cb(Math.max(0, Math.min(1, score)));
+  }
+  document.getElementById("miniSkip").addEventListener("click", function () { miniFinish(0); });
+
+  function playMini(game, done) {
+    miniCb = done;
+    miniTitle.textContent = game.title;
+    miniHint.textContent = game.hint;
+    miniStage.innerHTML = "";
+    var host = document.createElement("div");
+    host.className = "mini-stage " + game.cls;
+    miniStage.appendChild(host);
+    miniPanel.classList.add("open");
+    miniEndAt = performance.now() + MINI_MS;
+    function timeLeft() { return Math.max(0, (miniEndAt - performance.now()) / MINI_MS); }
+    (function tick() {
+      if (!miniCb) return;
+      var left = timeLeft();
+      if (left <= 0) return miniFinish(0);
+      miniBar.style.width = (left * 100) + "%";
+      miniBar.classList.toggle("low", left < 0.3);
+      miniRaf = requestAnimationFrame(tick);
+    })();
+    game.start(host, function (s) { miniFinish(s); }, timeLeft);
+  }
+
+  // 1. sequence — read the numbers off the flaps and fold them in order
+  function gFold() {
+    return {
+      title: "📦 Fold the box", hint: "Tap the flaps 1 → 4", cls: "fold",
+      start: function (host, done, timeLeft) {
+        var order = [0, 1, 2, 3];
+        for (var i = 3; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = order[i]; order[i] = order[j]; order[j] = t; }
+        var label = [];
+        order.forEach(function (flap, n) { label[flap] = n + 1; });
+        var next = 1, html = '<span class="fold-mid">📦</span>';
+        for (var f = 0; f < 4; f++) html += '<button type="button" class="flap f' + f + '" data-f="' + f + '">' + label[f] + "</button>";
+        host.innerHTML = '<div class="fold-box">' + html + "</div>";
+        host.addEventListener("click", function (e) {
+          var b = e.target.closest ? e.target.closest(".flap") : null;
+          if (!b || b.disabled) return;
+          if (label[+b.getAttribute("data-f")] !== next) {
+            host.classList.add("bad");
+            setTimeout(function () { host.classList.remove("bad"); }, 220);
+            return;
+          }
+          b.disabled = true;
+          b.classList.add("ok");
+          if (++next > 4) done(timeLeft());
+        });
+      }
+    };
+  }
+
+  // 2. decision — smallest box it actually fits in, not the first one you see
+  function gPickBox() {
+    return {
+      title: "📦 Pick the right box", hint: "Smallest one it'll actually fit in", cls: "pick",
+      start: function (host, done, timeLeft) {
+        var need = 18 + Math.floor(Math.random() * 30); // cm
+        var sizes = [need - 6 - Math.floor(Math.random() * 8), need + 2 + Math.floor(Math.random() * 6), need + 18 + Math.floor(Math.random() * 14)];
+        for (var i = sizes.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = sizes[i]; sizes[i] = sizes[j]; sizes[j] = t; }
+        var best = Math.min.apply(null, sizes.filter(function (s) { return s >= need; }));
+        host.innerHTML = '<div class="pick-need">It measures <b>' + need + "cm</b></div>"
+          + '<div class="pick-row">' + sizes.map(function (s) {
+            return '<button type="button" class="pbox" data-s="' + s + '"><i style="height:'
+              + Math.round(28 + s * 1.1) + 'px"></i><span>' + s + "cm</span></button>";
+          }).join("") + "</div>";
+        host.addEventListener("click", function (e) {
+          var b = e.target.closest ? e.target.closest(".pbox") : null;
+          if (!b) return;
+          if (+b.getAttribute("data-s") === best) { b.classList.add("ok"); done(timeLeft()); }
+          else {
+            b.classList.add("no");
+            host.classList.add("bad");
+            setTimeout(function () { host.classList.remove("bad"); }, 220);
+          }
+        });
+      }
+    };
+  }
+
+  // 3. timing — stop the needle on the right postage band
+  function gWeigh() {
+    return {
+      title: "⚖️ Weigh the parcel", hint: "Stop the needle on the right band", cls: "weigh",
+      start: function (host, done) {
+        host.innerHTML = '<div class="lbar"><i class="lzone"></i><i class="lmark"></i></div>'
+          + '<div class="weigh-tags"><span>Letter</span><span>Small</span><span>Medium</span><span>Large</span></div>'
+          + '<button type="button" class="lstop">Weigh it</button>';
+        var mark = host.querySelector(".lmark"), zone = host.querySelector(".lzone");
+        var zc = 0.22 + Math.random() * 0.56, zw = 0.14;
+        zone.style.left = (zc - zw / 2) * 100 + "%";
+        zone.style.width = zw * 100 + "%";
+        var t0 = performance.now(), pos = 0;
+        (function tick() {
+          if (!host.isConnected) return;
+          var p = ((performance.now() - t0) / 1250) % 2;
+          pos = p > 1 ? 2 - p : p;
+          mark.style.left = pos * 100 + "%";
+          requestAnimationFrame(tick);
+        })();
+        host.querySelector(".lstop").addEventListener("click", function () {
+          var d = Math.abs(pos - zc);
+          done(d <= zw / 2 ? 1 - (d / (zw / 2)) * 0.3 : Math.max(0, 0.45 - d));
+        });
+      }
+    };
+  }
+
+  // 4. drag — run the tape head along the seam without wandering off it
+  function gTape() {
+    return {
+      title: "📏 Tape the seam", hint: "Drag from the left edge to the right, stay on the line", cls: "tape",
+      start: function (host, done, timeLeft) {
+        host.innerHTML = '<div class="seam"><i class="seam-fill"></i><i class="tape-head"></i></div>';
+        var seam = host.querySelector(".seam");
+        var fill = host.querySelector(".seam-fill");
+        var head = host.querySelector(".tape-head");
+        var dragging = false, best = 0, slips = 0;
+        function read(e) {
+          var r = seam.getBoundingClientRect();
+          return {
+            x: Math.max(0, Math.min(1, (e.clientX - r.left) / r.width)),
+            off: Math.abs(e.clientY - (r.top + r.height / 2)) > 40
+          };
+        }
+        host.addEventListener("pointerdown", function (e) {
+          if (read(e).x > 0.2) return; // you start at the left edge, like real tape
+          dragging = true;
+          try { host.setPointerCapture(e.pointerId); } catch (err) {}
+        });
+        host.addEventListener("pointermove", function (e) {
+          if (!dragging) return;
+          var p = read(e);
+          if (p.off) {
+            slips++;
+            host.classList.add("slip");
+            setTimeout(function () { host.classList.remove("slip"); }, 150);
+            return;
+          }
+          if (p.x > best) {
+            best = p.x;
+            fill.style.width = best * 100 + "%";
+            head.style.left = best * 100 + "%";
+          }
+          if (best > 0.96) done(timeLeft() * (slips > 6 ? 0.6 : 1));
+        });
+        ["pointerup", "pointercancel"].forEach(function (ev) {
+          host.addEventListener(ev, function () { dragging = false; });
+        });
+      }
+    };
+  }
+
+  // 5. drag-to-target — get the label squarely onto the box, not half off the edge
+  function gLabel() {
+    return {
+      title: "🏷️ Stick the label", hint: "Drag the label onto the dashed patch", cls: "dlabel",
+      start: function (host, done) {
+        // the patch moves around the box face so it isn't muscle memory every time
+        var tx = 22 + Math.random() * 42, ty = 20 + Math.random() * 40;
+        host.innerHTML = '<div class="dbox"><i class="dtarget" style="left:' + tx + "%;top:" + ty + '%"></i></div>'
+          + '<div class="dlab">🏷️</div>';
+        var box = host.querySelector(".dbox");
+        var tgt = host.querySelector(".dtarget");
+        var lab = host.querySelector(".dlab");
+        var dragging = false, dx = 0, dy = 0;
+        lab.addEventListener("pointerdown", function (e) {
+          dragging = true;
+          var r = lab.getBoundingClientRect();
+          dx = e.clientX - r.left - r.width / 2;
+          dy = e.clientY - r.top - r.height / 2;
+          lab.classList.add("held");
+          try { lab.setPointerCapture(e.pointerId); } catch (err) {}
+        });
+        lab.addEventListener("pointermove", function (e) {
+          if (!dragging) return;
+          var hr = host.getBoundingClientRect();
+          lab.style.left = e.clientX - dx - hr.left + "px";
+          lab.style.top = e.clientY - dy - hr.top + "px";
+          lab.style.transform = "translate(-50%,-50%)";
+        });
+        ["pointerup", "pointercancel"].forEach(function (ev) {
+          lab.addEventListener(ev, function () {
+            if (!dragging) return;
+            dragging = false;
+            lab.classList.remove("held");
+            var lr = lab.getBoundingClientRect(), tr = tgt.getBoundingClientRect(), br = box.getBoundingClientRect();
+            var lc = { x: lr.left + lr.width / 2, y: lr.top + lr.height / 2 };
+            // off the box entirely is a fail; otherwise score by how central it landed
+            if (lc.x < br.left || lc.x > br.right || lc.y < br.top || lc.y > br.bottom) return done(0);
+            var d = Math.hypot(lc.x - (tr.left + tr.width / 2), lc.y - (tr.top + tr.height / 2));
+            done(Math.max(0, 1 - d / 90));
+          });
+        });
+      }
+    };
+  }
+
+  // 6. typing — write the listing out, monkeytype style
+  var TYPE_LINES = [
+    "vintage brass candlestick, no dents",
+    "1970s pyrex bowl, tiny chip on rim",
+    "retro gameboy, tested and working",
+    "art deco mantel clock, keeps time",
+    "boxed die-cast car, mint condition",
+    "hand-thrown studio pottery vase",
+    "leather satchel, worn but solid",
+    "first edition hardback, dust jacket"
+  ];
+  function gType() {
+    return {
+      title: "⌨️ Write the listing", hint: "Type it out — accuracy pays more than speed", cls: "type",
+      start: function (host, done, timeLeft) {
+        var line = pickFrom(TYPE_LINES);
+        host.innerHTML = '<div class="tw"></div>'
+          + '<input class="ti" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="Type the listing">';
+        var wrap = host.querySelector(".tw"), input = host.querySelector(".ti");
+        function paint(v) {
+          var html = "";
+          for (var i = 0; i < line.length; i++) {
+            var cls = i >= v.length ? "" : v[i] === line[i] ? "tok" : "tno";
+            if (i === v.length) cls += " tcur";
+            html += '<span class="' + cls + '">' + (line[i] === " " ? "&nbsp;" : line[i]) + "</span>";
+          }
+          wrap.innerHTML = html;
+        }
+        paint("");
+        setTimeout(function () { try { input.focus(); } catch (err) {} }, 30);
+        input.addEventListener("input", function () {
+          var v = input.value.slice(0, line.length);
+          paint(v);
+          if (v.length < line.length) return;
+          var right = 0;
+          for (var i = 0; i < line.length; i++) if (v[i] === line[i]) right++;
+          var acc = right / line.length;
+          // accuracy carries it, speed is the garnish
+          done(acc < 0.7 ? acc * 0.5 : acc * 0.8 + timeLeft() * 0.2);
+        });
+      }
+    };
+  }
+
+  // 5. the laptop's one — match the rings and the photo comes out sharp
+  function gFocus() {
+    return {
+      title: "📸 Focus the shot", hint: "Snap it when the ring meets the dashed mark", cls: "focus",
+      start: function (host, done) {
+        host.innerHTML = '<div class="fring"><i class="ftarget"></i><i class="fmove"></i></div>'
+          + '<button type="button" class="lstop">Snap it</button>';
+        var mv = host.querySelector(".fmove");
+        var t0 = performance.now(), r = 1;
+        (function tick() {
+          if (!host.isConnected) return;
+          var p = ((performance.now() - t0) / 1500) % 2;
+          r = p > 1 ? 2 - p : p;
+          var size = 40 + r * 150;
+          mv.style.width = mv.style.height = size + "px";
+          requestAnimationFrame(tick);
+        })();
+        host.querySelector(".lstop").addEventListener("click", function () {
+          // the dashed target is 88px across, which is r = 0.32
+          done(Math.max(0, 1 - Math.abs(r - 0.32) * 3.4));
+        });
+      }
+    };
+  }
+
+  // three tasks per parcel, drawn at random from the pool with no repeats, so no two
+  // parcels play the same. The draw is stored on the order so it survives a reload.
+  var PACK_POOL = [gFold, gPickBox, gWeigh, gTape, gLabel];
+  var LIST_POOL = [gType, gFocus];
+  var PACK_TASKS = 3;
+  function pickTasks() {
+    var pool = [], out = [];
+    for (var i = 0; i < PACK_POOL.length; i++) pool.push(i);
+    for (var n = 0; n < PACK_TASKS; n++) out.push(pool.splice(Math.floor(Math.random() * pool.length), 1)[0]);
+    return out;
+  }
+  function okTasks(a) {
+    if (!a || a.length !== PACK_TASKS) return false;
+    for (var i = 0; i < a.length; i++) if (!(a[i] >= 0 && a[i] < PACK_POOL.length)) return false;
+    return true;
+  }
+
+  // ---- the packing bench: three tasks a parcel, THEN you get paid ----
   var packPanel = document.getElementById("packPanel");
   var packRows = document.getElementById("packRows");
-  var PACK_STEPS = ["📦 Fold a box", "🫧 Bubble wrap it", "📏 Tape it up", "🏷️ Stick the label"];
   function openPack() { buildPack(); packPanel.classList.add("open"); }
   document.getElementById("closePack").addEventListener("click", function () { packPanel.classList.remove("open"); buildWh(); });
   packPanel.addEventListener("click", function (e) { if (e.target === packPanel) { packPanel.classList.remove("open"); buildWh(); } });
@@ -2821,12 +3281,14 @@
     if (!orders.length) html = '<div class="lp-row lp-dim">Nothing to pack — sell something from the laptop first 💻</div>';
     orders.forEach(function (o, i) {
       var it = items[o.i];
+      if (!okTasks(o.mg)) o.mg = pickTasks(); // older saves, or anything that got mangled
       var prog = "";
-      for (var st = 0; st < PACK_STEPS.length; st++) prog += st < o.step ? "●" : "○";
+      for (var st = 0; st < PACK_TASKS; st++) prog += st < o.step ? "●" : "○";
       html += '<div class="lp-row"><span class="lp-name">' + it.e + " " + it.n + "</span>"
         + '<div class="lp-meta">' + (o.plat === "ebay" ? "🔨 eBay" : "👗 Vinted") + " · sold to <b>" + o.by + "</b>, " + o.to
         + " · " + fmtC(o.soldFor) + ' · <span class="shop-pips">' + prog + "</span></div>"
-        + '<div class="lp-btns"><button type="button" data-i="' + i + '">' + PACK_STEPS[o.step] + "</button></div></div>";
+        + '<div class="lp-btns"><button type="button" data-i="' + i + '">'
+        + PACK_POOL[o.mg[o.step]]().title + "</button></div></div>";
     });
     packRows.innerHTML = html;
   }
@@ -2835,9 +3297,13 @@
     if (!b) return;
     var o = orders[+b.getAttribute("data-i")];
     if (!o) return;
-    o.step++;
-    if (o.step >= PACK_STEPS.length) completeOrder(o);
-    else { save(); buildPack(); }
+    if (!okTasks(o.mg)) o.mg = pickTasks();
+    playMini(PACK_POOL[o.mg[o.step]](), function (score) {
+      o.q = (o.q || 0) + score;
+      o.step++;
+      if (o.step >= PACK_TASKS) completeOrder(o);
+      else { save(); buildPack(); }
+    });
   });
   function completeOrder(o) {
     var ix = orders.indexOf(o);
@@ -2846,10 +3312,15 @@
     wallet += o.soldFor;
     packed++;
     packedThisVisit++;
-    var profit = o.soldFor - o.paid;
+    // a tidy parcel is worth real money — buyers pay for presentation
+    var q = (o.q || 0) / PACK_TASKS;
+    var bonus = Math.round(o.soldFor * 0.15 * q);
+    if (bonus > 0) wallet += bonus;
+    var profit = o.soldFor + bonus - o.paid;
     updWallet();
     var r = 0, why = "";
-    if (profit > 0) { r += 1; why = "sold at a profit"; }
+    if (q >= 0.75) { r += 1; why = "a proper tidy parcel"; }
+    if (profit > 0) { r += 1; why = why || "sold at a profit"; }
     if (it.t === 4) { r += 6; why = "Legendary sold"; }
     else if (it.t === 3) { r += 3; why = "Rare sold"; }
     awardRep(r, why);
