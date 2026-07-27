@@ -1,0 +1,3394 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Found by Isaac — Car Boot</title>
+<meta name="description" content="Walk the car boot sale and browse my pitches — eBay, Vinted, YouTube, TikTok and Instagram. Hand-picked secondhand finds.">
+<meta property="og:title" content="Found by Isaac — Car Boot">
+<meta property="og:description" content="Walk the car boot and browse my pitches. Hand-picked secondhand finds.">
+<meta property="og:url" content="https://foundbyisaac.com">
+<meta property="og:image" content="https://foundbyisaac.com/avatar.jpg">
+<meta property="og:type" content="website">
+<link rel="icon" href="avatar.jpg">
+<link rel="apple-touch-icon" href="avatar.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  /* always a sunny day at the car boot — no dark theme, that's a choice */
+  :root {
+    --sky-top: #4FA6F0;
+    --sky-bottom: #C6E8FD;
+    --grass: #55A45D;
+    --grass-edge: #2E7A3C;
+    --outline: #142A55;
+    --ink: #142A55;
+    --ink-soft: #3D5688;
+    --kraft: #C89B66;
+    --display: "Fredoka", "Comic Sans MS", sans-serif;
+    --body-font: "Nunito", "Segoe UI", sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+
+  body {
+    background: linear-gradient(var(--sky-top), var(--sky-bottom));
+    color: var(--ink);
+    font-family: var(--body-font);
+    font-weight: 700;
+    overflow: hidden;
+  }
+
+  /* ---------- HUD ---------- */
+  #hud {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 12px 14px;
+    pointer-events: none;
+  }
+  .who {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #FFFFFF;
+    border: 2.5px solid var(--outline);
+    border-radius: 999px;
+    padding: 5px 16px 5px 6px;
+    box-shadow: 3px 4px 0 rgb(20 42 85 / 0.35);
+    pointer-events: auto;
+  }
+  .who img { width: 38px; height: 38px; border-radius: 50%; display: block; }
+  .who .who-name { font-family: var(--display); font-weight: 700; font-size: 16px; color: #142A55; line-height: 1; }
+  .who .who-sub { font-size: 10.5px; font-weight: 800; color: #3D5688; letter-spacing: 0.06em; }
+
+  #finds {
+    margin-left: auto;
+    background: #FFFFFF;
+    border: 2.5px solid var(--outline);
+    border-radius: 999px;
+    padding: 8px 14px;
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: 14px;
+    color: #142A55;
+    box-shadow: 3px 4px 0 rgb(20 42 85 / 0.35);
+  }
+
+  #linksBtn {
+    pointer-events: auto;
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: 14px;
+    color: #142A55;
+    background: #FFD75E;
+    border: 2.5px solid var(--outline);
+    border-radius: 999px;
+    padding: 9px 16px;
+    cursor: pointer;
+    box-shadow: 3px 4px 0 rgb(20 42 85 / 0.35);
+  }
+  #linksBtn:hover { background: #FFE9A8; }
+
+  #whBtn, #goalsBtn {
+    pointer-events: auto;
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: 14px;
+    color: #142A55;
+    background: #BDEBEE;
+    border: 2.5px solid var(--outline);
+    border-radius: 999px;
+    padding: 9px 14px;
+    cursor: pointer;
+    box-shadow: 3px 4px 0 rgb(20 42 85 / 0.35);
+  }
+  #whBtn:hover, #goalsBtn:hover { background: #DFF6F8; }
+  #whBtn.canbuy { animation: shopPulse 1s ease-in-out infinite; }
+  @keyframes shopPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.08); background: #FFE9A8; }
+  }
+  #finds #prestN { font-size: 11px; margin-left: 3px; }
+  #finds #bagChip { font-size: 11px; margin-left: 6px; }
+
+  #hint {
+    position: fixed;
+    bottom: 108px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 20;
+    background: #FFFFFF;
+    color: #142A55;
+    border: 2.5px solid var(--outline);
+    border-radius: 999px;
+    padding: 8px 18px;
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: 14px;
+    width: max-content;
+    max-width: min(92vw, 480px);
+    text-align: center;
+    line-height: 1.4;
+    box-shadow: 3px 4px 0 rgb(20 42 85 / 0.35);
+    transition: opacity 0.6s ease;
+    pointer-events: none;
+  }
+  #hint.gone { opacity: 0; }
+
+  /* ---------- scene ---------- */
+  #view { position: fixed; inset: 0; overflow: hidden; touch-action: none; }
+  img { -webkit-user-drag: none; user-select: none; }
+
+  #ground {
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    height: 92px;
+    background: var(--grass);
+    border-top: 3px solid var(--grass-edge);
+    z-index: 2;
+  }
+
+  #sky { position: absolute; inset: 0; z-index: 0; will-change: transform; transform-origin: left top; }
+  .cloud { position: absolute; animation: drift 18s ease-in-out infinite alternate; }
+  @keyframes drift { from { transform: translateX(0); } to { transform: translateX(28px); } }
+
+  /* the field climbs away behind us — one terraced band per row of pitches */
+  #slope { position: absolute; inset: 0; z-index: 1; transform-origin: left bottom; }
+  .band { position: absolute; left: 0; width: 6400px; }
+  .farlayer { position: absolute; inset: 0; z-index: 1; will-change: transform; transform-origin: left bottom; }
+  .bgpitch { position: absolute; }
+
+  #world { position: absolute; top: 0; bottom: 0; left: 0; z-index: 3; will-change: transform; transform-origin: left bottom; }
+
+  /* ---------- pitches (car + table + sign) ---------- */
+  .stall {
+    position: absolute;
+    bottom: 60px;
+    width: 430px;
+    height: 178px;
+    cursor: pointer;
+    z-index: 2;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .stall:focus-visible { outline: 3px solid #4B7BE5; outline-offset: 6px; border-radius: 12px; }
+
+  .pitch-svg { display: block; position: absolute; left: 0; bottom: 0; color: var(--c); }
+
+  .stall .shadow, .whstation .shadow {
+    position: absolute;
+    bottom: -9px; left: 2%; right: 20%;
+    height: 18px;
+    background: rgb(20 42 85 / 0.18);
+    border-radius: 50%;
+    z-index: 0;
+  }
+
+  .aboard {
+    position: absolute;
+    left: -6px; bottom: -4px;
+    z-index: 4;
+    background: #FFD75E;
+    border: 3px solid var(--outline);
+    border-radius: 6px;
+    padding: 7px 12px 6px;
+    text-align: center;
+    transform: rotate(-4deg);
+    box-shadow: 3px 4px 0 rgb(20 42 85 / 0.35);
+  }
+  .aboard b { font-family: var(--display); font-weight: 700; font-size: 18px; line-height: 1.05; color: #142A55; display: block; }
+  .aboard span { font-size: 9.5px; font-weight: 800; letter-spacing: 0.09em; color: #3D5688; text-transform: uppercase; }
+  .aboard::before, .aboard::after {
+    content: "";
+    position: absolute;
+    bottom: -11px;
+    width: 8px; height: 11px;
+    background: #C89B66;
+    border: 2.5px solid var(--outline);
+  }
+  .aboard::before { left: 14%; } .aboard::after { right: 14%; }
+  .stall.near .aboard { background: #FFE9A8; }
+
+  /* sellers you can chat to */
+  .npc {
+    position: absolute;
+    left: 400px; bottom: 2px;
+    width: 64px; height: 100px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    z-index: 5;
+  }
+  .npc svg { display: block; animation: npcIdle 2.6s ease-in-out infinite; }
+  /* generous hit area so near-misses talk to the seller instead of opening the link */
+  .npc::before {
+    content: "";
+    position: absolute;
+    top: -36px; left: -26px; right: -26px; bottom: -4px;
+  }
+  .npc::after {
+    content: "💬";
+    position: absolute;
+    top: -28px; left: 50%;
+    font-size: 17px;
+    line-height: 1;
+    background: #FFD75E;
+    border: 2.5px solid var(--outline);
+    border-radius: 999px;
+    padding: 4px 7px;
+    box-shadow: 2px 3px 0 rgb(20 42 85 / 0.3);
+    animation: badgeBob 1.3s ease-in-out infinite;
+  }
+  @keyframes badgeBob { 0%, 100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, -6px); } }
+  .npc:hover svg { animation-duration: 1.1s; }
+  .npc:focus-visible { outline: 3px solid #4B7BE5; outline-offset: 4px; border-radius: 10px; }
+  @keyframes npcIdle { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+
+  /* the rare find, glowing on its crate */
+  /* the glowing find is clickable too — it starts the haggle, not the link */
+  .rare {
+    position: absolute;
+    left: 318px; bottom: 0;
+    width: 46px; height: 78px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    z-index: 3;
+  }
+  .rare::before {
+    content: "";
+    position: absolute;
+    top: -14px; left: -14px; right: -14px; bottom: -2px;
+  }
+  /* rarity reads from across the field: the glow colour IS the tier.
+     white → cyan → gold → legendary holo, and only the top two twinkle. */
+  .rare .rare-item { animation: glowT1 2.2s ease-in-out infinite; }
+  .rare.t2 .rare-item { animation-name: glowT2; animation-duration: 1.8s; }
+  .rare.t3 .rare-item { animation-name: glowT3; animation-duration: 1.4s; }
+  .rare.t4 .rare-item { animation-name: glowT4; animation-duration: 1.15s; }
+  @keyframes glowT1 {
+    0%, 100% { filter: drop-shadow(0 0 2px #FFFFFF); }
+    50% { filter: drop-shadow(0 0 5px #FFFFFF) drop-shadow(0 0 9px #C9D8EC); }
+  }
+  @keyframes glowT2 {
+    0%, 100% { filter: drop-shadow(0 0 3px #DFF7F9) drop-shadow(0 0 7px #35C4CE); }
+    50% { filter: drop-shadow(0 0 7px #FFFFFF) drop-shadow(0 0 15px #35C4CE); }
+  }
+  @keyframes glowT3 {
+    0%, 100% { filter: drop-shadow(0 0 3px #FFE9A8) drop-shadow(0 0 8px #FFC01F); }
+    50% { filter: drop-shadow(0 0 8px #FFF3C4) drop-shadow(0 0 18px #FF9D0A); }
+  }
+  /* legendary: the halo cycles purple → pink → gold, like a holo card catching the light */
+  @keyframes glowT4 {
+    0%, 100% { filter: drop-shadow(0 0 5px #F4E6FF) drop-shadow(0 0 14px #B45AF2); }
+    33% { filter: drop-shadow(0 0 6px #FFE2F4) drop-shadow(0 0 20px #FF4FA3); }
+    66% { filter: drop-shadow(0 0 6px #FFF3C4) drop-shadow(0 0 20px #FFC01F); }
+  }
+  .rare .spark { display: none; }
+  .rare.t3 .spark, .rare.t4 .spark { display: block; animation: twinkle 1.4s ease-in-out infinite; }
+  .rare.t4 .spark { animation-duration: 0.9s; }
+  .rare .spark.s2 { animation-delay: -0.7s; }
+  @keyframes twinkle { 0%, 100% { opacity: 0.15; } 50% { opacity: 1; } }
+
+  .say {
+    position: absolute;
+    right: -44px; bottom: 118px;
+    width: 264px;
+    background: #FFFFFF;
+    border: 2.5px solid var(--outline);
+    border-radius: 12px;
+    padding: 10px 13px;
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #142A55;
+    line-height: 1.35;
+    box-shadow: 3px 4px 0 rgb(20 42 85 / 0.35);
+    opacity: 0;
+    transition: opacity 0.15s ease;
+    pointer-events: none;
+    z-index: 7;
+  }
+  .say.show { opacity: 1; pointer-events: auto; }
+  .say::after {
+    content: "";
+    position: absolute;
+    bottom: -9px; left: 72%;
+    transform: rotate(45deg);
+    width: 14px; height: 14px;
+    background: #FFFFFF;
+    border-right: 2.5px solid var(--outline);
+    border-bottom: 2.5px solid var(--outline);
+  }
+  .say-price { margin-top: 5px; font-size: 12px; font-weight: 800; color: #3D5688; }
+  .say-btns { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 9px; }
+  .say-btns button {
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: 13px;
+    color: #142A55;
+    background: #FFD75E;
+    border: 2px solid var(--outline);
+    border-radius: 999px;
+    padding: 7px 11px;
+    min-height: 34px;
+    cursor: pointer;
+    flex: 1 1 auto;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .say-btns button:hover { background: #FFE9A8; }
+  .say-btns button:disabled { background: #E4E8EF; color: #8A97B2; cursor: not-allowed; }
+  .say-btns .bye { background: #F1F6FE; flex: 0 0 auto; }
+
+  /* the two haggle moves sit apart from the price buttons — they aren't offers */
+  .say-moves { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+  .say-moves button {
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: 12px;
+    color: #3D5688;
+    background: #FFFFFF;
+    border: 2px dashed var(--outline);
+    border-radius: 999px;
+    padding: 6px 10px;
+    min-height: 32px;
+    cursor: pointer;
+    flex: 1 1 auto;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .say-moves button:hover:not(:disabled) { background: #F1F6FE; color: #142A55; }
+  .say-moves button:disabled { opacity: 0.45; cursor: not-allowed; }
+
+  /* how much rope the seller has left */
+  .pips { letter-spacing: 1px; color: #1F8A3B; font-weight: 800; }
+  .pips.low { color: #D33036; }
+
+  .profit-up { color: #1F8A3B; }
+  .profit-down { color: #D33036; }
+
+  /* floating profit numbers — the big green ones are the whole point */
+  .pop {
+    position: fixed;
+    left: 50%; top: 42%;
+    transform: translate(-50%, 0);
+    z-index: 26;
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 40px;
+    pointer-events: none;
+    white-space: nowrap;
+    text-shadow: -2px -2px 0 #FFF, 2px -2px 0 #FFF, -2px 2px 0 #FFF, 2px 2px 0 #FFF, 3px 5px 0 rgb(20 42 85 / 0.25);
+    animation: popUp 1.7s ease-out forwards;
+  }
+  /* rep lands below the cash number so the two don't collide on a sale */
+  .pop.rep { color: #3358B8; font-size: 21px; top: 53%; }
+  .pop.up { color: #1F8A3B; }
+  .pop.down { color: #D33036; }
+  .pop.big { font-size: 62px; }
+  @keyframes popUp {
+    0% { opacity: 0; transform: translate(-50%, 14px) scale(0.5); }
+    12% { opacity: 1; transform: translate(-50%, 0) scale(1.18); }
+    24% { transform: translate(-50%, -4px) scale(1); }
+    100% { opacity: 0; transform: translate(-50%, -90px) scale(1); }
+  }
+  .confetto {
+    position: fixed;
+    top: -6vh;
+    z-index: 40;
+    font-size: 22px;
+    pointer-events: none;
+    animation: confFall linear forwards;
+  }
+  @keyframes confFall {
+    to { transform: translateY(118vh) rotate(560deg); opacity: 0.9; }
+  }
+  .story { display: block; margin-top: 6px; font-size: 12.5px; font-weight: 800; color: #6B3FA0; }
+  #finds .goal { font-size: 11px; font-weight: 800; color: #3D5688; margin-left: 2px; }
+  /* how far through the level you are — rep, not cash */
+  .lvlbar {
+    display: inline-block; vertical-align: middle;
+    width: 40px; height: 7px; margin: -1px 0 0 5px;
+    background: #D7E0EF;
+    border: 1.5px solid var(--outline);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .lvlbar b { display: block; height: 100%; background: #4B7BE5; transition: width 0.4s ease; }
+
+  /* mobile: the haggle floats as a card up in the sky, where the screen is empty */
+  #barter {
+    position: fixed;
+    left: 12px; right: 12px;
+    top: calc(74px + env(safe-area-inset-top, 0px));
+    margin: 0 auto;
+    max-width: 430px;
+    z-index: 25;
+    background: #FFFFFF;
+    border: 3px solid var(--outline);
+    border-radius: 18px;
+    padding: 14px 16px 16px;
+    box-shadow: 5px 7px 0 rgb(20 42 85 / 0.35);
+    opacity: 0;
+    transform: translateY(-14px) scale(0.98);
+    transition: transform 0.2s ease, opacity 0.2s ease;
+    pointer-events: none;
+    font-size: 15px;
+    font-weight: 700;
+    color: #142A55;
+    line-height: 1.4;
+  }
+  #barter.open { opacity: 1; transform: none; pointer-events: auto; }
+  #barter .sheet-grip { display: none; }
+  #barter .sheet-head { display: flex; align-items: center; gap: 12px; margin-bottom: 9px; }
+  #barter .sheet-art {
+    display: block;
+    background: #F1F6FE;
+    border: 2.5px solid var(--outline);
+    border-radius: 14px;
+    flex: 0 0 auto;
+  }
+  .tier-chip {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 5px 11px;
+    border: 2px solid var(--outline);
+    border-radius: 999px;
+  }
+  .tier-chip.t1 { background: #E4E8EF; color: #3D5688; }
+  .tier-chip.t2 { background: #BDEBEE; color: #0F5E63; }
+  .tier-chip.t3 { background: #FFD75E; color: #6B4A00; }
+  .tier-chip.t4 { background: #E3C7FF; color: #4B1E7A; }
+
+  #barter .say-price { font-size: 13px; margin-top: 7px; }
+  #barter .say-btns { margin-top: 12px; gap: 8px; }
+  #barter .say-btns button { min-height: 48px; font-size: 15px; flex: 1 1 44%; }
+  #barter .say-moves { margin-top: 8px; gap: 8px; }
+  #barter .say-moves button { min-height: 42px; font-size: 13px; flex: 1 1 44%; }
+
+  /* small screens keep the bare minimum: name, wallet, warehouse, links */
+  @media (max-width: 640px) {
+    #hud { padding: 8px 10px; gap: 6px; }
+    .who { padding: 4px 10px 4px 4px; gap: 7px; }
+    .who img { width: 30px; height: 30px; }
+    .who .who-name { font-size: 13px; white-space: nowrap; }
+    .who .who-sub { display: none; }
+    #finds { padding: 8px 11px; font-size: 12.5px; white-space: nowrap; }
+    #finds .goal { display: none; }
+    #finds #prestN { display: none; }
+    #goalsBtn { display: none; }
+    #trendPill { display: none !important; }
+    #linksBtn, #whBtn { padding: 8px 11px; font-size: 12.5px; white-space: nowrap; }
+    #barter { padding: 12px 13px 13px; }
+    #barter .sheet-art { width: 56px; height: 56px; }
+    .pad { width: 56px; height: 56px; font-size: 20px; background: rgb(255 255 255 / 0.88); }
+    /* wide prompt bubbles get clipped at the screen edge — let them wrap instead */
+    .prompt { white-space: normal; width: max-content; max-width: 230px; }
+  }
+
+  /* very narrow: wrap the HUD into two rows — name + links on top, cash + warehouse below */
+  @media (max-width: 480px) {
+    #hud { flex-wrap: wrap; }
+    #hud::after { content: ""; width: 100%; order: 1; }
+    #linksBtn { margin-left: auto; }
+    #finds { order: 2; margin-left: 0; }
+    #whBtn { order: 3; margin-left: auto; }
+    /* the two-row HUD is taller — drop the haggle card below it */
+    #barter { top: calc(116px + env(safe-area-inset-top, 0px)); }
+  }
+
+  .rare.sold .rare-item { animation: none; filter: none; }
+  .rare.sold .spark { display: none; }
+  .rare.sold::after {
+    content: "SOLD";
+    position: absolute;
+    top: 8px; left: -6px;
+    background: #E5484D;
+    color: #FFFFFF;
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    padding: 2px 7px;
+    border: 2px solid var(--outline);
+    border-radius: 6px;
+    transform: rotate(-8deg);
+  }
+
+  .prompt {
+    position: absolute;
+    top: -52px; left: 50%;
+    transform: translateX(-50%);
+    background: #FFFFFF;
+    border: 2.5px solid var(--outline);
+    border-radius: 12px;
+    padding: 7px 15px;
+    text-align: center;
+    white-space: nowrap;
+    box-shadow: 3px 4px 0 rgb(20 42 85 / 0.35);
+    opacity: 0;
+    transition: opacity 0.15s ease;
+    pointer-events: none;
+    z-index: 6;
+  }
+  .prompt::after {
+    content: "";
+    position: absolute;
+    bottom: -9px; left: 50%;
+    transform: translateX(-50%) rotate(45deg);
+    width: 14px; height: 14px;
+    background: #FFFFFF;
+    border-right: 2.5px solid var(--outline);
+    border-bottom: 2.5px solid var(--outline);
+  }
+  .prompt b { font-family: var(--display); font-weight: 600; font-size: 14.5px; color: #142A55; display: block; }
+  .prompt span { font-size: 11px; font-weight: 800; color: #3D5688; }
+  .stall.near .prompt, .whstation.near .prompt { opacity: 1; pointer-events: auto; animation: bounce 0.9s ease-in-out infinite; }
+  @keyframes bounce { 0%, 100% { margin-top: 0; } 50% { margin-top: -7px; } }
+
+  @media (max-width: 520px) {
+    .stall { transform: scale(0.82); transform-origin: bottom left; }
+    .say { right: auto; left: 40px; width: 238px; }
+    .say::after { left: 78%; }
+    /* sellers are the game — make them easy to hit with a thumb */
+    .npc { transform: scale(1.45); transform-origin: bottom center; }
+  }
+  @media (max-width: 400px) {
+    .stall { transform: scale(0.75); }
+  }
+
+  .puff {
+    position: absolute;
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: rgb(255 255 255 / 0.75);
+    z-index: 4;
+    pointer-events: none;
+    animation: puff 0.5s ease-out forwards;
+  }
+  @keyframes puff {
+    to { transform: translate(var(--dx), -16px) scale(1.8); opacity: 0; }
+  }
+
+  /* ---------- player ---------- */
+  #player { position: absolute; bottom: 34px; left: 0; width: 84px; height: 134px; z-index: 5; will-change: transform; }
+  #player .p-shadow {
+    position: absolute;
+    bottom: -8px; left: 8px; right: 8px;
+    height: 12px;
+    background: rgb(20 42 85 / 0.22);
+    border-radius: 50%;
+  }
+  .p-inner { position: absolute; inset: 0; }
+  .p-figure { position: absolute; inset: 0; }
+  #player.walking .p-figure { animation: bob 0.32s ease-in-out infinite alternate; }
+  @keyframes bob { from { transform: translateY(0); } to { transform: translateY(-4px); } }
+  .p-head {
+    position: absolute;
+    top: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 58px; height: 58px;
+    border-radius: 50%;
+    border: 3px solid #FFFFFF;
+    box-shadow: 2px 3px 0 rgb(20 42 85 / 0.4);
+    z-index: 2;
+  }
+  .p-bod { position: absolute; top: 46px; left: 50%; transform: translateX(-50%); z-index: 1; }
+  .p-bod .leg1, .p-bod .leg2, .p-bod .arm1, .p-bod .arm2 { transform-box: fill-box; transform-origin: 50% 10%; }
+  #player.walking .leg1 { animation: step 0.32s ease-in-out infinite alternate; }
+  #player.walking .leg2 { animation: step 0.32s ease-in-out infinite alternate-reverse; }
+  #player.walking .arm1 { animation: swing 0.32s ease-in-out infinite alternate-reverse; }
+  #player.walking .arm2 { animation: swing 0.32s ease-in-out infinite alternate; }
+  @keyframes step { from { transform: rotate(18deg); } to { transform: rotate(-18deg); } }
+  @keyframes swing { from { transform: rotate(11deg); } to { transform: rotate(-11deg); } }
+
+  /* ---------- touch controls ---------- */
+  #pads { position: fixed; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); left: 0; right: 0; z-index: 21; display: none; justify-content: space-between; padding: 0 18px; }
+  @media (pointer: coarse) { #pads { display: flex; } }
+  .pad {
+    width: 64px; height: 64px;
+    border-radius: 50%;
+    background: #FFFFFF;
+    border: 3px solid var(--outline);
+    box-shadow: 3px 4px 0 rgb(20 42 85 / 0.35);
+    font-size: 24px;
+    color: #142A55;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .pad:active { background: #FFE9A8; }
+  /* double-tapped and held — you're legging it */
+  .pad.running { background: #FFD75E; box-shadow: 0 0 0 4px rgb(255 215 94 / 0.45), 3px 4px 0 rgb(20 42 85 / 0.35); }
+
+  /* ---------- plain links panel + upgrades shop + game intro ---------- */
+  #linksPanel, #shopPanel, #introPanel, #rewardPanel, #goalsPanel, #laptopPanel, #packPanel {
+    position: fixed; inset: 0;
+    z-index: 30;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgb(13 27 54 / 0.55);
+    padding: 20px;
+  }
+  #linksPanel.open, #shopPanel.open, #introPanel.open, #rewardPanel.open, #goalsPanel.open, #laptopPanel.open, #packPanel.open { display: flex; }
+  .panel-card {
+    width: 100%;
+    max-width: 380px;
+    background: #FFFFFF;
+    border: 3px solid var(--outline);
+    border-radius: 18px;
+    padding: 22px;
+    box-shadow: 6px 8px 0 rgb(20 42 85 / 0.4);
+  }
+  .panel-card h2 { font-family: var(--display); font-weight: 700; font-size: 22px; color: #142A55; margin-bottom: 14px; text-align: center; }
+  .panel-card ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  .panel-card a {
+    display: block;
+    text-align: center;
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: 17px;
+    color: #142A55;
+    text-decoration: none;
+    background: #F1F6FE;
+    border: 2.5px solid var(--outline);
+    border-radius: 12px;
+    padding: 11px;
+  }
+  .panel-card a:hover, .panel-card a:focus-visible { background: #FFE9A8; }
+  .shop-row { display: flex; align-items: center; gap: 11px; padding: 10px 2px; border-bottom: 2px dashed #E4E8EF; }
+  .shop-row:last-child { border-bottom: 0; }
+  .shop-ico { font-size: 25px; flex: 0 0 auto; }
+  .shop-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+  .shop-name { font-family: var(--display); font-weight: 600; font-size: 15px; color: #142A55; }
+  .shop-pips { font-style: normal; font-size: 11px; color: #C89B66; letter-spacing: 2px; }
+  .shop-desc { font-size: 11.5px; font-weight: 800; color: var(--ink-soft); }
+  .shop-buy {
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: 13.5px;
+    color: #142A55;
+    background: #FFD75E;
+    border: 2px solid var(--outline);
+    border-radius: 999px;
+    padding: 8px 13px;
+    min-height: 38px;
+    cursor: pointer;
+    flex: 0 0 auto;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .shop-buy:hover:not(:disabled) { background: #FFE9A8; }
+  .shop-buy:disabled { background: #E4E8EF; color: #8A97B2; cursor: not-allowed; }
+  .shop-buy.maxed { background: #DFF3E1; color: #1F8A3B; }
+  .shop-buy.pro:not(:disabled) { background: #E3C7FF; }
+  /* the wipe sits apart from things you buy, and looks like it means it */
+  .wipe-row { border-top: 2px dashed #C2CBDA; margin-top: 6px; padding-top: 12px; }
+  .shop-buy.wipe { background: #F1F6FE; color: #8A3B14; border-color: #C2703F; }
+  .shop-buy.wipe:hover:not(:disabled) { background: #E5484D; color: #FFFFFF; border-color: var(--outline); }
+  .shop-pro-note {
+    text-align: center;
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: 13px;
+    color: #6B3FA0;
+    background: #F4E6FF;
+    border: 2px dashed #B45AF2;
+    border-radius: 10px;
+    padding: 6px;
+    margin-bottom: 6px;
+  }
+
+  /* trending category pill — sits under the HUD once the game is discovered */
+  #trendPill {
+    position: fixed;
+    /* clears the .who card (12px hud pad + 53px card + 4px drop shadow) */
+    top: 76px; left: 14px;
+    z-index: 19;
+    display: none;
+    align-items: center;
+    gap: 6px;
+    background: #FFFFFF;
+    border: 2.5px solid var(--outline);
+    border-radius: 999px;
+    padding: 6px 13px;
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: 12.5px;
+    color: #142A55;
+    box-shadow: 3px 4px 0 rgb(20 42 85 / 0.35);
+    pointer-events: none;
+  }
+  #trendPill.show { display: flex; }
+  @media (max-width: 480px) { #trendPill { top: 104px; } }
+
+  /* link-visit reward modal */
+  #rewardPanel .panel-card { text-align: center; }
+  .reward-big { font-size: 46px; line-height: 1; margin-bottom: 6px; }
+  .reward-amt { font-family: var(--display); font-weight: 700; font-size: 40px; color: #1F8A3B; margin-bottom: 6px; }
+  .reward-msg { font-size: 14.5px; font-weight: 700; color: #142A55; line-height: 1.45; }
+  .reward-dots { font-size: 15px; letter-spacing: 4px; color: #C89B66; margin: 10px 0 2px; }
+  .reward-next { font-size: 12.5px; font-weight: 800; color: #3D5688; margin-top: 4px; }
+
+  /* goals panel */
+  .quest-row { display: flex; align-items: center; gap: 11px; padding: 10px 2px; border-bottom: 2px dashed #E4E8EF; }
+  .quest-row:last-child { border-bottom: 0; }
+  .quest-ico { font-size: 23px; flex: 0 0 auto; }
+  .quest-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+  .quest-name { font-family: var(--display); font-weight: 600; font-size: 14.5px; color: #142A55; }
+  .quest-prog { font-size: 11px; font-weight: 800; color: #3D5688; }
+  .quest-pay { font-family: var(--display); font-weight: 600; font-size: 13px; color: #1F8A3B; background: #DFF3E1; border: 2px solid var(--outline); border-radius: 999px; padding: 6px 10px; flex: 0 0 auto; }
+
+  .shop-wallet { text-align: center; font-family: var(--display); font-weight: 600; font-size: 14px; color: #3D5688; margin: -8px 0 10px; }
+  .shop-fx { font-size: 10.5px; font-weight: 800; color: #1F8A3B; }
+
+  /* ---------- the warehouse: a second walkable scene ---------- */
+  /* dark up at the roof, warmer down where the lamps reach */
+  body.in-wh { background: linear-gradient(#20263A 0%, #2E3650 34%, #414C6B 100%); }
+  body.in-wh #sky, body.in-wh #slope, body.in-wh .farlayer, body.in-wh .stall { display: none; }
+  body.in-wh #ground {
+    background: #566180 !important;
+    background-image: none !important;
+    border-top-color: #39435C;
+  }
+  .whstation {
+    position: absolute;
+    bottom: 60px;
+    cursor: pointer;
+    z-index: 2;
+    display: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  body.in-wh .whstation { display: block; }
+  .whstation:focus-visible { outline: 3px solid #4B7BE5; outline-offset: 6px; border-radius: 12px; }
+  .whstation > svg { display: block; position: absolute; left: 0; bottom: 0; }
+  .whstation.near .aboard { background: #FFE9A8; }
+  /* something waiting at this station: the sign says what, and glows to catch the eye */
+  .whstation.todo .aboard { background: #FFC94A; }
+  .whstation.todo .aboard span { color: #8A3B14; }
+  .whstation.todo:not(.near) .aboard { animation: signNudge 2.4s ease-in-out infinite; }
+  @keyframes signNudge {
+    0%, 88%, 100% { transform: rotate(-4deg); }
+    92% { transform: rotate(-7deg) translateY(-3px); }
+    96% { transform: rotate(-1deg) translateY(-1px); }
+  }
+  @media (max-width: 520px) {
+    .whstation { transform: scale(0.85); transform-origin: bottom left; }
+  }
+
+  /* ---------- warehouse dressing: strip lights and a decorated back wall ----------
+     two parallax layers, built in JS. --vu is the visible height in world units,
+     so the lights can hang off the top of the screen at any zoom. */
+  #whWall, #whLight {
+    position: absolute; inset: 0;
+    display: none;
+    z-index: 1;
+    transform-origin: left bottom;
+    will-change: transform;
+    pointer-events: none;
+  }
+  /* the wall is the far plane, so knock it back — the lamps do the lifting */
+  #whWall { filter: brightness(0.84) saturate(0.9); }
+  #whLight { z-index: 2; }  /* cones and floor pools sit on the floor, under the world */
+  body.in-wh #whWall, body.in-wh #whLight { display: block; }
+
+  /* the corrugated wall and the girder that runs the length of it, both parallaxed */
+  #whWall::before {
+    content: "";
+    position: absolute; top: 0; bottom: 0; left: -3000px; right: -3000px;
+    background: repeating-linear-gradient(90deg, transparent 0 300px, rgb(15 26 55 / 0.32) 300px 314px);
+  }
+  .whbeam {
+    position: absolute; left: -3000px; right: -3000px; height: 13px;
+    bottom: calc((var(--vu, 560) - 74) * 1px);
+    background: rgb(15 26 55 / 0.42);
+  }
+
+  /* a hanging strip light: fixture, cone, and a warm pool on the concrete */
+  /* the fixture hangs on a long stem so it clears the HUD along the top edge */
+  .whlamp { position: absolute; width: 132px; bottom: calc((var(--vu, 560) - 96) * 1px); }
+  .whlamp > svg { display: block; }
+  .whlamp .halo {
+    position: absolute; left: 50%; top: 76px;
+    width: 190px; height: 90px; margin-left: -95px;
+    background: radial-gradient(closest-side, rgb(255 226 150 / 0.5), transparent);
+  }
+  .whlamp .cone {
+    position: absolute; left: 50%; top: 88px;
+    width: 300px; margin-left: -150px;
+    height: calc((var(--vu, 560) - 180) * 1px);
+    background: linear-gradient(rgb(255 226 150 / 0.26), rgb(255 226 150 / 0.03));
+    clip-path: polygon(44% 0, 56% 0, 100% 100%, 0 100%);
+  }
+  .whlamp .pool {
+    position: absolute; left: 50%;
+    bottom: calc((114 - var(--vu, 560)) * 1px);
+    width: 340px; height: 58px; margin-left: -170px;
+    background: radial-gradient(closest-side, rgb(255 226 150 / 0.34), transparent);
+  }
+  /* every lit part of one lamp shares a delay, so the flicker reads as one bulb */
+  .whlamp .lit { animation: whFlick 11s steps(1, end) infinite var(--d, 0s); }
+  .whlamp.dodgy .lit { animation-duration: 4.3s; }
+  /* one bulb in the row has gone entirely — no halo, no cone, no pool */
+  .whlamp.dead .halo, .whlamp.dead .cone, .whlamp.dead .pool { display: none; }
+  .whlamp.dead .tube { fill: #6E7791; animation: none; }
+  @keyframes whFlick {
+    0%, 91%, 100% { opacity: 1; }
+    91.4% { opacity: 0.15; }
+    92% { opacity: 0.85; }
+    92.6% { opacity: 0.25; }
+    93.4% { opacity: 1; }
+    95.5% { opacity: 0.4; }
+    96.2% { opacity: 1; }
+  }
+
+  /* pinned-up wall clutter — posters, a pinboard, a clock */
+  .whdec, .whbox { position: absolute; }
+  .whdec > svg, .whbox > svg { display: block; }
+  .whposter {
+    position: absolute;
+    background: #F6EFE3;
+    border: 3px solid var(--outline);
+    border-radius: 3px;
+    padding: 10px 14px 9px;
+    text-align: center;
+    box-shadow: 4px 5px 0 rgb(10 18 40 / 0.35);
+  }
+  .whposter b {
+    display: block;
+    font-family: var(--display); font-weight: 700; font-size: 21px; line-height: 1.05;
+    color: #142A55;
+  }
+  .whposter span {
+    display: block; margin-top: 3px;
+    font-size: 10px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase;
+    color: #3D5688;
+  }
+  .whposter .tack {
+    position: absolute; top: -7px; left: 50%; margin-left: -6px;
+    width: 12px; height: 12px; border-radius: 50%;
+    background: #E5484D; border: 2.5px solid var(--outline);
+  }
+  .whposter.red { background: #E5484D; }
+  .whposter.red b { color: #FFF3E2; }
+  .whposter.red span { color: #FFD9C0; }
+  .whposter.red .tack { background: #FFD75E; }
+  .whposter.blue { background: #4B7BE5; }
+  .whposter.blue b { color: #FFFFFF; }
+  .whposter.blue span { color: #D5E4FF; }
+
+  /* the laptop's little internet */
+  .laptop-card { max-width: 470px; padding: 0 0 14px; overflow: hidden; }
+  .lp-bar { display: flex; align-items: center; gap: 10px; background: #22254A; padding: 10px 14px; }
+  .lp-dots { color: #FFD75E; font-size: 9px; letter-spacing: 2px; }
+  .lp-url { flex: 1; background: #3E4A5C; color: #DCEFFC; border-radius: 999px; padding: 4px 12px; font-size: 11px; font-weight: 800; }
+  #lpRows { padding: 10px 16px 0; max-height: 56vh; overflow-y: auto; }
+  #packRows { max-height: 58vh; overflow-y: auto; }
+  .lp-h { font-family: var(--display); font-weight: 600; font-size: 12px; letter-spacing: 0.07em; text-transform: uppercase; color: var(--ink-soft); margin: 10px 0 6px; }
+  .lp-row { background: #F1F6FE; border: 2.5px solid var(--outline); border-radius: 12px; padding: 9px 12px; margin-bottom: 8px; font-size: 13px; color: #142A55; }
+  .lp-row.live-ebay { background: #FFF6DC; }
+  .lp-row.live-vinted { background: #E7F8EE; }
+  .lp-row.lp-dim { background: #F4F6FA; color: #8A97B2; font-weight: 800; font-size: 12px; border-style: dashed; }
+  .lp-name { font-family: var(--display); font-weight: 600; font-size: 14px; }
+  .lp-meta { font-size: 11.5px; font-weight: 800; color: var(--ink-soft); margin-top: 3px; line-height: 1.45; }
+  .lp-bid { color: #1F8A3B; }
+  .lp-btns { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .lp-btns button {
+    font-family: var(--display); font-weight: 600; font-size: 12.5px; color: #142A55;
+    background: #FFD75E; border: 2px solid var(--outline); border-radius: 999px;
+    padding: 7px 11px; min-height: 34px; cursor: pointer; flex: 1 1 auto;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .lp-btns button:hover:not(:disabled) { background: #FFE9A8; }
+  .lp-btns button:disabled { background: #E4E8EF; color: #8A97B2; cursor: not-allowed; }
+  .tag-mint { font-size: 11px; font-weight: 800; color: #1F8A3B; }
+  .tag-tat { font-size: 11px; font-weight: 800; color: #D33036; }
+  .tag-hot { font-size: 11px; font-weight: 800; color: #C2703F; }
+
+  .intro-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 9px 2px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #142A55;
+    line-height: 1.35;
+  }
+  .intro-row .intro-ico { font-size: 26px; flex: 0 0 auto; }
+
+  /* the intro card gets room to breathe on desktop */
+  @media (min-width: 700px) {
+    #introPanel .panel-card { max-width: 560px; padding: 34px 38px; }
+    #introPanel h2 { font-size: 32px; margin-bottom: 22px; }
+    #introPanel .intro-row { font-size: 18px; padding: 13px 2px; gap: 18px; }
+    #introPanel .intro-row .intro-ico { font-size: 38px; }
+    #introPanel #closeIntro { font-size: 19px; padding: 14px; margin-top: 22px; }
+  }
+
+  #closePanel, #closeShop, #closeIntro, #closeReward, #closeGoals, #closeLaptop, #closePack {
+    margin-top: 14px;
+    width: 100%;
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: 15px;
+    color: #142A55;
+    background: #FFD75E;
+    border: 2.5px solid var(--outline);
+    border-radius: 12px;
+    padding: 10px;
+    cursor: pointer;
+  }
+  /* the laptop card has no side padding, so its close button carries its own margins
+     — this must sit after the shared close-button rule to win the cascade */
+  #closeLaptop { width: calc(100% - 32px); margin: 12px 16px 0; }
+
+  /* panels must never overflow a small screen */
+  .panel-card { max-height: calc(100dvh - 40px); overflow-y: auto; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .stall.near .prompt, #player.walking .p-figure, #player.walking .p-bod g, .cloud, .npc svg, .npc::after, .rare .rare-item, .rare .spark, .confetto, #whBtn.canbuy, .whlamp .lit, .whstation.todo .aboard { animation: none; }
+  }
+</style>
+<noscript><style>
+  #linksPanel { display: flex !important; }
+  #closePanel, #hint, #pads { display: none !important; }
+</style></noscript>
+</head>
+<body>
+
+<div id="hud">
+  <div class="who">
+    <img src="avatar.jpg" alt="">
+    <div>
+      <div class="who-name">Found by Isaac</div>
+      <div class="who-sub">HAND-PICKED SECONDHAND FINDS</div>
+    </div>
+  </div>
+  <div id="finds" title="Your flipping wallet — turn £200 into £10k" hidden>💰 <b id="walletN">£200</b><span id="prestN"></span><span id="bagChip"></span><span class="goal" id="rankN">Boot Sale Newbie</span></div>
+  <button id="goalsBtn" type="button" hidden>🎯</button>
+  <button id="whBtn" type="button" hidden>🏭 Warehouse</button>
+  <button id="linksBtn" type="button">Skip to links</button>
+</div>
+
+<div id="hint">Loading the car boot…</div>
+
+<div id="trendPill" aria-hidden="true">🔥 <span id="trendTxt"></span></div>
+
+<div id="view">
+
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <!-- fluffy cloud: stroked layer under a fill-only layer hides internal seams -->
+      <g id="cloudShape">
+        <ellipse cx="75" cy="50" rx="62" ry="17"/>
+        <circle cx="42" cy="41" r="20"/>
+        <circle cx="75" cy="30" r="26"/>
+        <circle cx="108" cy="41" r="19"/>
+      </g>
+      <g id="cloud">
+        <use href="#cloudShape" fill="#FFFFFF" stroke="#B7D8F1" stroke-width="7" stroke-linejoin="round"/>
+        <use href="#cloudShape" fill="#FFFFFF"/>
+      </g>
+      <!-- car-boot bric-a-brac -->
+      <g id="gBox">
+        <path d="M6 16 L18 4 L30 8 V16 Z" fill="#B98A57" stroke="#142A55" stroke-width="2.5" stroke-linejoin="round"/>
+        <path d="M54 16 L44 5 L30 8 V16 Z" fill="#A87C4F" stroke="#142A55" stroke-width="2.5" stroke-linejoin="round"/>
+        <rect x="4" y="14" width="52" height="28" rx="3" fill="#C89B66" stroke="#142A55" stroke-width="3"/>
+        <path d="M14 22 H26" stroke="#142A55" stroke-width="2" opacity="0.5"/>
+      </g>
+      <g id="gBooks">
+        <rect x="2" y="24" width="52" height="10" rx="2" fill="#E5484D" stroke="#142A55" stroke-width="2.5"/>
+        <rect x="6" y="14" width="44" height="10" rx="2" fill="#4B7BE5" stroke="#142A55" stroke-width="2.5"/>
+        <rect x="4" y="4" width="48" height="10" rx="2" fill="#FFD75E" stroke="#142A55" stroke-width="2.5"/>
+      </g>
+      <g id="gPolaroid">
+        <rect x="2" y="6" width="52" height="30" rx="6" fill="#F6EFE3" stroke="#142A55" stroke-width="3"/>
+        <path d="M13 9 V33" stroke="#E5484D" stroke-width="3"/>
+        <path d="M17 9 V33" stroke="#FFD75E" stroke-width="3"/>
+        <path d="M21 9 V33" stroke="#55A45D" stroke-width="3"/>
+        <path d="M25 9 V33" stroke="#4B7BE5" stroke-width="3"/>
+        <circle cx="40" cy="21" r="9" fill="#22254A" stroke="#142A55" stroke-width="3"/>
+        <circle cx="40" cy="21" r="3.5" fill="#8FC9F5"/>
+        <rect x="2" y="36" width="52" height="6" rx="2" fill="#22254A"/>
+      </g>
+      <g id="gGameboy">
+        <rect x="2" y="2" width="32" height="48" rx="6" fill="#CBD2DC" stroke="#142A55" stroke-width="3"/>
+        <rect x="7" y="7" width="22" height="18" rx="3" fill="#3E4A5C" stroke="#142A55" stroke-width="2.5"/>
+        <rect x="10" y="10" width="16" height="12" fill="#9CCF9E"/>
+        <path d="M11 36 H19 M15 32 V40" stroke="#142A55" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="25" cy="34" r="3" fill="#B23B5E" stroke="#142A55" stroke-width="2"/>
+        <circle cx="29" cy="39" r="3" fill="#B23B5E" stroke="#142A55" stroke-width="2"/>
+      </g>
+      <g id="gTrainer">
+        <path d="M4 22 C4 12 10 6 20 6 L28 6 C34 6 38 10 44 14 L54 18 Q58 19 58 24 V26 H4 Z" fill="#F6EFE3" stroke="#142A55" stroke-width="3" stroke-linejoin="round"/>
+        <path d="M4 26 H58 V27 Q58 31 54 31 H8 Q4 31 4 27 Z" fill="#E5484D" stroke="#142A55" stroke-width="2.5" stroke-linejoin="round"/>
+        <path d="M22 10 L30 14 M20 14 L28 18" stroke="#142A55" stroke-width="2" stroke-linecap="round"/>
+        <path d="M8 20 C16 18 24 20 30 24" fill="none" stroke="#4B7BE5" stroke-width="3" stroke-linecap="round"/>
+      </g>
+      <g id="gCamera">
+        <rect x="32" y="6" width="22" height="14" rx="4" fill="#F6EFE3" stroke="#142A55" stroke-width="3.5"/>
+        <rect x="10" y="16" width="80" height="58" rx="12" fill="#F6EFE3" stroke="#142A55" stroke-width="4"/>
+        <rect x="70" y="26" width="11" height="8" rx="2.5" fill="#FFD75E" stroke="#142A55" stroke-width="2.5"/>
+        <circle cx="44" cy="45" r="17" fill="#FFFFFF" stroke="#142A55" stroke-width="3.5"/>
+        <circle cx="44" cy="45" r="9" fill="#4B7BE5" stroke="#142A55" stroke-width="3"/>
+        <circle cx="47.5" cy="41.5" r="2.5" fill="#FFFFFF"/>
+      </g>
+      <g id="gController">
+        <path d="M10 4 H42 Q50 4 50 14 L48 26 Q47 33 40 32 L34 30 Q26 27 18 30 L12 32 Q5 33 4 26 L2 14 Q2 4 10 4 Z" fill="#3E4A5C" stroke="#142A55" stroke-width="3" stroke-linejoin="round"/>
+        <path d="M12 14 H22 M17 9 V19" stroke="#F6EFE3" stroke-width="3.5" stroke-linecap="round"/>
+        <circle cx="36" cy="11" r="3" fill="#E5484D"/><circle cx="42" cy="16" r="3" fill="#FFD75E"/>
+      </g>
+      <g id="gBlanket">
+        <rect x="0" y="6" width="130" height="20" rx="9" fill="#F1E5CF" stroke="#142A55" stroke-width="3"/>
+        <path d="M8 12 H122 M8 20 H122" stroke="#E58AB6" stroke-width="2.5" opacity="0.7"/>
+      </g>
+      <g id="gRecords">
+        <circle cx="18" cy="18" r="13" fill="#22254A" stroke="#142A55" stroke-width="2.5"/><circle cx="18" cy="18" r="4" fill="#E5484D"/>
+        <circle cx="31" cy="15" r="13" fill="#22254A" stroke="#142A55" stroke-width="2.5"/><circle cx="31" cy="15" r="4" fill="#FFD75E"/>
+        <circle cx="42" cy="18" r="13" fill="#22254A" stroke="#142A55" stroke-width="2.5"/><circle cx="42" cy="18" r="4" fill="#3FC1C9"/>
+        <rect x="2" y="20" width="52" height="22" rx="3" fill="#8A6238" stroke="#142A55" stroke-width="3"/>
+      </g>
+      <g id="gFrame">
+        <rect x="4" y="4" width="36" height="44" rx="2" fill="#C89B66" stroke="#142A55" stroke-width="3"/>
+        <rect x="10" y="10" width="24" height="32" fill="#8FC9F5" stroke="#142A55" stroke-width="2.5"/>
+        <circle cx="17" cy="18" r="3.5" fill="#FFD75E"/>
+        <path d="M10 36 L20 28 L28 34 L34 30 V42 H10 Z" fill="#55A45D"/>
+      </g>
+      <g id="gRadio">
+        <path d="M44 10 L54 2" stroke="#142A55" stroke-width="2.5" stroke-linecap="round"/>
+        <rect x="2" y="8" width="52" height="30" rx="6" fill="#F6EFE3" stroke="#142A55" stroke-width="3"/>
+        <circle cx="16" cy="23" r="8" fill="#FFD75E" stroke="#142A55" stroke-width="2.5"/>
+        <path d="M32 15 V31 M39 15 V31 M46 15 V31" stroke="#142A55" stroke-width="2.5" stroke-linecap="round"/>
+      </g>
+      <!-- distant pitches for the background rows: cars boot-open toward their table -->
+      <g id="bgSaloon">
+        <path d="M22 21 L10 9 L15 4 L26 15 Z" fill="currentColor" stroke="#3B598F" stroke-width="2.5" stroke-linejoin="round"/>
+        <path d="M6 32 Q6 20 20 18 L30 17 Q36 8 48 8 L64 8 Q74 8 79 17 L92 19 Q98 21 98 30 V36 Q98 40 93 40 H11 Q6 40 6 32 Z" fill="currentColor" stroke="#3B598F" stroke-width="3" stroke-linejoin="round"/>
+        <path d="M36 17 Q40 11 48 11 L62 11 Q69 11 73 17 Z" fill="#DCEFFC" stroke="#3B598F" stroke-width="2"/>
+        <circle cx="26" cy="40" r="7" fill="#2F3B5C" stroke="#3B598F" stroke-width="2.5"/>
+        <circle cx="76" cy="40" r="7" fill="#2F3B5C" stroke="#3B598F" stroke-width="2.5"/>
+      </g>
+      <g id="bgVan">
+        <path d="M12 4 L2 22 L8 25 L17 8 Z" fill="#F4F1EA" stroke="#3B598F" stroke-width="2.5" stroke-linejoin="round"/>
+        <rect x="10" y="3" width="56" height="37" rx="4" fill="#F4F1EA" stroke="#3B598F" stroke-width="3"/>
+        <path d="M66 10 H76 Q79 10 81 13 L90 25 H95 Q100 27 100 32 V36 Q100 40 95 40 H66 Z" fill="#F4F1EA" stroke="#3B598F" stroke-width="3" stroke-linejoin="round"/>
+        <path d="M72 14 H79 L86 24 H72 Z" fill="#DCEFFC" stroke="#3B598F" stroke-width="2"/>
+        <circle cx="26" cy="40" r="7" fill="#2F3B5C" stroke="#3B598F" stroke-width="2.5"/>
+        <circle cx="84" cy="40" r="7" fill="#2F3B5C" stroke="#3B598F" stroke-width="2.5"/>
+      </g>
+      <g id="bgHatch">
+        <path d="M22 20 L8 6 L14 2 L26 16 Z" fill="currentColor" stroke="#3B598F" stroke-width="2.5" stroke-linejoin="round"/>
+        <path d="M14 34 Q14 22 24 18 L34 9 Q38 6 46 6 H58 Q68 6 72 13 L78 21 Q86 23 86 31 V36 Q86 40 81 40 H19 Q14 40 14 34 Z" fill="currentColor" stroke="#3B598F" stroke-width="3" stroke-linejoin="round"/>
+        <path d="M38 12 H56 V20 H30 Z" fill="#DCEFFC" stroke="#3B598F" stroke-width="2"/>
+        <circle cx="30" cy="40" r="7" fill="#2F3B5C" stroke="#3B598F" stroke-width="2.5"/>
+        <circle cx="70" cy="40" r="7" fill="#2F3B5C" stroke="#3B598F" stroke-width="2.5"/>
+      </g>
+      <g id="bgPickup">
+        <rect x="12" y="12" width="12" height="10" rx="1.5" fill="#C89B66" stroke="#3B598F" stroke-width="2"/>
+        <rect x="26" y="8" width="14" height="14" rx="1.5" fill="#B98A57" stroke="#3B598F" stroke-width="2"/>
+        <path d="M4 22 H56 V36 Q56 40 51 40 H9 Q4 40 4 36 Z" fill="currentColor" stroke="#3B598F" stroke-width="3" stroke-linejoin="round"/>
+        <path d="M56 40 V18 Q56 14 60 14 H66 L72 6 H82 Q85 6 85 10 V14 H89 Q95 16 95 24 V36 Q95 40 90 40 H56 Z" fill="currentColor" stroke="#3B598F" stroke-width="3" stroke-linejoin="round"/>
+        <path d="M68 14 L73 8 H80 V14 Z" fill="#DCEFFC" stroke="#3B598F" stroke-width="2"/>
+        <circle cx="20" cy="40" r="7" fill="#2F3B5C" stroke="#3B598F" stroke-width="2.5"/>
+        <circle cx="78" cy="40" r="7" fill="#2F3B5C" stroke="#3B598F" stroke-width="2.5"/>
+      </g>
+      <g id="bgTableA">
+        <rect x="4" y="8" width="10" height="8" rx="1.5" fill="#E5484D" stroke="#3B598F" stroke-width="2"/>
+        <rect x="16" y="5" width="12" height="11" rx="1.5" fill="#4B7BE5" stroke="#3B598F" stroke-width="2"/>
+        <circle cx="36" cy="11" r="5" fill="#FFD75E" stroke="#3B598F" stroke-width="2"/>
+        <rect x="44" y="7" width="9" height="9" rx="1.5" fill="#3FC1C9" stroke="#3B598F" stroke-width="2"/>
+        <rect x="0" y="16" width="58" height="6" rx="2" fill="#C89B66" stroke="#3B598F" stroke-width="2.5"/>
+        <path d="M8 22 L4 34 M50 22 L54 34" stroke="#3B598F" stroke-width="2.5" stroke-linecap="round"/>
+      </g>
+      <g id="bgTableB">
+        <rect x="4" y="12" width="16" height="4" rx="1" fill="#E58AB6" stroke="#3B598F" stroke-width="1.8"/>
+        <rect x="6" y="8" width="14" height="4" rx="1" fill="#FFD75E" stroke="#3B598F" stroke-width="1.8"/>
+        <circle cx="31" cy="10" r="6" fill="#22254A" stroke="#3B598F" stroke-width="2"/>
+        <rect x="41" y="6" width="12" height="10" rx="1.5" fill="#B98A57" stroke="#3B598F" stroke-width="2"/>
+        <rect x="0" y="16" width="58" height="6" rx="2" fill="#C89B66" stroke="#3B598F" stroke-width="2.5"/>
+        <path d="M8 22 L4 34 M50 22 L54 34" stroke="#3B598F" stroke-width="2.5" stroke-linecap="round"/>
+      </g>
+      <g id="bgFig">
+        <circle cx="8" cy="6" r="5" fill="#F0C8A0" stroke="#3B598F" stroke-width="2"/>
+        <path d="M4 12 H12 Q16 12 16 17 V26 H0 V17 Q0 12 4 12 Z" fill="currentColor" stroke="#3B598F" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M3 26 H7 V34 H3 Z M9 26 H13 V34 H9 Z" fill="#2F3B5C" stroke="#3B598F" stroke-width="1.5"/>
+      </g>
+    </defs>
+  </svg>
+
+  <div id="sky" aria-hidden="true"></div>
+  <div id="slope" aria-hidden="true"></div>
+  <div class="farlayer" id="far1" aria-hidden="true"></div>
+  <div class="farlayer" id="far2" aria-hidden="true"></div>
+  <div class="farlayer" id="far3" aria-hidden="true"></div>
+  <div id="whWall" aria-hidden="true"></div>
+  <div id="ground"></div>
+  <div id="whLight" aria-hidden="true"></div>
+
+  <div id="world">
+
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+      <defs>
+        <!-- estate car, boot open to the left -->
+        <g id="carSide">
+          <path d="M84 36 L30 4 L22 15 L74 46 Z" fill="currentColor" stroke="#142A55" stroke-width="4" stroke-linejoin="round"/>
+          <path d="M74 64 L86 32 Q90 26 100 26 L196 26 Q208 26 216 34 L240 64 Z" fill="currentColor" stroke="#142A55" stroke-width="4" stroke-linejoin="round"/>
+          <path d="M96 34 L88 60 H140 V34 Z" fill="#8FC9F5" stroke="#142A55" stroke-width="3"/>
+          <path d="M150 34 V60 H206 L190 36 Q187 34 182 34 Z" fill="#8FC9F5" stroke="#142A55" stroke-width="3"/>
+          <rect x="22" y="40" width="54" height="26" rx="4" fill="#1E2B4D" stroke="#142A55" stroke-width="3"/>
+          <rect x="14" y="62" width="278" height="52" rx="14" fill="currentColor" stroke="#142A55" stroke-width="4"/>
+          <rect x="18" y="70" width="10" height="14" rx="3" fill="#E5484D" stroke="#142A55" stroke-width="2.5"/>
+          <rect x="278" y="70" width="10" height="14" rx="3" fill="#FFE9A8" stroke="#142A55" stroke-width="2.5"/>
+          <path d="M152 66 V108" stroke="#142A55" stroke-width="3"/>
+          <rect x="160" y="76" width="16" height="6" rx="3" fill="#142A55"/>
+          <circle cx="78" cy="114" r="21" fill="#22254A" stroke="#142A55" stroke-width="4"/>
+          <circle cx="78" cy="114" r="8" fill="#F6EFE3" stroke="#142A55" stroke-width="3"/>
+          <circle cx="236" cy="114" r="21" fill="#22254A" stroke="#142A55" stroke-width="4"/>
+          <circle cx="236" cy="114" r="8" fill="#F6EFE3" stroke="#142A55" stroke-width="3"/>
+        </g>
+        <!-- saloon, boot lid up at the rear -->
+        <g id="carSaloon">
+          <path d="M96 50 L44 20 L37 30 L88 60 Z" fill="currentColor" stroke="#142A55" stroke-width="4" stroke-linejoin="round"/>
+          <path d="M104 62 L118 34 Q122 28 132 28 L192 28 Q204 28 212 36 L232 62 Z" fill="currentColor" stroke="#142A55" stroke-width="4" stroke-linejoin="round"/>
+          <path d="M128 36 L120 58 H164 V36 Z" fill="#8FC9F5" stroke="#142A55" stroke-width="3"/>
+          <path d="M174 36 V58 H218 L204 38 Q201 36 196 36 Z" fill="#8FC9F5" stroke="#142A55" stroke-width="3"/>
+          <rect x="24" y="44" width="60" height="20" rx="4" fill="#1E2B4D" stroke="#142A55" stroke-width="3"/>
+          <rect x="14" y="62" width="278" height="52" rx="14" fill="currentColor" stroke="#142A55" stroke-width="4"/>
+          <rect x="18" y="70" width="10" height="14" rx="3" fill="#E5484D" stroke="#142A55" stroke-width="2.5"/>
+          <rect x="278" y="70" width="10" height="14" rx="3" fill="#FFE9A8" stroke="#142A55" stroke-width="2.5"/>
+          <path d="M168 66 V108" stroke="#142A55" stroke-width="3"/>
+          <rect x="176" y="76" width="16" height="6" rx="3" fill="#142A55"/>
+          <circle cx="78" cy="114" r="21" fill="#22254A" stroke="#142A55" stroke-width="4"/>
+          <circle cx="78" cy="114" r="8" fill="#F6EFE3" stroke="#142A55" stroke-width="3"/>
+          <circle cx="236" cy="114" r="21" fill="#22254A" stroke="#142A55" stroke-width="4"/>
+          <circle cx="236" cy="114" r="8" fill="#F6EFE3" stroke="#142A55" stroke-width="3"/>
+        </g>
+        <!-- compact hatchback, glass hatch up -->
+        <g id="carHatch">
+          <path d="M100 44 L42 6 L34 16 L92 54 Z" fill="currentColor" stroke="#142A55" stroke-width="4" stroke-linejoin="round"/>
+          <path d="M84 62 L98 32 Q102 26 112 26 L172 26 Q184 26 192 34 L212 62 Z" fill="currentColor" stroke="#142A55" stroke-width="4" stroke-linejoin="round"/>
+          <path d="M120 34 L112 58 H152 V34 Z" fill="#8FC9F5" stroke="#142A55" stroke-width="3"/>
+          <path d="M162 34 V58 H200 L188 36 Q185 34 180 34 Z" fill="#8FC9F5" stroke="#142A55" stroke-width="3"/>
+          <rect x="34" y="42" width="52" height="22" rx="4" fill="#1E2B4D" stroke="#142A55" stroke-width="3"/>
+          <rect x="28" y="62" width="234" height="52" rx="14" fill="currentColor" stroke="#142A55" stroke-width="4"/>
+          <rect x="32" y="70" width="10" height="14" rx="3" fill="#E5484D" stroke="#142A55" stroke-width="2.5"/>
+          <rect x="248" y="70" width="10" height="14" rx="3" fill="#FFE9A8" stroke="#142A55" stroke-width="2.5"/>
+          <path d="M158 66 V108" stroke="#142A55" stroke-width="3"/>
+          <rect x="166" y="76" width="16" height="6" rx="3" fill="#142A55"/>
+          <circle cx="88" cy="114" r="21" fill="#22254A" stroke="#142A55" stroke-width="4"/>
+          <circle cx="88" cy="114" r="8" fill="#F6EFE3" stroke="#142A55" stroke-width="3"/>
+          <circle cx="210" cy="114" r="21" fill="#22254A" stroke="#142A55" stroke-width="4"/>
+          <circle cx="210" cy="114" r="8" fill="#F6EFE3" stroke="#142A55" stroke-width="3"/>
+        </g>
+        <!-- pickup truck, bed stacked with boxes, tailgate ajar -->
+        <g id="carPickup">
+          <path d="M18 64 L2 46 L11 39 L28 58 Z" fill="currentColor" stroke="#142A55" stroke-width="4" stroke-linejoin="round"/>
+          <rect x="36" y="30" width="44" height="34" rx="4" fill="#C89B66" stroke="#142A55" stroke-width="3"/>
+          <path d="M46 44 H70" stroke="#142A55" stroke-width="2" opacity="0.5"/>
+          <rect x="86" y="20" width="52" height="44" rx="4" fill="#B98A57" stroke="#142A55" stroke-width="3"/>
+          <path d="M96 36 H128" stroke="#142A55" stroke-width="2" opacity="0.5"/>
+          <rect x="14" y="64" width="156" height="50" rx="10" fill="currentColor" stroke="#142A55" stroke-width="4"/>
+          <path d="M176 62 L188 32 Q192 26 202 26 H228 Q240 26 246 36 L258 62 Z" fill="currentColor" stroke="#142A55" stroke-width="4" stroke-linejoin="round"/>
+          <path d="M204 34 L196 58 H240 L231 36 Q228 34 223 34 Z" fill="#8FC9F5" stroke="#142A55" stroke-width="3"/>
+          <rect x="170" y="62" width="122" height="52" rx="14" fill="currentColor" stroke="#142A55" stroke-width="4"/>
+          <rect x="18" y="70" width="10" height="14" rx="3" fill="#E5484D" stroke="#142A55" stroke-width="2.5"/>
+          <rect x="278" y="70" width="10" height="14" rx="3" fill="#FFE9A8" stroke="#142A55" stroke-width="2.5"/>
+          <rect x="196" y="76" width="16" height="6" rx="3" fill="#142A55"/>
+          <circle cx="78" cy="114" r="21" fill="#22254A" stroke="#142A55" stroke-width="4"/>
+          <circle cx="78" cy="114" r="8" fill="#F6EFE3" stroke="#142A55" stroke-width="3"/>
+          <circle cx="236" cy="114" r="21" fill="#22254A" stroke="#142A55" stroke-width="4"/>
+          <circle cx="236" cy="114" r="8" fill="#F6EFE3" stroke="#142A55" stroke-width="3"/>
+        </g>
+        <!-- big white panel van: one-box body, raked windscreen, rear doors open -->
+        <g id="carVanBig">
+          <rect x="2" y="-14" width="15" height="112" rx="5" transform="rotate(-7 9 42)" fill="#F6EFE3" stroke="#142A55" stroke-width="3.5"/>
+          <path d="M34 -22 H206 Q222 -22 231 -11 L261 25 Q276 30 280 46 V96 Q280 114 262 114 H36 Q18 114 18 96 V-6 Q18 -22 34 -22 Z" fill="#F6EFE3" stroke="#142A55" stroke-width="4" stroke-linejoin="round"/>
+          <rect x="24" y="-10" width="54" height="116" rx="6" fill="#1E2B4D" stroke="#142A55" stroke-width="3"/>
+          <rect x="30" y="58" width="42" height="44" rx="3" fill="#C89B66" stroke="#142A55" stroke-width="2.5"/>
+          <rect x="32" y="24" width="36" height="30" rx="3" fill="#B98A57" stroke="#142A55" stroke-width="2.5"/>
+          <rect x="36" y="0" width="28" height="20" rx="3" fill="#C89B66" stroke="#142A55" stroke-width="2.5"/>
+          <path d="M38 76 H62" stroke="#142A55" stroke-width="2" opacity="0.5"/>
+          <rect x="122" y="-6" width="76" height="110" rx="10" fill="none" stroke="#142A55" stroke-width="3"/>
+          <rect x="180" y="44" width="14" height="6" rx="3" fill="#142A55"/>
+          <path d="M206 -16 V106" stroke="#142A55" stroke-width="3"/>
+          <path d="M212 -12 H220 Q226 -12 230 -6 L248 22 H212 Z" fill="#8FC9F5" stroke="#142A55" stroke-width="3"/>
+          <path d="M244 24 L236 27" stroke="#142A55" stroke-width="2.5"/>
+          <rect x="248" y="16" width="9" height="14" rx="2.5" fill="#3E4A5C" stroke="#142A55" stroke-width="2"/>
+          <rect x="264" y="52" width="12" height="12" rx="3" fill="#FFE9A8" stroke="#142A55" stroke-width="2.5"/>
+          <rect x="256" y="98" width="26" height="13" rx="5" fill="#3E4A5C" stroke="#142A55" stroke-width="2.5"/>
+          <rect x="14" y="98" width="14" height="13" rx="4" fill="#3E4A5C" stroke="#142A55" stroke-width="2.5"/>
+          <path d="M88 84 H196" stroke="#DCD6C8" stroke-width="4" stroke-linecap="round"/>
+          <circle cx="66" cy="114" r="21" fill="#22254A" stroke="#142A55" stroke-width="4"/>
+          <circle cx="66" cy="114" r="8" fill="#F6EFE3" stroke="#142A55" stroke-width="3"/>
+          <circle cx="238" cy="114" r="21" fill="#22254A" stroke="#142A55" stroke-width="4"/>
+          <circle cx="238" cy="114" r="8" fill="#F6EFE3" stroke="#142A55" stroke-width="3"/>
+        </g>
+        <!-- trestle table for the front-row pitches -->
+        <g id="tableBig">
+          <rect x="0" y="0" width="140" height="10" rx="3" fill="#C89B66" stroke="#142A55" stroke-width="3"/>
+          <path d="M14 10 L6 44 M126 10 L134 44" stroke="#142A55" stroke-width="4" stroke-linecap="round"/>
+        </g>
+        <!-- stall seller: hoodie = currentColor, skin/hair via CSS vars; hair styles layered on top -->
+        <g id="npcBody">
+          <ellipse cx="32" cy="95" rx="22" ry="5" fill="rgb(20 42 85 / 0.18)"/>
+          <path d="M17 42 Q10 48 11 58" fill="none" stroke="#142A55" stroke-width="11" stroke-linecap="round"/>
+          <path d="M17 42 Q10 48 11 58" fill="none" stroke="currentColor" stroke-width="6.5" stroke-linecap="round"/>
+          <circle cx="11" cy="60" r="4.5" fill="var(--skin, #F0C8A0)" stroke="#142A55" stroke-width="2.5"/>
+          <path d="M46 40 Q56 34 58 24" fill="none" stroke="#142A55" stroke-width="11" stroke-linecap="round"/>
+          <path d="M46 40 Q56 34 58 24" fill="none" stroke="currentColor" stroke-width="6.5" stroke-linecap="round"/>
+          <circle cx="58" cy="22" r="4.5" fill="var(--skin, #F0C8A0)" stroke="#142A55" stroke-width="2.5"/>
+          <circle cx="32" cy="18" r="13" fill="var(--skin, #F0C8A0)" stroke="#142A55" stroke-width="3"/>
+          <path d="M26 19 H28 M36 19 H38" stroke="#142A55" stroke-width="2.5" stroke-linecap="round"/>
+          <path d="M29 24 Q32 26 35 24" fill="none" stroke="#142A55" stroke-width="2" stroke-linecap="round"/>
+          <path d="M19 36 Q32 30 45 36 L47 64 Q47 70 40 70 H24 Q17 70 17 64 Z" fill="currentColor" stroke="#142A55" stroke-width="3.5" stroke-linejoin="round"/>
+          <rect x="22" y="70" width="9" height="19" rx="4" fill="#26418F" stroke="#142A55" stroke-width="2.5"/>
+          <rect x="33" y="70" width="9" height="19" rx="4" fill="#26418F" stroke="#142A55" stroke-width="2.5"/>
+          <path d="M20 88 H32 Q34 93 30 94 H22 Q18 94 20 88 Z" fill="#F6EFE3" stroke="#142A55" stroke-width="2"/>
+          <path d="M32 88 H44 Q46 93 42 94 H34 Q30 94 32 88 Z" fill="#F6EFE3" stroke="#142A55" stroke-width="2"/>
+        </g>
+        <g id="npcHairA">
+          <path d="M20 14 Q23 5 32 4 Q41 5 44 14 Q38 10 32 10 Q26 10 20 14 Z" fill="var(--hair, #5B3A24)" stroke="#142A55" stroke-width="2"/>
+        </g>
+        <g id="npcHairB">
+          <path d="M19 13 Q18 2 28 3 Q32 -2 38 3 Q46 3 45 13 Q40 7 32 8 Q24 7 19 13 Z" fill="var(--hair, #2B1B12)" stroke="#142A55" stroke-width="2"/>
+        </g>
+        <g id="npcCap">
+          <path d="M19 13 Q20 3 32 3 Q44 3 45 13 L45 15 H19 Z" fill="var(--hair, #22254A)" stroke="#142A55" stroke-width="2"/>
+          <path d="M45 13 Q54 13 55 17 Q55 19 51 19 L44 17 Z" fill="var(--hair, #22254A)" stroke="#142A55" stroke-width="2"/>
+        </g>
+        <!-- the rare finds: one glows on a crate at each pitch, picked at random per visit -->
+        <g id="r0"><!-- Fabergé-style egg -->
+          <ellipse cx="18" cy="18" rx="11" ry="13" fill="#B23B5E" stroke="#142A55" stroke-width="2.5"/>
+          <path d="M8 18 Q18 12 28 18" fill="none" stroke="#FFD75E" stroke-width="2.5"/>
+          <circle cx="18" cy="18" r="2.5" fill="#FFD75E" stroke="#142A55" stroke-width="1.5"/>
+          <path d="M11 36 H25 L22 30 H14 Z" fill="#FFD75E" stroke="#142A55" stroke-width="2"/>
+        </g>
+        <g id="r1"><!-- Leica rangefinder -->
+          <rect x="24" y="13" width="7" height="6" rx="1" fill="#22254A" stroke="#142A55" stroke-width="1.5"/>
+          <rect x="4" y="18" width="28" height="18" rx="4" fill="#22254A" stroke="#142A55" stroke-width="2.5"/>
+          <path d="M4 25 H32" stroke="#CBD2DC" stroke-width="4"/>
+          <circle cx="18" cy="28" r="6" fill="#3E4A5C" stroke="#142A55" stroke-width="2"/>
+          <circle cx="18" cy="28" r="2" fill="#8FC9F5"/>
+        </g>
+        <g id="r2"><!-- gold SX-70 -->
+          <rect x="8" y="14" width="20" height="10" rx="2" fill="#8A6238" stroke="#142A55" stroke-width="2.5"/>
+          <circle cx="18" cy="19" r="3.5" fill="#22254A" stroke="#142A55" stroke-width="1.5"/>
+          <rect x="5" y="22" width="26" height="11" rx="2" fill="#E8C57F" stroke="#142A55" stroke-width="2.5"/>
+          <rect x="5" y="32" width="26" height="4" fill="#22254A"/>
+        </g>
+        <g id="r3"><!-- first-press LP -->
+          <rect x="3" y="10" width="24" height="24" rx="2" fill="#E5484D" stroke="#142A55" stroke-width="2.5"/>
+          <circle cx="24" cy="23" r="12" fill="#22254A" stroke="#142A55" stroke-width="2.5"/>
+          <circle cx="24" cy="23" r="4" fill="#FFD75E" stroke="#142A55" stroke-width="1.5"/>
+        </g>
+        <g id="r4"><!-- gold watch -->
+          <rect x="13" y="4" width="10" height="32" rx="4" fill="#E8C57F" stroke="#142A55" stroke-width="2"/>
+          <circle cx="18" cy="20" r="9" fill="#FFD75E" stroke="#142A55" stroke-width="2.5"/>
+          <circle cx="18" cy="20" r="5.5" fill="#F6EFE3" stroke="#142A55" stroke-width="1.5"/>
+          <path d="M18 17 V20 L21 21" stroke="#142A55" stroke-width="1.5" fill="none"/>
+        </g>
+        <g id="r5"><!-- Ming-style vase -->
+          <path d="M14 4 H22 L20 9 Q30 12 30 22 Q30 33 18 33 Q6 33 6 22 Q6 12 16 9 Z" fill="#F6EFE3" stroke="#142A55" stroke-width="2.5"/>
+          <path d="M10 18 Q18 13 26 18 M9 24 Q18 20 27 24" stroke="#4B7BE5" stroke-width="2" fill="none"/>
+          <rect x="12" y="33" width="12" height="3" fill="#4B7BE5" stroke="#142A55" stroke-width="1.5"/>
+        </g>
+        <g id="r6"><!-- boxed Game Boy -->
+          <rect x="6" y="6" width="24" height="30" rx="2" fill="#E5484D" stroke="#142A55" stroke-width="2.5"/>
+          <rect x="10" y="10" width="16" height="22" rx="2" fill="#CBD2DC" stroke="#142A55" stroke-width="2"/>
+          <rect x="13" y="13" width="10" height="8" fill="#9CCF9E" stroke="#142A55" stroke-width="1.5"/>
+          <path d="M9 8 L27 30" stroke="#FFFFFF" stroke-width="2" opacity="0.6"/>
+        </g>
+        <g id="r7"><!-- pocket watch -->
+          <path d="M8 8 Q13 3 20 7" fill="none" stroke="#E8C57F" stroke-width="2.5"/>
+          <rect x="16" y="6" width="4" height="5" rx="1" fill="#E8C57F" stroke="#142A55" stroke-width="1.5"/>
+          <circle cx="18" cy="23" r="12" fill="#E8C57F" stroke="#142A55" stroke-width="2.5"/>
+          <circle cx="18" cy="23" r="8" fill="#F6EFE3" stroke="#142A55" stroke-width="1.5"/>
+          <path d="M18 18 V23 L22 25" stroke="#142A55" stroke-width="1.5" fill="none"/>
+        </g>
+        <g id="r8"><!-- Banksy print (allegedly) -->
+          <rect x="4" y="6" width="28" height="30" rx="1.5" fill="#22254A" stroke="#142A55" stroke-width="2.5"/>
+          <rect x="8" y="10" width="20" height="22" fill="#F6EFE3" stroke="#142A55" stroke-width="1.5"/>
+          <path d="M12 26 Q14 20 20 22 L24 20 L23 24 Q20 28 14 27 Z" fill="#22254A"/>
+          <circle cx="24" cy="14" r="2" fill="#E5484D"/>
+        </g>
+        <g id="r9"><!-- 1966 programme -->
+          <rect x="7" y="6" width="22" height="30" rx="2" fill="#F6EFE3" stroke="#142A55" stroke-width="2.5"/>
+          <path d="M10 12 H26" stroke="#E5484D" stroke-width="3"/>
+          <circle cx="18" cy="24" r="6" fill="#FFFFFF" stroke="#142A55" stroke-width="2"/>
+          <path d="M15 22 L18 20 L21 22 L20 26 H16 Z" fill="#22254A"/>
+        </g>
+        <g id="r10"><!-- carded Star Wars figure -->
+          <rect x="5" y="5" width="26" height="31" rx="2" fill="#22254A" stroke="#142A55" stroke-width="2.5"/>
+          <circle cx="11" cy="10" r="1.5" fill="#FFFFFF"/><circle cx="25" cy="13" r="1" fill="#FFFFFF"/><circle cx="17" cy="8" r="1" fill="#FFFFFF"/>
+          <rect x="12" y="14" width="12" height="18" rx="5" fill="#8FC9F5" opacity="0.85" stroke="#142A55" stroke-width="1.5"/>
+          <circle cx="18" cy="19" r="2.5" fill="#F6EFE3"/>
+          <rect x="16" y="22" width="4" height="8" rx="1.5" fill="#F6EFE3"/>
+        </g>
+        <g id="r11"><!-- Georgian candlesticks -->
+          <path d="M6 36 H16 L14 30 H8 Z" fill="#CBD2DC" stroke="#142A55" stroke-width="2"/>
+          <rect x="9.5" y="16" width="3" height="14" fill="#CBD2DC" stroke="#142A55" stroke-width="1.5"/>
+          <rect x="7.5" y="10" width="7" height="6" rx="1" fill="#CBD2DC" stroke="#142A55" stroke-width="1.5"/>
+          <path d="M20 36 H30 L28 30 H22 Z" fill="#CBD2DC" stroke="#142A55" stroke-width="2"/>
+          <rect x="23.5" y="20" width="3" height="10" fill="#CBD2DC" stroke="#142A55" stroke-width="1.5"/>
+          <rect x="21.5" y="14" width="7" height="6" rx="1" fill="#CBD2DC" stroke="#142A55" stroke-width="1.5"/>
+        </g>
+        <g id="r12"><!-- valve radio -->
+          <path d="M6 36 V16 Q6 8 18 8 Q30 8 30 16 V36 Z" fill="#8A6238" stroke="#142A55" stroke-width="2.5"/>
+          <circle cx="13" cy="24" r="4" fill="#FFD75E" stroke="#142A55" stroke-width="1.5"/>
+          <path d="M21 18 V30 M25 18 V30" stroke="#142A55" stroke-width="2"/>
+        </g>
+        <g id="r13"><!-- signed first edition -->
+          <rect x="6" y="8" width="24" height="28" rx="2" fill="#3E8A4C" stroke="#142A55" stroke-width="2.5"/>
+          <path d="M10 8 V36" stroke="#142A55" stroke-width="2"/>
+          <path d="M14 16 H26 M14 21 H24" stroke="#FFD75E" stroke-width="2"/>
+          <path d="M15 28 Q19 25 21 29 Q24 32 26 27" stroke="#F6EFE3" stroke-width="1.5" fill="none"/>
+        </g>
+        <g id="r14"><!-- SNES-CD prototype -->
+          <circle cx="14" cy="12" r="7" fill="#F6EFE3" stroke="#142A55" stroke-width="2"/>
+          <circle cx="14" cy="12" r="2" fill="#3E4A5C"/>
+          <rect x="4" y="22" width="28" height="14" rx="3" fill="#CBD2DC" stroke="#142A55" stroke-width="2.5"/>
+          <rect x="8" y="26" width="10" height="4" rx="1" fill="#3E4A5C"/>
+          <circle cx="25" cy="29" r="3" fill="#3E4A5C"/>
+        </g>
+        <g id="r15"><!-- the tenner ring -->
+          <path d="M18 2 L25 9 L18 17 L11 9 Z" fill="#CFF1FF" stroke="#142A55" stroke-width="2.5" stroke-linejoin="round"/>
+          <path d="M14 9 H22 M18 5 L18 13" stroke="#8FC9F5" stroke-width="1.5"/>
+          <circle cx="18" cy="25" r="9" fill="none" stroke="#FFD75E" stroke-width="5"/>
+          <circle cx="18" cy="25" r="11.5" fill="none" stroke="#142A55" stroke-width="2"/>
+          <circle cx="18" cy="25" r="6.5" fill="none" stroke="#142A55" stroke-width="2"/>
+        </g>
+        <g id="rareCrate">
+          <rect x="2" y="0" width="40" height="26" rx="3" fill="#C89B66" stroke="#142A55" stroke-width="3"/>
+          <path d="M2 8 H42" stroke="#142A55" stroke-width="2" opacity="0.4"/>
+        </g>
+      </defs>
+    </svg>
+
+    <!-- eBay pitch -->
+    <div class="stall" style="left: 560px; --c: #E5484D;" data-href="https://www.ebay.co.uk/usr/foundbyisaac" tabindex="0" role="link" aria-label="eBay pitch — my eBay store">
+      <div class="shadow"></div>
+      <div class="npc" style="color:#4B7BE5;--skin:#F0C8A0;--hair:#5B3A24" tabindex="0" role="button" aria-label="Talk to the eBay seller">
+        <svg width="64" height="100" viewBox="0 0 64 100" aria-hidden="true"><use href="#npcBody"/><use href="#npcHairA"/></svg>
+      </div>
+      <svg class="pitch-svg" width="430" height="178" viewBox="0 0 430 178" aria-hidden="true">
+        <use href="#carSide" transform="translate(0,36)"/>
+        <use href="#gBox" transform="translate(24,68) scale(0.72)"/>
+        <g transform="translate(288,0)">
+          <use href="#gPolaroid" transform="translate(6,86) scale(0.95)"/>
+          <use href="#gGameboy" transform="translate(72,81) scale(0.9)"/>
+          <use href="#gController" transform="translate(102,104) scale(0.65)"/>
+          <use href="#tableBig" transform="translate(0,126)"/>
+          <use href="#gBox" transform="translate(34,142) scale(0.6)"/>
+        </g>
+      </svg>
+      <div class="rare" aria-hidden="true">
+        <svg width="46" height="78" viewBox="0 0 46 78">
+          <g class="rare-item"><use class="rare-use" href="#r0" transform="translate(5,8)"/></g>
+          <use href="#rareCrate" transform="translate(1,44)"/>
+          <path class="spark" d="M38 4 l1.6 3.4 3.4 1.6 -3.4 1.6 -1.6 3.4 -1.6 -3.4 -3.4 -1.6 3.4 -1.6 Z" fill="#FFD75E"/>
+          <path class="spark s2" d="M6 28 l1.3 2.7 2.7 1.3 -2.7 1.3 -1.3 2.7 -1.3 -2.7 -2.7 -1.3 2.7 -1.3 Z" fill="#FFF3C4"/>
+        </svg>
+      </div>
+      <div class="say"></div>
+      <div class="aboard"><b>eBay</b><span>Browse ↗</span></div>
+      <div class="prompt"><b>Browse my eBay ↗</b><span>ebay.co.uk/usr/foundbyisaac</span></div>
+    </div>
+
+    <!-- Vinted pitch -->
+    <div class="stall" style="left: 1180px; --c: #3FC1C9;" data-href="https://www.vinted.co.uk/member/198218005" tabindex="0" role="link" aria-label="Vinted pitch — my Vinted wardrobe">
+      <div class="shadow"></div>
+      <div class="npc" style="color:#E58AB6;--skin:#8D5A3B;--hair:#1E1410" tabindex="0" role="button" aria-label="Talk to the Vinted seller">
+        <svg width="64" height="100" viewBox="0 0 64 100" aria-hidden="true"><use href="#npcBody"/><use href="#npcHairB"/></svg>
+      </div>
+      <svg class="pitch-svg" width="430" height="178" viewBox="0 0 430 178" aria-hidden="true">
+        <use href="#carHatch" transform="translate(0,36)"/>
+        <rect x="38" y="96" width="38" height="10" rx="4" fill="#E58AB6" stroke="#142A55" stroke-width="2.5"/>
+        <rect x="40" y="86" width="36" height="10" rx="4" fill="#FBF6EC" stroke="#142A55" stroke-width="2.5"/>
+        <rect x="39" y="76" width="37" height="10" rx="4" fill="#FFD75E" stroke="#142A55" stroke-width="2.5"/>
+        <g transform="translate(288,0)">
+          <rect x="8" y="116" width="34" height="10" rx="3" fill="#E58AB6" stroke="#142A55" stroke-width="2.5"/>
+          <rect x="10" y="106" width="32" height="10" rx="3" fill="#FBF6EC" stroke="#142A55" stroke-width="2.5"/>
+          <rect x="9" y="96" width="33" height="10" rx="3" fill="#3FC1C9" stroke="#142A55" stroke-width="2.5"/>
+          <rect x="52" y="116" width="34" height="10" rx="3" fill="#FFD75E" stroke="#142A55" stroke-width="2.5"/>
+          <rect x="54" y="106" width="32" height="10" rx="3" fill="#B79FD8" stroke="#142A55" stroke-width="2.5"/>
+          <use href="#gTrainer" transform="translate(92,101) scale(0.8)"/>
+          <use href="#tableBig" transform="translate(0,126)"/>
+          <use href="#gBox" transform="translate(36,142) scale(0.6)"/>
+        </g>
+      </svg>
+      <div class="rare" aria-hidden="true">
+        <svg width="46" height="78" viewBox="0 0 46 78">
+          <g class="rare-item"><use class="rare-use" href="#r0" transform="translate(5,8)"/></g>
+          <use href="#rareCrate" transform="translate(1,44)"/>
+          <path class="spark" d="M38 4 l1.6 3.4 3.4 1.6 -3.4 1.6 -1.6 3.4 -1.6 -3.4 -3.4 -1.6 3.4 -1.6 Z" fill="#FFD75E"/>
+          <path class="spark s2" d="M6 28 l1.3 2.7 2.7 1.3 -2.7 1.3 -1.3 2.7 -1.3 -2.7 -2.7 -1.3 2.7 -1.3 Z" fill="#FFF3C4"/>
+        </svg>
+      </div>
+      <div class="say"></div>
+      <div class="aboard"><b>Vinted</b><span>Browse ↗</span></div>
+      <div class="prompt"><b>Browse my Vinted ↗</b><span>vinted.co.uk — foundbyisaac</span></div>
+    </div>
+
+    <!-- YouTube pitch -->
+    <div class="stall" style="left: 1800px; --c: #4B7BE5;" data-href="https://www.youtube.com/@FoundByIsaac" tabindex="0" role="link" aria-label="YouTube pitch — my YouTube channel">
+      <div class="shadow"></div>
+      <div class="npc" style="color:#E5484D;--skin:#F0C8A0;--hair:#22254A" tabindex="0" role="button" aria-label="Talk to the YouTube seller">
+        <svg width="64" height="100" viewBox="0 0 64 100" aria-hidden="true"><use href="#npcBody"/><use href="#npcCap"/></svg>
+      </div>
+      <svg class="pitch-svg" width="430" height="178" viewBox="0 0 430 178" aria-hidden="true">
+        <use href="#carSaloon" transform="translate(0,36)"/>
+        <use href="#gCamera" transform="translate(24,66) scale(0.42)"/>
+        <g transform="translate(288,0)">
+          <use href="#gRecords" transform="translate(4,92) scale(0.8)"/>
+          <use href="#gController" transform="translate(58,98) scale(0.85)"/>
+          <use href="#gRadio" transform="translate(104,102) scale(0.62)"/>
+          <use href="#tableBig" transform="translate(0,126)"/>
+          <use href="#gBox" transform="translate(34,142) scale(0.6)"/>
+        </g>
+      </svg>
+      <div class="rare" aria-hidden="true">
+        <svg width="46" height="78" viewBox="0 0 46 78">
+          <g class="rare-item"><use class="rare-use" href="#r0" transform="translate(5,8)"/></g>
+          <use href="#rareCrate" transform="translate(1,44)"/>
+          <path class="spark" d="M38 4 l1.6 3.4 3.4 1.6 -3.4 1.6 -1.6 3.4 -1.6 -3.4 -3.4 -1.6 3.4 -1.6 Z" fill="#FFD75E"/>
+          <path class="spark s2" d="M6 28 l1.3 2.7 2.7 1.3 -2.7 1.3 -1.3 2.7 -1.3 -2.7 -2.7 -1.3 2.7 -1.3 Z" fill="#FFF3C4"/>
+        </svg>
+      </div>
+      <div class="say"></div>
+      <div class="aboard"><b>YouTube</b><span>Watch ↗</span></div>
+      <div class="prompt"><b>Watch on YouTube ↗</b><span>@FoundByIsaac</span></div>
+    </div>
+
+    <!-- TikTok pitch: the big white van -->
+    <div class="stall" style="left: 2420px; --c: #E58AB6;" data-href="https://www.tiktok.com/@foundbyisaaac" tabindex="0" role="link" aria-label="TikTok pitch — my TikTok">
+      <div class="shadow"></div>
+      <div class="npc" style="color:#22254A;--skin:#C68642;--hair:#141414" tabindex="0" role="button" aria-label="Talk to the TikTok seller">
+        <svg width="64" height="100" viewBox="0 0 64 100" aria-hidden="true"><use href="#npcBody"/><use href="#npcHairA"/></svg>
+      </div>
+      <svg class="pitch-svg" width="430" height="178" viewBox="0 0 430 178" aria-hidden="true">
+        <use href="#carVanBig" transform="translate(0,36)"/>
+        <g transform="translate(288,0)">
+          <use href="#gGameboy" transform="translate(2,81) scale(0.9)"/>
+          <use href="#gRadio" transform="translate(42,90) scale(0.95)"/>
+          <use href="#gBooks" transform="translate(100,99) scale(0.8)"/>
+          <use href="#tableBig" transform="translate(0,126)"/>
+          <use href="#gBox" transform="translate(30,142) scale(0.62)"/>
+          <use href="#gRecords" transform="translate(84,148) scale(0.55)"/>
+        </g>
+      </svg>
+      <div class="rare" aria-hidden="true">
+        <svg width="46" height="78" viewBox="0 0 46 78">
+          <g class="rare-item"><use class="rare-use" href="#r0" transform="translate(5,8)"/></g>
+          <use href="#rareCrate" transform="translate(1,44)"/>
+          <path class="spark" d="M38 4 l1.6 3.4 3.4 1.6 -3.4 1.6 -1.6 3.4 -1.6 -3.4 -3.4 -1.6 3.4 -1.6 Z" fill="#FFD75E"/>
+          <path class="spark s2" d="M6 28 l1.3 2.7 2.7 1.3 -2.7 1.3 -1.3 2.7 -1.3 -2.7 -2.7 -1.3 2.7 -1.3 Z" fill="#FFF3C4"/>
+        </svg>
+      </div>
+      <div class="say"></div>
+      <div class="aboard"><b>TikTok</b><span>Watch ↗</span></div>
+      <div class="prompt"><b>Watch on TikTok ↗</b><span>@foundbyisaaac</span></div>
+    </div>
+
+    <!-- Instagram pitch -->
+    <div class="stall" style="left: 3040px; --c: #55A45D;" data-href="https://www.instagram.com/foundbyisaac" tabindex="0" role="link" aria-label="Instagram pitch — my Instagram">
+      <div class="shadow"></div>
+      <div class="npc" style="color:#B79FD8;--skin:#F7D7B0;--hair:#C2703F" tabindex="0" role="button" aria-label="Talk to the Instagram seller">
+        <svg width="64" height="100" viewBox="0 0 64 100" aria-hidden="true"><use href="#npcBody"/><use href="#npcHairB"/></svg>
+      </div>
+      <svg class="pitch-svg" width="430" height="178" viewBox="0 0 430 178" aria-hidden="true">
+        <use href="#carPickup" transform="translate(0,36)"/>
+        <g transform="translate(288,0)">
+          <use href="#gPolaroid" transform="translate(4,86) scale(0.95)"/>
+          <use href="#gFrame" transform="translate(68,83) scale(0.9)"/>
+          <use href="#gCamera" transform="translate(104,100) scale(0.35)"/>
+          <use href="#tableBig" transform="translate(0,126)"/>
+          <use href="#gBox" transform="translate(34,142) scale(0.6)"/>
+        </g>
+      </svg>
+      <div class="rare" aria-hidden="true">
+        <svg width="46" height="78" viewBox="0 0 46 78">
+          <g class="rare-item"><use class="rare-use" href="#r0" transform="translate(5,8)"/></g>
+          <use href="#rareCrate" transform="translate(1,44)"/>
+          <path class="spark" d="M38 4 l1.6 3.4 3.4 1.6 -3.4 1.6 -1.6 3.4 -1.6 -3.4 -3.4 -1.6 3.4 -1.6 Z" fill="#FFD75E"/>
+          <path class="spark s2" d="M6 28 l1.3 2.7 2.7 1.3 -2.7 1.3 -1.3 2.7 -1.3 -2.7 -2.7 -1.3 2.7 -1.3 Z" fill="#FFF3C4"/>
+        </svg>
+      </div>
+      <div class="say"></div>
+      <div class="aboard"><b>Instagram</b><span>Follow ↗</span></div>
+      <div class="prompt"><b>Follow on Instagram ↗</b><span>@foundbyisaac</span></div>
+    </div>
+
+    <!-- Facebook pitch -->
+    <div class="stall" style="left: 3660px; --c: #FFD75E;" data-href="https://www.facebook.com/profile.php?id=61590784979277" tabindex="0" role="link" aria-label="Facebook pitch — my Facebook page">
+      <div class="shadow"></div>
+      <div class="npc" style="color:#3FC1C9;--skin:#7A4A2B;--hair:#8A6238" tabindex="0" role="button" aria-label="Talk to the Facebook seller">
+        <svg width="64" height="100" viewBox="0 0 64 100" aria-hidden="true"><use href="#npcBody"/><use href="#npcCap"/></svg>
+      </div>
+      <svg class="pitch-svg" width="430" height="178" viewBox="0 0 430 178" aria-hidden="true">
+        <use href="#carSaloon" transform="translate(0,36)"/>
+        <rect x="28" y="88" width="42" height="12" rx="2" fill="#E5484D" stroke="#142A55" stroke-width="2.5"/>
+        <rect x="32" y="76" width="36" height="12" rx="2" fill="#4B7BE5" stroke="#142A55" stroke-width="2.5"/>
+        <rect x="30" y="64" width="34" height="12" rx="2" fill="#3FC1C9" stroke="#142A55" stroke-width="2.5"/>
+        <g transform="translate(288,0)">
+          <use href="#gFrame" transform="translate(4,88) scale(0.8)"/>
+          <use href="#gBooks" transform="translate(44,95) scale(0.9)"/>
+          <use href="#gTrainer" transform="translate(98,103) scale(0.75)"/>
+          <use href="#tableBig" transform="translate(0,126)"/>
+          <use href="#gRecords" transform="translate(40,148) scale(0.55)"/>
+        </g>
+      </svg>
+      <div class="rare" aria-hidden="true">
+        <svg width="46" height="78" viewBox="0 0 46 78">
+          <g class="rare-item"><use class="rare-use" href="#r0" transform="translate(5,8)"/></g>
+          <use href="#rareCrate" transform="translate(1,44)"/>
+          <path class="spark" d="M38 4 l1.6 3.4 3.4 1.6 -3.4 1.6 -1.6 3.4 -1.6 -3.4 -3.4 -1.6 3.4 -1.6 Z" fill="#FFD75E"/>
+          <path class="spark s2" d="M6 28 l1.3 2.7 2.7 1.3 -2.7 1.3 -1.3 2.7 -1.3 -2.7 -2.7 -1.3 2.7 -1.3 Z" fill="#FFF3C4"/>
+        </svg>
+      </div>
+      <div class="say"></div>
+      <div class="aboard"><b>Facebook</b><span>Follow ↗</span></div>
+      <div class="prompt"><b>Follow on Facebook ↗</b><span>Found by Isaac</span></div>
+    </div>
+
+    <!-- warehouse stations: the same field becomes an interior when you drive over -->
+    <div class="whstation" id="whVan" style="left: 200px; width: 310px; height: 178px;" tabindex="-1" role="button" aria-label="The van — drive back to the car boot">
+      <div class="shadow"></div>
+      <svg width="310" height="178" viewBox="0 0 310 178" aria-hidden="true">
+        <use href="#carVanBig" transform="translate(8,36)"/>
+      </svg>
+      <div class="aboard"><b>The Van</b><span>Car boot ↩</span></div>
+      <div class="prompt"><b>🚗 Drive to the car boot</b><span id="whVanSub">£5 in · fresh stock · bag holds 3</span></div>
+    </div>
+
+    <div class="whstation" id="whLaptop" style="left: 720px; width: 250px; height: 178px;" tabindex="-1" role="button" aria-label="The laptop — auction on eBay, list on Vinted">
+      <div class="shadow"></div>
+      <svg width="250" height="178" viewBox="0 0 250 178" aria-hidden="true">
+        <use href="#tableBig" transform="translate(40,124) scale(1.2)"/>
+        <g transform="translate(88,74)">
+          <rect x="0" y="0" width="56" height="38" rx="4" fill="#3E4A5C" stroke="#142A55" stroke-width="3"/>
+          <rect x="5" y="5" width="46" height="28" rx="2" fill="#8FC9F5"/>
+          <path d="M14 12 H42 M14 19 H36 M14 26 H40" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round"/>
+          <path d="M-8 38 H64 L56 48 H0 Z" fill="#CBD2DC" stroke="#142A55" stroke-width="3" stroke-linejoin="round"/>
+        </g>
+        <g transform="translate(174,100)">
+          <rect x="0" y="0" width="16" height="20" rx="3" fill="#E5484D" stroke="#142A55" stroke-width="2.5"/>
+          <path d="M16 5 Q24 5 24 11 Q24 17 16 15" fill="none" stroke="#142A55" stroke-width="2.5"/>
+        </g>
+      </svg>
+      <div class="aboard"><b>Laptop</b><span id="whLaptopSub">Sell 💻</span></div>
+      <div class="prompt"><b>💻 Sell your finds</b><span>eBay auctions · Vinted listings</span></div>
+    </div>
+
+    <div class="whstation" id="whPack" style="left: 1240px; width: 260px; height: 178px;" tabindex="-1" role="button" aria-label="Packing bench — pack sold orders to get paid">
+      <div class="shadow"></div>
+      <svg width="260" height="178" viewBox="0 0 260 178" aria-hidden="true">
+        <use href="#tableBig" transform="translate(36,124) scale(1.25)"/>
+        <use href="#gBox" transform="translate(52,84)"/>
+        <use href="#gBox" transform="translate(120,94) scale(0.75)"/>
+        <g transform="translate(180,96)">
+          <circle cx="14" cy="14" r="14" fill="#C89B66" stroke="#142A55" stroke-width="3"/>
+          <circle cx="14" cy="14" r="6" fill="#F6EFE3" stroke="#142A55" stroke-width="2.5"/>
+        </g>
+        <use href="#gBox" transform="translate(4,146) scale(0.55)"/>
+      </svg>
+      <div class="aboard"><b>Packing</b><span id="whPackSub">Get paid 📦</span></div>
+      <div class="prompt"><b>📦 Pack sold orders</b><span>box · wrap · tape · label</span></div>
+    </div>
+
+    <div class="whstation" id="whShop" style="left: 1760px; width: 240px; height: 200px;" tabindex="-1" role="button" aria-label="Upgrades corner">
+      <div class="shadow"></div>
+      <svg width="240" height="200" viewBox="0 0 240 200" aria-hidden="true">
+        <rect x="30" y="20" width="180" height="156" rx="6" fill="#8A6238" stroke="#142A55" stroke-width="3.5"/>
+        <rect x="42" y="66" width="156" height="8" fill="#C89B66" stroke="#142A55" stroke-width="2.5"/>
+        <rect x="42" y="120" width="156" height="8" fill="#C89B66" stroke="#142A55" stroke-width="2.5"/>
+        <use href="#gBooks" transform="translate(48,30) scale(0.72)"/>
+        <use href="#gRadio" transform="translate(96,36) scale(0.7)"/>
+        <use href="#gRecords" transform="translate(146,34) scale(0.7)"/>
+        <use href="#gGameboy" transform="translate(52,84) scale(0.62)"/>
+        <use href="#gCamera" transform="translate(94,88) scale(0.32)"/>
+        <use href="#gTrainer" transform="translate(136,92) scale(0.72)"/>
+        <use href="#gBox" transform="translate(46,140) scale(0.6)"/>
+        <use href="#gPolaroid" transform="translate(104,142) scale(0.6)"/>
+        <use href="#gFrame" transform="translate(158,134) scale(0.62)"/>
+      </svg>
+      <div class="aboard"><b>Upgrades</b><span id="whShopSub">Spend it ⬆️</span></div>
+      <div class="prompt"><b>⬆️ Upgrades corner</b><span>bigger bag · faster wifi · rarer stock</span></div>
+    </div>
+
+    <div id="player">
+      <div class="p-shadow"></div>
+      <div class="p-inner">
+        <div class="p-figure">
+          <img class="p-head" src="avatar.jpg" alt="">
+          <svg class="p-bod" width="84" height="88" viewBox="0 0 84 88" aria-hidden="true">
+            <g class="arm1">
+              <path d="M28 16 C20 24 18 34 19 44" fill="none" stroke="#142A55" stroke-width="14" stroke-linecap="round"/>
+              <path d="M28 16 C20 24 18 34 19 44" fill="none" stroke="#2F5FD0" stroke-width="9" stroke-linecap="round"/>
+              <circle cx="19" cy="46" r="5.5" fill="#F0C8A0" stroke="#142A55" stroke-width="2.5"/>
+            </g>
+            <g class="leg1">
+              <rect x="27" y="51" width="13" height="25" rx="5" fill="#26418F" stroke="#142A55" stroke-width="3"/>
+              <path d="M26 74 H43 Q46 80 40 82 H28 Q24 82 26 74 Z" fill="#F6EFE3" stroke="#142A55" stroke-width="2.5" stroke-linejoin="round"/>
+            </g>
+            <g class="leg2">
+              <rect x="44" y="51" width="13" height="25" rx="5" fill="#26418F" stroke="#142A55" stroke-width="3"/>
+              <path d="M43 74 H60 Q63 80 57 82 H45 Q41 82 43 74 Z" fill="#F6EFE3" stroke="#142A55" stroke-width="2.5" stroke-linejoin="round"/>
+            </g>
+            <path d="M24 8 Q42 0 60 8 L63 42 Q63 51 54 51 H30 Q21 51 21 42 Z" fill="#2F5FD0" stroke="#142A55" stroke-width="3.5" stroke-linejoin="round"/>
+            <path d="M33 40 H51 L48 50 H36 Z" fill="#2955C2" stroke="#142A55" stroke-width="2.5" stroke-linejoin="round"/>
+            <path d="M38 12 V20 M46 12 V20" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round"/>
+            <g class="arm2">
+              <path d="M56 16 C64 24 66 34 65 44" fill="none" stroke="#142A55" stroke-width="14" stroke-linecap="round"/>
+              <path d="M56 16 C64 24 66 34 65 44" fill="none" stroke="#2F5FD0" stroke-width="9" stroke-linecap="round"/>
+              <circle cx="65" cy="46" r="5.5" fill="#F0C8A0" stroke="#142A55" stroke-width="2.5"/>
+            </g>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="pads" aria-hidden="true">
+  <button class="pad" id="padL" type="button">◀</button>
+  <button class="pad" id="padR" type="button">▶</button>
+</div>
+
+<div id="barter" role="dialog" aria-label="Barter with the seller">
+  <div class="sheet-grip"></div>
+  <div class="sheet-head">
+    <svg class="sheet-art" width="76" height="76" viewBox="-3 -3 42 42" aria-hidden="true"><use class="sheet-item-use" href="#r0"/></svg>
+    <span class="tier-chip"></span>
+  </div>
+  <div class="say-text"></div>
+  <div class="say-price"></div>
+  <div class="say-btns">
+    <button type="button"></button>
+    <button type="button"></button>
+    <button type="button"></button>
+    <button type="button" class="bye">Walk away</button>
+  </div>
+  <div class="say-moves">
+    <button type="button" class="mv-flaw"></button>
+    <button type="button" class="mv-cash"></button>
+  </div>
+</div>
+
+<div id="linksPanel" role="dialog" aria-label="All my links">
+  <div class="panel-card">
+    <h2>Found by Isaac</h2>
+    <ul>
+      <li><a href="https://www.ebay.co.uk/usr/foundbyisaac">eBay Store</a></li>
+      <li><a href="https://www.vinted.co.uk/member/198218005">Vinted</a></li>
+      <li><a href="https://www.youtube.com/@FoundByIsaac">YouTube</a></li>
+      <li><a href="https://www.tiktok.com/@foundbyisaaac">TikTok</a></li>
+      <li><a href="https://www.instagram.com/foundbyisaac">Instagram</a></li>
+      <li><a href="https://www.facebook.com/profile.php?id=61590784979277">Facebook</a></li>
+    </ul>
+    <button id="closePanel" type="button">Back to the car boot</button>
+  </div>
+</div>
+
+<div id="shopPanel" role="dialog" aria-label="Upgrades shop">
+  <div class="panel-card">
+    <h2>⬆️ Upgrades</h2>
+    <div id="shopRows"></div>
+    <button id="closeShop" type="button">Back to flipping</button>
+  </div>
+</div>
+
+<div id="introPanel" role="dialog" aria-label="How the flip game works">
+  <div class="panel-card">
+    <h2>🕹️ You found the flip game!</h2>
+    <div class="intro-row"><span class="intro-ico">💰</span>You've got £200 — haggle the sellers down for the glowing finds and fill your bag.</div>
+    <div class="intro-row"><span class="intro-ico">🏭</span>Take your haul to the Warehouse — auction it on eBay or list it on Vinted from the laptop.</div>
+    <div class="intro-row"><span class="intro-ico">📦</span>Sold! Pack the order at the bench to get paid. Driving back resets the stalls with fresh stock.</div>
+    <div class="intro-row"><span class="intro-ico">💷</span>Visiting my real pages pays your game wallet — £25, then £50, then £75… every new pitch pays more.</div>
+    <div class="intro-row"><span class="intro-ico">🏆</span>Turn it all into £10,000 and go pro.</div>
+    <button id="closeIntro" type="button">Let's haggle!</button>
+  </div>
+</div>
+
+<div id="rewardPanel" role="dialog" aria-label="Link visit reward">
+  <div class="panel-card">
+    <div class="reward-big">💷</div>
+    <div class="reward-amt" id="rewardAmt"></div>
+    <div class="reward-msg" id="rewardMsg"></div>
+    <div class="reward-dots" id="rewardDots"></div>
+    <div class="reward-next" id="rewardNext"></div>
+    <button id="closeReward" type="button">Back to flipping</button>
+  </div>
+</div>
+
+<div id="goalsPanel" role="dialog" aria-label="Goals">
+  <div class="panel-card">
+    <h2>🎯 Goals</h2>
+    <div id="goalsRows"></div>
+    <button id="closeGoals" type="button">Back to flipping</button>
+  </div>
+</div>
+
+<div id="laptopPanel" role="dialog" aria-label="The laptop — list and sell your finds">
+  <div class="panel-card laptop-card">
+    <div class="lp-bar"><span class="lp-dots">● ● ●</span><span class="lp-url">🔒 flipnet.co.uk — sell your finds</span></div>
+    <div id="lpRows"></div>
+    <button id="closeLaptop" type="button">Step away from the laptop</button>
+  </div>
+</div>
+
+<div id="packPanel" role="dialog" aria-label="Packing bench">
+  <div class="panel-card">
+    <h2>📦 Packing Bench</h2>
+    <div id="packRows"></div>
+    <button id="closePack" type="button">Back to the warehouse</button>
+  </div>
+</div>
+
+<script>
+(function () {
+  var P = 3720, SPEED = 300, NEAR = 195; // the field repeats every P px — walk forever either way
+  function wrap(v, b) { return ((v % b) + b) % b; }
+
+  var view = document.getElementById("view");
+  var world = document.getElementById("world");
+  var slope = document.getElementById("slope");
+  var far1 = document.getElementById("far1");
+  var far2 = document.getElementById("far2");
+  var far3 = document.getElementById("far3");
+  var sky = document.getElementById("sky");
+  var ground = document.getElementById("ground");
+  var whWall = document.getElementById("whWall");
+  var whLight = document.getElementById("whLight");
+  var player = document.getElementById("player");
+  var hint = document.getElementById("hint");
+  var panel = document.getElementById("linksPanel");
+
+  // fluffy clouds — a block that tiles so the sky wraps seamlessly
+  var CB = 2900;
+  var cloudDefs = [[40, 46, 210], [420, 110, 150], [780, 40, 250], [1180, 130, 170], [1560, 60, 220], [1920, 120, 150], [2280, 50, 240], [2620, 100, 180]];
+  var cloudHtml = "";
+  for (var ck = 0; ck < 3; ck++) {
+    cloudDefs.forEach(function (c, i) {
+      cloudHtml += '<svg class="cloud" style="left:' + (c[0] + ck * CB) + 'px;top:' + c[1] + 'px;animation-delay:-' + (i * 2.6) + 's" width="' + c[2] + '" height="' + Math.round(c[2] * 0.47) + '" viewBox="0 0 150 70"><use href="#cloud"/></svg>';
+    });
+  }
+  sky.innerHTML = cloudHtml;
+
+  // we're at the bottom of the slope — terraced bands rise behind, one per row of pitches
+  [
+    [92, 60, "#5FAF69", "#3E8A4C"],
+    [152, 50, "#6FBA79", "#4C9C5E"],
+    [202, 42, "#80C58A", "#5BA96B"]
+  ].forEach(function (b) {
+    var d = document.createElement("div");
+    d.className = "band";
+    d.style.bottom = b[0] + "px";
+    d.style.height = b[1] + "px";
+    d.style.background = b[2];
+    d.style.borderTop = "3px solid " + b[3];
+    slope.appendChild(d);
+  });
+
+  // parallel rows of distant pitches: mixed cars, boot open toward the table, odd shopper browsing
+  var bgCars = ["bgSaloon", "bgVan", "bgHatch", "bgPickup"];
+  var carColors = ["#E0938F", "#8FB7E8", "#9CCF9E", "#E8C57F", "#B79FD8", "#8FD0D4", "#EFA98A"];
+  var figColors = ["#B23B5E", "#2F5FD0", "#3E8A4C", "#8A5FB0", "#C2703F"];
+  var RB = 2600; // background rows repeat every RB px within their own layer
+  function buildRow(el, scale, bottom, seed) {
+    var pitches = [], x = 30 + seed * 55, i = 0;
+    while (x < RB - 220 * scale) {
+      pitches.push([Math.round(x), i]);
+      x += (256 + ((i * 37 + seed * 19) % 80)) * scale;
+      i++;
+    }
+    var html = "";
+    for (var k = 0; k < 3; k++) {
+      pitches.forEach(function (p) {
+        var pi = p[1];
+        var car = bgCars[(pi * 3 + seed) % 4];
+        var tint = carColors[(pi * 5 + seed * 2) % carColors.length];
+        var tbl = (pi + seed) % 2 ? "bgTableA" : "bgTableB";
+        var fig = (pi * 3 + seed) % 3 !== 0
+          ? '<use href="#bgFig" transform="translate(2,13)" style="color:' + figColors[(pi * 2 + seed) % figColors.length] + '"/>'
+          : "";
+        html += '<svg class="bgpitch" style="left:' + (p[0] + k * RB) + 'px;bottom:' + bottom + 'px" width="' + Math.round(196 * scale) + '" height="' + Math.round(50 * scale) + '" viewBox="0 0 196 50">' + fig
+          + '<use href="#' + tbl + '" transform="translate(24,13)"/>'
+          + '<use href="#' + car + '" transform="translate(94,0)" style="color:' + tint + '"/></svg>';
+      });
+    }
+    el.innerHTML = html;
+  }
+  buildRow(far1, 0.34, 206, 2);
+  buildRow(far2, 0.46, 156, 1);
+  buildRow(far3, 0.62, 96, 0);
+  var stalls = Array.prototype.slice.call(document.querySelectorAll(".stall")).map(function (el) {
+    var baseLeft = parseFloat(el.style.left);
+    return { el: el, baseLeft: baseLeft, x0: baseLeft + el.offsetWidth / 2, x: baseLeft + el.offsetWidth / 2, k: 0, href: el.getAttribute("data-href"), name: (el.getAttribute("aria-label") || "").split(" pitch")[0] };
+  });
+
+  var px = 2320, face = 1, target = null, near = null, moved = false, cam = 0;
+  var keys = { left: false, right: false, run: false };
+  var viewW = view.clientWidth;
+  var coarse = window.matchMedia("(pointer: coarse)").matches;
+  var dragging = false, dragMoved = 0, dragLastX = 0, dragLastT = 0, dragVel = 0, flick = 0;
+  var zoom = 1;
+
+  // scale the whole scene to the screen so the field isn't a thin strip under a huge sky
+  function computeZoom() {
+    zoom = Math.max(1, Math.min(2.5, view.clientHeight / 560));
+    // how tall the visible scene is in world units — the warehouse ceiling hangs off this
+    document.body.style.setProperty("--vu", Math.round(view.clientHeight / zoom));
+    ground.style.height = Math.round(92 * zoom) + "px";
+    slope.style.transform = "scale(" + zoom + ")";
+    ground.style.backgroundImage =
+      "radial-gradient(ellipse " + 9 * zoom + "px " + 4 * zoom + "px at " + 60 * zoom + "px " + 34 * zoom + "px, rgb(46 122 60 / 0.75) 98%, transparent), " +
+      "radial-gradient(ellipse " + 7 * zoom + "px " + 3 * zoom + "px at " + 220 * zoom + "px " + 66 * zoom + "px, rgb(46 122 60 / 0.75) 98%, transparent)";
+    ground.style.backgroundSize = 340 * zoom + "px " + 92 * zoom + "px";
+  }
+  computeZoom();
+
+  var compactHud = window.matchMedia("(max-width: 640px)");
+  var linksBtn = document.getElementById("linksBtn");
+  function applyHudLabels() {
+    linksBtn.textContent = compactHud.matches ? "Links" : "Skip to links";
+  }
+  applyHudLabels();
+
+  hint.textContent = coarse ? "Swipe to walk · tap to explore" : "← → walk · E browse a pitch · T chat to the seller";
+
+  var linkReward = null;
+  function openStall(s) {
+    var w = window.open(s.href, "_blank");
+    if (w) w.opener = null;
+    else window.location.href = s.href;
+    if (w) linkReward = { s: s, at: Date.now() };
+  }
+
+  function dismissHint() {
+    if (!moved) { moved = true; setTimeout(function () { hint.classList.add("gone"); }, 900); }
+  }
+
+  window.addEventListener("keydown", function (e) {
+    var openPanels = ["linksPanel", "shopPanel", "rewardPanel", "goalsPanel", "laptopPanel", "packPanel"];
+    for (var opi = 0; opi < openPanels.length; opi++) {
+      var pe = document.getElementById(openPanels[opi]);
+      if (pe && pe.classList.contains("open")) {
+        if (e.key === "Escape") pe.classList.remove("open");
+        return;
+      }
+    }
+    var introEl = document.getElementById("introPanel");
+    if (introEl.classList.contains("open")) {
+      if (e.key === "Escape" || e.key === "Enter" || e.key === " ") { e.preventDefault(); introEl.classList.remove("open"); }
+      return;
+    }
+    var whBtnEl = document.getElementById("whBtn");
+    if ((e.key === "w" || e.key === "W") && !whBtnEl.hidden) { whBtnEl.click(); return; }
+    if ((e.key === "g" || e.key === "G") && !document.getElementById("goalsBtn").hidden) { document.getElementById("goalsBtn").click(); return; }
+    if (document.body.classList.contains("in-wh")) {
+      if (e.key === "u" || e.key === "U") { toggleShop(true); return; }
+      if (e.key === "l" || e.key === "L") { openLaptop(); return; }
+      if (e.key === "p" || e.key === "P") { openPack(); return; }
+      if (e.key === "Escape") { exitWh(); return; }
+      // arrows and E fall through — you walk the warehouse like the boot
+    }
+    if (e.key === "Shift") keys.run = true; // hold shift to leg it
+    if (e.key === "ArrowLeft" || e.key === "a" || e.key === "A") { keys.left = true; dismissHint(); e.preventDefault(); }
+    if (e.key === "ArrowRight" || e.key === "d" || e.key === "D") { keys.right = true; dismissHint(); e.preventDefault(); }
+    if ((e.key === "e" || e.key === "E" || e.key === "Enter") && near) { if (near.open) near.open(); else openStall(near); }
+    if ((e.key === "t" || e.key === "T") && near && near.talk) near.talk();
+    if ((e.key === "1" || e.key === "2" || e.key === "3") && near && near.offerKey) near.offerKey(+e.key - 1);
+    if (e.key === "Escape" && near && near.hideSay) near.hideSay();
+  });
+  window.addEventListener("keyup", function (e) {
+    if (e.key === "Shift") keys.run = false;
+    if (e.key === "ArrowLeft" || e.key === "a" || e.key === "A") keys.left = false;
+    if (e.key === "ArrowRight" || e.key === "d" || e.key === "D") keys.right = false;
+  });
+  // alt-tabbing away with shift down would otherwise leave you sprinting forever
+  window.addEventListener("blur", function () { keys.left = keys.right = keys.run = false; });
+
+  function bindPad(id, dir) {
+    var el = document.getElementById(id);
+    var lastTap = 0;
+    el.addEventListener("pointerdown", function (e) {
+      e.preventDefault();
+      // double-tap the pad and hold: the second tap legs it, same as shift on desktop
+      var t = performance.now();
+      if (t - lastTap < 320) { keys.run = true; el.classList.add("running"); }
+      lastTap = t;
+      keys[dir] = true;
+      dismissHint();
+      el.setPointerCapture(e.pointerId);
+    });
+    ["pointerup", "pointercancel"].forEach(function (ev) {
+      el.addEventListener(ev, function () { keys[dir] = false; keys.run = false; el.classList.remove("running"); });
+    });
+  }
+  bindPad("padL", "left");
+  bindPad("padR", "right");
+
+  // swipe to run (with momentum) and tap the grass to walk there
+  view.addEventListener("pointerdown", function (e) {
+    dragging = true; dragMoved = 0; flick = 0;
+    dragLastX = e.clientX; dragLastT = performance.now(); dragVel = 0;
+  });
+  view.addEventListener("pointermove", function (e) {
+    if (!dragging) return;
+    var dx = e.clientX - dragLastX;
+    dragMoved += Math.abs(dx);
+    if (dragMoved > 10) {
+      target = null;
+      px -= dx / zoom;
+      dismissHint();
+    }
+    var now = performance.now();
+    var dt = Math.max(now - dragLastT, 1);
+    dragVel = dragVel * 0.6 + (-dx / zoom / dt * 1000) * 0.4;
+    dragLastX = e.clientX; dragLastT = now;
+  });
+  view.addEventListener("pointerup", function (e) {
+    if (!dragging) return;
+    dragging = false;
+    if (dragMoved <= 10) {
+      var onStall = e.target.closest && e.target.closest(".stall, .whstation");
+      if (!onStall) {
+        var r = view.getBoundingClientRect();
+        target = cam + (e.clientX - r.left) / zoom;
+        dismissHint();
+      }
+    } else if (Math.abs(dragVel) > 120) {
+      flick = Math.max(-1400, Math.min(1400, dragVel));
+    }
+  });
+  view.addEventListener("pointercancel", function () { dragging = false; });
+
+  stalls.forEach(function (s) {
+    s.el.addEventListener("click", function () {
+      if (dragMoved > 10) return;
+      if (Math.abs(s.x - px) <= NEAR) openStall(s);
+      else { target = s.x; dismissHint(); }
+    });
+    s.el.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openStall(s); }
+    });
+  });
+
+  // ---- flip tycoon mini game ----
+  // Haggle for the glowing find, flip it, spend profit on upgrades, go pro at £10k.
+  // the stock: tiers 1-4. Legendaries (t4) are real finds — the actual stories are in `h`.
+  var items = [
+    // tier 1a — pocket-money finds: always something to flip, even skint
+    { d: "r13", n: "a carrier bag of paperbacks", e: "📚", a: 8, f: 5, v: 20, t: 1, q: "Fifty pee each, or the bag for less." },
+    { d: "r3", n: "a stack of scratched 45s", e: "🎶", a: 10, f: 5, v: 25, t: 1, q: "The skips add character." },
+    { d: "r2", n: "a Polaroid with no film", e: "📸", a: 12, f: 5, v: 30, t: 1, q: "Untested. That's vintage for 'works'." },
+    { d: "r11", n: "a box of brass oddments", e: "🕯️", a: 10, f: 5, v: 22, t: 1, q: "Polish hides a multitude of sins." },
+    { d: "r9", n: "a 90s Panini sticker album", e: "⚽", a: 8, f: 5, v: 28, t: 1, q: "Half full. The good half." },
+    { d: "r6", n: "a tangle of console leads", e: "🎮", a: 5, f: 5, v: 18, t: 1, q: "One of them's rare. Probably." },
+    { d: "r12", n: "a clock radio", e: "📻", a: 5, f: 5, v: 14, t: 1, q: "Alarm's stuck on six. Character." },
+    { d: "r7", n: "a watch with no strap", e: "🕰️", a: 15, f: 10, v: 35, t: 1, q: "Ticks lovely. Straps are pennies." },
+    { d: "r13", n: "a 1970s cookbook", e: "📚", a: 5, f: 5, v: 12, t: 1, q: "All aspic. Collectors love aspic." },
+    { d: "r5", n: "a chipped Toby jug", e: "🏺", a: 10, f: 5, v: 8, t: 1, q: "The chip's period-correct, that." },
+    { d: "r8", n: "a framed seaside print", e: "🎨", a: 12, f: 5, v: 10, t: 1, q: "Worth it for the frame. Nearly." },
+    { d: "r1", n: "a boxed 35mm compact", e: "📷", a: 15, f: 10, v: 40, t: 1, q: "Used once, at a christening." },
+    { d: "r10", n: "a bag of toy soldiers", e: "🚀", a: 10, f: 5, v: 30, t: 1, q: "Most of them are still standing." },
+    { d: "r4", n: "a quartz watch, fresh battery", e: "⌚", a: 15, f: 10, v: 30, t: 1, q: "Battery cost me nearly that." },
+    { d: "r0", n: "a painted wooden egg", e: "🥚", a: 5, f: 5, v: 15, t: 1, q: "Off a market in Kraków, that." },
+    { d: "r9", n: "a shoebox of cigarette cards", e: "🃏", a: 12, f: 5, v: 28, t: 1, q: "Full sets in there somewhere." },
+    { d: "r12", n: "a Walkman with a chewed belt", e: "📻", a: 15, f: 10, v: 45, t: 1, q: "Plays a bit slow. That's lo-fi." },
+    { d: "r5", n: "a mystery box of tat", e: "🏺", a: 5, f: 5, v: 10, t: 1, q: "Could be anything. Probably isn't." },
+    { d: "r6", n: "a Tamagotchi, still alive", e: "🎮", a: 15, f: 10, v: 40, t: 1, q: "Fed it this morning. Your problem now." },
+    // tier 1b — everyday stock
+    { d: "r2", n: "a Polaroid 600 box camera", e: "📸", a: 45, f: 30, v: 65, t: 1, q: "Flash still pops. Film's your problem." },
+    { d: "r1", n: "a Zenit-E with leather case", e: "📷", a: 55, f: 40, v: 70, t: 1, q: "Built like a tank, weighs like one too." },
+    { d: "r13", n: "a book-club 'first edition'", e: "📚", a: 60, f: 45, v: 40, t: 1, q: "Says first edition right there on it…" },
+    { d: "r3", n: "a crate of 70s LPs", e: "🎶", a: 40, f: 30, v: 75, t: 1, q: "Someone's entire youth in there." },
+    { d: "r6", n: "a Game & Watch Donkey Kong", e: "🎮", a: 35, f: 25, v: 80, t: 1, q: "Two screens. Ahead of its time." },
+    { d: "r9", n: "a signed Subbuteo team", e: "⚽", a: 30, f: 20, v: 55, t: 1, q: "Signed by… someone, definitely." },
+    { d: "r7", n: "a nurse's fob watch", e: "🕰️", a: 25, f: 20, v: 45, t: 1, q: "Kept better time than the doctors." },
+    { d: "r5", n: "a studio pottery bowl", e: "🏺", a: 30, f: 20, v: 60, t: 1, q: "Signed on the bottom, look." },
+    { d: "r10", n: "a bag of He-Man figures", e: "🚀", a: 45, f: 30, v: 85, t: 1, q: "Skeletor's seen some things." },
+    { d: "r8", n: "a Guinness pub mirror", e: "🎨", a: 35, f: 25, v: 70, t: 1, q: "Every kitchen wants one now." },
+    { d: "r14", n: "a Mega Drive, one pad", e: "🕹️", a: 40, f: 30, v: 75, t: 1, q: "Sonic's still in the slot." },
+    { d: "r4", n: "a 60s Timex, runs fast", e: "⌚", a: 25, f: 15, v: 40, t: 1, q: "You'll never be late again." },
+    { d: "r15", n: "a box of costume brooches", e: "💍", a: 20, f: 15, v: 45, t: 1, q: "Granny glamour. Very in." },
+    { d: "r13", n: "an atlas from 1938", e: "📚", a: 30, f: 20, v: 50, t: 1, q: "Full of countries that've gone." },
+    { d: "r0", n: "an alabaster egg collection", e: "🥚", a: 25, f: 15, v: 35, t: 1, q: "Ten eggs, no chickens." },
+    // tier 1c — proper finds
+    { d: "r12", n: "a Roberts transistor radio", e: "📻", a: 60, f: 45, v: 90, t: 1, q: "Still gets Radio 2 lovely and clear." },
+    { d: "r12", n: "a 1950s valve radio", e: "📻", a: 85, f: 60, v: 110, t: 1, q: "Warms up like a fireplace." },
+    { d: "r7", n: "a railwayman's pocket watch", e: "🕰️", a: 90, f: 65, v: 85, t: 1, q: "Kept the 07:42 on time for forty years." },
+    { d: "r9", n: "a 1966 World Cup programme", e: "⚽", a: 95, f: 70, v: 120, t: 1, q: "They think it's all over? Not this one." },
+    { d: "r3", n: "a box of Northern Soul 45s", e: "🎶", a: 120, f: 90, v: 200, t: 1, q: "Keep the faith. Rarities in there." },
+    { d: "r8", n: "a Banksy print (allegedly)", e: "🎨", a: 75, f: 50, v: 38, t: 1, q: "Found it behind a skip in Bristol." },
+    { d: "r5", n: "a Ming-style vase (probably Woolworths)", e: "🏺", a: 150, f: 110, v: 95, t: 1, q: "Survived four house moves. Provenance." },
+    { d: "r11", n: "silver-plated candlesticks", e: "🕯️", a: 90, f: 70, v: 60, t: 1, q: "They polish up lovely, honest." },
+    { d: "r6", n: "a Game Boy with Tetris in it", e: "🎮", a: 70, f: 50, v: 95, t: 1, q: "Screen's got the lines but she plays." },
+    { d: "r10", n: "a boxed Corgi DB5", e: "🚀", a: 70, f: 50, v: 110, t: 1, q: "Ejector seat still fires." },
+    { d: "r14", n: "a boxed NES, yellowed", e: "🕹️", a: 80, f: 60, v: 130, t: 1, q: "Nothing a bit of sun won't fix." },
+    { d: "r15", n: "a hallmarked signet ring", e: "💍", a: 75, f: 55, v: 120, t: 1, q: "Someone's initials. Could be yours." },
+    { d: "r2", n: "an SX-70 with film jammed", e: "📸", a: 65, f: 45, v: 100, t: 1, q: "The jam's free." },
+    { d: "r8", n: "an oil painting of cows", e: "🎨", a: 90, f: 65, v: 140, t: 1, q: "Big in farmhouse kitchens." },
+    { d: "r4", n: "a diver's watch, misted", e: "⌚", a: 95, f: 70, v: 150, t: 1, q: "It's been places, this." },
+    // tier 2 — quality gear
+    { d: "r7", n: "a Victorian pocket watch", e: "🕰️", a: 120, f: 90, v: 150, t: 2, q: "Still ticks. Hear that? Quality." },
+    { d: "r11", n: "a pair of Georgian candlesticks", e: "🕯️", a: 140, f: 100, v: 180, t: 2, q: "Solid silver — feel the weight." },
+    { d: "r6", n: "a boxed original Game Boy", e: "🎮", a: 200, f: 150, v: 260, t: 2, q: "Someone's 1990 regret, your gain." },
+    { d: "r6", n: "Pokémon Yellow, boxed", e: "🎮", a: 150, f: 110, v: 240, t: 2, q: "Pikachu still follows you about." },
+    { d: "r2", n: "a Polaroid SX-70", e: "📸", a: 180, f: 140, v: 220, t: 2, q: "Folds flat like a chocolate bar." },
+    { d: "r3", n: "a first-press Beatles LP", e: "🎶", a: 280, f: 210, v: 240, t: 2, q: "Matrix numbers check out. I looked twice." },
+    { d: "r10", n: "a carded '78 Star Wars figure", e: "🚀", a: 350, f: 260, v: 420, t: 2, q: "Bubble's never been popped." },
+    { d: "r1", n: "a black-paint Nikon F2", e: "📷", a: 260, f: 200, v: 310, t: 2, q: "Brassing in all the right places." },
+    { d: "r5", n: "a Clarice Cliff jug", e: "🏺", a: 180, f: 140, v: 260, t: 2, q: "That orange doesn't fade, you know." },
+    { d: "r13", n: "a signed modern first edition", e: "📚", a: 250, f: 190, v: 320, t: 2, q: "Signature's real. Bookmark's free." },
+    { d: "r3", n: "a mint Northern Soul rarity", e: "🎶", a: 130, f: 95, v: 210, t: 2, q: "Keep the faith, keep the receipt." },
+    { d: "r12", n: "a Bush TV22 telly", e: "📻", a: 160, f: 120, v: 230, t: 2, q: "Bakelite. Weighs a child." },
+    { d: "r9", n: "a framed '66 ticket stub", e: "⚽", a: 140, f: 100, v: 200, t: 2, q: "Wembley. The day itself." },
+    { d: "r0", n: "a Russian lacquer egg", e: "🥚", a: 120, f: 90, v: 170, t: 2, q: "Hand-painted. Probably." },
+    { d: "r5", n: "a Moorcroft vase", e: "🏺", a: 220, f: 160, v: 300, t: 2, q: "That glaze. Come on." },
+    { d: "r7", n: "a gold-cased pocket watch", e: "🕰️", a: 300, f: 230, v: 380, t: 2, q: "Opens like a secret." },
+    { d: "r11", n: "a pair of Sheffield trays", e: "🕯️", a: 110, f: 80, v: 95, t: 2, q: "Gleam like new money." },
+    { d: "r6", n: "an original PlayStation, boxed", e: "🎮", a: 120, f: 90, v: 180, t: 2, q: "Demo disc included. Iconic." },
+    { d: "r13", n: "a Wainwright set, first prints", e: "📚", a: 170, f: 130, v: 250, t: 2, q: "Fell-walking royalty, these." },
+    { d: "r1", n: "a Rolleiflex TLR", e: "📷", a: 280, f: 210, v: 360, t: 2, q: "Look down, not through. Classy." },
+    { d: "r15", n: "a Victorian mourning ring", e: "💍", a: 190, f: 140, v: 260, t: 2, q: "Bit morbid. Very collectable." },
+    { d: "r8", n: "a signed Lowry print", e: "🎨", a: 320, f: 240, v: 430, t: 2, q: "Matchstick men and all." },
+    { d: "r10", n: "a Boba Fett, unpunched", e: "🚀", a: 340, f: 260, v: 450, t: 2, q: "Card's flat as Norfolk." },
+    { d: "r14", n: "a boxed Dreamcast", e: "🕹️", a: 150, f: 110, v: 220, t: 2, q: "Ahead of its time. Still is." },
+    { d: "r2", n: "a Polaroid Big Shot", e: "📸", a: 200, f: 150, v: 280, t: 2, q: "Warhol's favourite, this model." },
+    // tier 3 — rare finds
+    { d: "r2", n: "a gold Polaroid SX-70", e: "📸", a: 320, f: 250, v: 400, t: 3, q: "Gold-plated. Sinatra had one, apparently." },
+    { d: "r1", n: "a Leica M3 rangefinder", e: "📷", a: 600, f: 480, v: 650, t: 3, q: "Glass is spotless. Sharper than my prices." },
+    { d: "r4", n: "an Omega Seamaster '69", e: "⌚", a: 620, f: 480, v: 540, t: 3, q: "Worn once, allegedly. To a wedding." },
+    { d: "r4", n: "a 1985 gold Rolex", e: "⌚", a: 900, f: 700, v: 1500, t: 3, q: "Keeps better time than the bloke selling it." },
+    { d: "r0", n: "a Fabergé-style egg (paste, probably)", e: "🥚", a: 450, f: 340, v: 520, t: 3, q: "Straight off a Russian estate sale." },
+    { d: "r13", n: "a first-print Harry Potter", e: "📚", a: 400, f: 320, v: 900, t: 3, q: "Check the number line. Go on." },
+    { d: "r14", n: "a SNES-CD prototype (don't ask)", e: "🕹️", a: 999, f: 850, v: 2500, t: 3, q: "Only meant to be a couple of these…" },
+    { d: "r3", n: "a Beatles 'butcher cover'", e: "🎶", a: 700, f: 550, v: 1200, t: 3, q: "Don't ask how I got it." },
+    { d: "r12", n: "a pre-war Ekco round radio", e: "📻", a: 450, f: 340, v: 700, t: 3, q: "Design museums fight over these." },
+    { d: "r11", n: "solid silver Georgian pair", e: "🕯️", a: 500, f: 380, v: 750, t: 3, q: "Feel that. That's money, that is." },
+    { d: "r9", n: "a '66 final programme and ticket", e: "⚽", a: 550, f: 420, v: 850, t: 3, q: "They think it's all over — it's laminated." },
+    { d: "r15", n: "an Art Deco diamond ring", e: "💍", a: 800, f: 620, v: 1300, t: 3, q: "Sparkles like trouble." },
+    { d: "r1", n: "a Nikon SP rangefinder", e: "📷", a: 750, f: 580, v: 1000, t: 3, q: "Rarer than the Leica. Don't tell Leica." },
+    { d: "r13", n: "a signed Ian Fleming", e: "📚", a: 900, f: 700, v: 1600, t: 3, q: "Shaken, not stirred, not cheap." },
+    { d: "r10", n: "a vinyl-cape Jawa", e: "🚀", a: 850, f: 650, v: 1800, t: 3, q: "The holy grail, in a sandwich bag." },
+    { d: "r6", n: "a Nintendo championships cart", e: "🎮", a: 999, f: 800, v: 2200, t: 3, q: "The grey one. Imagine the gold." },
+    { d: "r4", n: "a Cartier Tank with papers", e: "⌚", a: 950, f: 750, v: 1400, t: 3, q: "Papers! At a car boot!" },
+    { d: "r5", n: "a Troika chimney vase", e: "🏺", a: 380, f: 280, v: 550, t: 3, q: "Cornish. Brutalist. Brilliant." },
+    { d: "r7", n: "a Breguet pocket watch (says so)", e: "🕰️", a: 600, f: 470, v: 520, t: 3, q: "Says Breguet right on it…" },
+    // tier 4 — legendary: real finds, real prices (the easter eggs)
+    { d: "r0", n: "a heavy little gold egg", e: "🥚", a: 850, f: 700, v: 9500, t: 4,
+      q: "Bloke I got it off wanted it melted for scrap. Feels… important.",
+      h: "Real find: a US scrap dealer paid $14,000 at a flea market for a gold egg to melt down — it was the lost Third Imperial Fabergé Egg, worth $33 MILLION." },
+    { d: "r5", n: "a small dusty yellow vase", e: "🏺", a: 10, f: 5, v: 4000, t: 4,
+      q: "Tenner and it's yours. Nice yellow, that. Imperial, almost.",
+      h: "Real find: a Qianlong imperial vase bought for £10 at a car boot sale sold at auction for £50,000 in 2016." },
+    { d: "r13", n: "a tatty old kids' book", e: "📚", a: 5, f: 5, v: 4500, t: 4,
+      q: "Ex-library. 'Philosopher's something'. Quid's fine.",
+      h: "Real find: a £1 discarded library copy of Harry Potter and the Philosopher's Stone — one of only 500 first prints — sold for £28,500 at auction." },
+    { d: "r15", n: "a chunky costume ring", e: "💍", a: 10, f: 5, v: 6500, t: 4,
+      q: "Big glass one, that. Tenner. Looks the part though, dunnit?",
+      h: "Real find: the 'Tenner Ring' — a 26-carat diamond bought for £10 at a London car boot sale in the 80s, sold at Sotheby's for £656,750 in 2017." },
+    { d: "r8", n: "a gloomy old portrait", e: "🎨", a: 300, f: 240, v: 7500, t: 4,
+      q: "House clearance job. Heavier than it looks.",
+      h: "Real find: a priest paid £400 for a dusty portrait that turned out to be a genuine Van Dyck — valued at £400,000 on Antiques Roadshow." },
+    { d: "r4", n: "a chunky old dive watch", e: "⌚", a: 10, f: 5, v: 5500, t: 4,
+      q: "Charity shop reject, that. Big though, innit?",
+      h: "Real find: a LeCoultre Deep Sea Alarm bought for $5.99 in a Goodwill charity shop sold at auction for $35,000." },
+    { d: "r3", n: "a plain acetate disc", e: "🎶", a: 5, f: 5, v: 5000, t: 4,
+      q: "No label. Someone's demo. 50p?",
+      h: "Real find: a 75-cent flea-market acetate turned out to be the Velvet Underground's first studio recording — it sold for $25,000." },
+    { d: "r8", n: "a print of an old document", e: "📜", a: 10, f: 5, v: 7000, t: 4,
+      q: "Nice frame, that. Print's basically free.",
+      h: "Real find: a $4 flea-market picture had an original 1823 printing of the Declaration of Independence hidden behind it — it sold for $2.42 MILLION." }
+  ];
+  var currentItems = {};
+  var TIER_W = { 1: 10, 2: 5, 3: 2, 4: 1 };
+  // exact=true draws only from that tier — used for the lucky pitch, where a weighted
+  // draw would nearly always fall back to tier 1 and the bump would never be felt
+  function pickItem(maxTier, exact) {
+    var pool = [], total = 0;
+    for (var pi = 0; pi < items.length; pi++) {
+      var ok = exact ? items[pi].t === maxTier : items[pi].t <= maxTier;
+      if (ok) { pool.push(items[pi]); total += TIER_W[items[pi].t]; }
+    }
+    var chosen = pool[0];
+    for (var tries = 0; tries < 6; tries++) {
+      var roll = Math.random() * total;
+      for (var ci = 0; ci < pool.length; ci++) {
+        roll -= TIER_W[pool[ci].t];
+        if (roll <= 0) { chosen = pool[ci]; break; }
+      }
+      var dupe = false;
+      for (var ky in currentItems) { if (currentItems[ky] === chosen) dupe = true; }
+      if (!dupe) break;
+    }
+    return chosen;
+  }
+
+  // wallet + warehouse + upgrades: buy at the boot, sell it online from the warehouse,
+  // pack the orders to get paid, hit £10k, go pro, do it again richer.
+  var findsPill = document.getElementById("finds");
+  var walletN = document.getElementById("walletN");
+  var rankN = document.getElementById("rankN");
+  var prestN = document.getElementById("prestN");
+  var bagChip = document.getElementById("bagChip");
+  var whBtn = document.getElementById("whBtn");
+  var goalsBtn = document.getElementById("goalsBtn");
+  var trendPill = document.getElementById("trendPill");
+  var shopPanel = document.getElementById("shopPanel");
+  var shopRows = document.getElementById("shopRows");
+  var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  var wallet = 200, prestige = 0, introSeen = false, packed = 0, rep = 0;
+  var packedThisVisit = 0; // clearing the bench before you drive off is worth rep
+  var inv = [], listings = [], orders = [], visitedLinks = [], uid = 1, inWh = false;
+  var UPG = {
+    tongue: { icon: "🗣️", name: "Silver Tongue", desc: "Sellers cave to lower prices", costs: [300, 800, 2000], lvl: 0,
+      fx: ["—", "sellers go 8% lower", "sellers go 16% lower", "sellers go 24% lower"] },
+    eye:    { icon: "👁️", name: "Eagle Eye", desc: "Spot resale value before you buy", costs: [600, 1500], lvl: 0,
+      fx: ["—", "rough resale estimate", "exact value · never buy tat blind"] },
+    van:    { icon: "🚐", name: "The Van", desc: "Rarer stock turns up on the crates", costs: [500, 1500, 4000], lvl: 0,
+      fx: ["everyday stock", "+ Quality stock", "+ Rare stock", "+ Legendary finds"] },
+    bag:    { icon: "🎒", name: "Bigger Bag", desc: "Carry more finds per boot run", costs: [250, 700, 1800], lvl: 0,
+      fx: ["3 slots", "5 slots", "8 slots", "12 slots"] },
+    desk:   { icon: "📶", name: "Faster Broadband", desc: "More listings, quicker sales", costs: [400, 1000, 2500], lvl: 0,
+      fx: ["2 listings at once", "3 listings · a bit quicker", "4 listings · quicker", "5 listings · rapid"] },
+    lucky:  { icon: "🍀", name: "Lucky Charm", desc: "Better condition on the things you buy", costs: [400, 1200], lvl: 0,
+      fx: ["1 in 4 finds come up tatty", "tatty finds are rare", "minters twice as common"] }
+  };
+  var PRO_AT = 10000;
+  function proMult() { return 1 + prestige * 0.5; }
+  function maxTier() { return Math.min(4, 1 + UPG.van.lvl + lvlTierBonus()); }
+  function bagCap() { return [3, 5, 8, 12][UPG.bag.lvl]; }
+  function maxListings() { return 2 + UPG.desk.lvl; }
+  function deskSpeed() { return 1 + UPG.desk.lvl * 0.35; }
+  function fmtC(n) { return "£" + n.toLocaleString("en-GB"); }
+  function r5g(n) { return Math.max(5, Math.round(n / 5) * 5); }
+
+  var BUYERS = ["retro_rob_88", "car_boot_carol", "bargain.brian", "vintage_vera", "flip_king_04", "norfolk_nige", "attic_annie", "dealz_dave", "midge_finds", "tat_magnet"];
+  var TOWNS = ["Swindon", "Leeds", "Cardiff", "Dundee", "Norwich", "Truro", "Hull", "Margate", "Wigan", "Stroud"];
+  function pickFrom(a) { return a[Math.floor(Math.random() * a.length)]; }
+
+  var SAVE_KEY = "fbi-flip-v1";
+  function save() {
+    try {
+      localStorage.setItem(SAVE_KEY, JSON.stringify({
+        w: wallet, p: prestige, i: introSeen ? 1 : 0, pk: packed, rp: rep,
+        t: UPG.tongue.lvl, e: UPG.eye.lvl, v: UPG.van.lvl, b: UPG.bag.lvl, d: UPG.desk.lvl, l: UPG.lucky.lvl,
+        lk: visitedLinks, q: activeQ, inv: inv, li: listings, or: orders
+      }));
+    } catch (err) {}
+  }
+  var savedQ = null;
+  try {
+    var sv = JSON.parse(localStorage.getItem(SAVE_KEY));
+    if (sv) {
+      wallet = +sv.w || 200; prestige = +sv.p || 0; introSeen = !!sv.i; packed = +sv.pk || 0;
+      rep = Math.max(0, +sv.rp || 0);
+      UPG.tongue.lvl = +sv.t || 0; UPG.eye.lvl = +sv.e || 0; UPG.van.lvl = +sv.v || 0;
+      UPG.bag.lvl = +sv.b || 0; UPG.desk.lvl = +sv.d || 0; UPG.lucky.lvl = +sv.l || 0;
+      if (sv.lk && sv.lk.length) visitedLinks = sv.lk.slice(0, 12);
+      if (sv.q && sv.q.length) savedQ = sv.q;
+      var okItem = function (e) { return e && items[+e.i] && +e.paid >= 0; };
+      if (sv.inv) sv.inv.forEach(function (e) { if (okItem(e)) inv.push({ i: +e.i, paid: +e.paid, cond: +e.cond || 1 }); });
+      if (sv.li) sv.li.forEach(function (e) { if (okItem(e)) listings.push(e); });
+      if (sv.or) sv.or.forEach(function (e) {
+        if (okItem(e)) orders.push({ i: +e.i, paid: +e.paid, soldFor: +e.soldFor || 0, plat: e.plat === "ebay" ? "ebay" : "vinted", tr: !!e.tr, by: e.by || pickFrom(BUYERS), to: e.to || pickFrom(TOWNS), step: 0 });
+      });
+    }
+  } catch (err) {}
+
+  // ---- levels: earned by trading well, not by hoarding cash ----
+  // rep comes from selling at a profit, sharp haggling, moving rare stock and leaving
+  // the bench clear. A good run banks 5-8, so the early levels are 3-5 boot runs apart
+  // and the late ones 8-10. Cash still drives upgrades; this is the career track.
+  var LEVELS = [
+    [0, "Boot Sale Newbie"],
+    [15, "Bargain Hunter"],
+    [35, "Keen Eye"],
+    [70, "Wheeler Dealer"],
+    [120, "Serious Reseller"],
+    [200, "Dealer in Rarities"],
+    [320, "Car Boot Legend"]
+  ];
+  function levelIdx() {
+    var n = 0;
+    for (var li = 0; li < LEVELS.length; li++) { if (rep >= LEVELS[li][0]) n = li; }
+    return n;
+  }
+  var lvlIdx = levelIdx();
+  // every other level lifts what turns up on the crates, so a level is felt, not just counted
+  function lvlTierBonus() { return Math.floor(lvlIdx / 2); }
+
+  function popRep(n, why) {
+    var el = document.createElement("div");
+    el.className = "pop rep";
+    el.textContent = "+" + n + " rep" + (why ? " · " + why : "");
+    document.body.appendChild(el);
+    setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 1800);
+  }
+
+  function awardRep(n, why) {
+    if (n <= 0) return;
+    rep += n;
+    popRep(n, why);
+    var ni = levelIdx();
+    if (ni > lvlIdx) {
+      lvlIdx = ni;
+      var top = lvlIdx === LEVELS.length - 1;
+      banner("📈 Level " + (lvlIdx + 1) + " — " + LEVELS[lvlIdx][1] + "! "
+        + (top ? "Top of the game." : lvlIdx % 2 === 0
+          ? "Better stock turns up on the crates from now on. 💎"
+          : "One more level and the crates start carrying better stock."), 8000);
+      confetti(top ? 34 : 18);
+    }
+    updLevel();
+    save();
+  }
+
+  function updLevel() {
+    var cur = LEVELS[lvlIdx][0];
+    var nxt = lvlIdx + 1 < LEVELS.length ? LEVELS[lvlIdx + 1][0] : null;
+    rankN.innerHTML = "Lv" + (lvlIdx + 1) + " " + LEVELS[lvlIdx][1]
+      + (nxt ? ' <i class="lvlbar"><b style="width:'
+        + Math.max(0, Math.min(100, Math.round(100 * (rep - cur) / (nxt - cur)))) + '%"></b></i>' : " ⭐");
+    rankN.title = nxt ? rep + " / " + nxt + " rep to " + LEVELS[lvlIdx + 1][1] : rep + " rep — top level";
+  }
+
+  function banner(text, ms) {
+    hint.textContent = text;
+    hint.classList.remove("gone");
+    clearTimeout(banner.t);
+    banner.t = setTimeout(function () { hint.classList.add("gone"); }, ms || 6000);
+  }
+
+  function popProfit(n) {
+    var el = document.createElement("div");
+    var big = n >= 300;
+    el.className = "pop " + (n >= 0 ? "up" : "down") + (big ? " big" : "");
+    el.textContent = (n >= 0 ? "+" : "−") + fmtC(Math.abs(n)) + (big ? " 💰" : "");
+    document.body.appendChild(el);
+    setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 1800);
+  }
+  function confetti(n) {
+    if (reduceMotion) return;
+    var bits = ["💷", "✨", "🪙", "💰"];
+    for (var ci = 0; ci < n; ci++) {
+      var c = document.createElement("span");
+      c.className = "confetto";
+      c.textContent = bits[ci % bits.length];
+      c.style.left = (4 + Math.random() * 92) + "%";
+      c.style.animationDuration = (1.3 + Math.random() * 1.2) + "s";
+      c.style.animationDelay = (Math.random() * 0.4) + "s";
+      document.body.appendChild(c);
+      (function (el) { setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 3200); })(c);
+    }
+  }
+
+  function nextCost(u) { return u.lvl < u.costs.length ? u.costs[u.lvl] : null; }
+  function anyAffordable() {
+    for (var k in UPG) { var c = nextCost(UPG[k]); if (c && wallet >= c) return true; }
+    return wallet >= PRO_AT;
+  }
+
+  function pendingOffers() {
+    var n = 0;
+    for (var i = 0; i < listings.length; i++) if (listings[i].offer) n++;
+    return n;
+  }
+
+  function updBadges() {
+    var todo = orders.length + pendingOffers();
+    whBtn.textContent = compactHud.matches
+      ? (inWh ? "🚗" : "🏭" + (todo ? " " + todo : ""))
+      : (inWh ? "🚗 Car boot" : "🏭 Warehouse" + (todo ? " ·" + todo : ""));
+    whBtn.classList.toggle("canbuy", (!inWh && todo > 0) || anyAffordable());
+    bagChip.textContent = "🎒" + inv.length + "/" + bagCap();
+    buildWh();
+  }
+
+  function updWallet() {
+    // skint with nothing coming in? the coat pocket provides
+    if (wallet < 5 && !inv.length && !listings.length && !orders.length) {
+      wallet += 20;
+      banner("🍀 Found a £20 note in an old coat pocket!", 5000);
+    }
+    walletN.textContent = fmtC(wallet);
+    var stars = "";
+    for (var si = 0; si < prestige; si++) stars += "⭐";
+    prestN.textContent = stars;
+    // £10k is still the prestige gate, but it's a cash milestone now, not a rank
+    if (wallet >= PRO_AT && !updWallet.toldPro) {
+      updWallet.toldPro = true;
+      banner("🏆 £10,000! GO PRO is waiting in the warehouse Upgrades Corner ⬆️", 9000);
+      confetti(34);
+    }
+    updLevel();
+    updBadges();
+    if (shopPanel.classList.contains("open")) buildShop();
+    save();
+  }
+
+  // ---- goals: three rotating jobs to chase ----
+  var QUESTS = [
+    { id: "pack3", ico: "📦", txt: "Pack and post 3 orders", n: 3, pay: 60 },
+    { id: "pack8", ico: "🚚", txt: "Pack and post 8 orders", n: 8, pay: 150 },
+    { id: "profit150", ico: "📈", txt: "Make £150+ profit on one sale", n: 1, pay: 100 },
+    { id: "visitlink", ico: "💷", txt: "Visit one of my real pages", n: 1, pay: 75 },
+    { id: "tier3", ico: "💎", txt: "Sell a Rare or Legendary find", n: 1, pay: 120 },
+    { id: "haggle50", ico: "🗣️", txt: "Knock £50+ off an asking price", n: 1, pay: 80 },
+    { id: "auction", ico: "🔨", txt: "See an eBay auction through to the end", n: 1, pay: 90 },
+    { id: "trend", ico: "🔥", txt: "Sell a trending item", n: 1, pay: 90 }
+  ];
+  function questDef(id) {
+    for (var i = 0; i < QUESTS.length; i++) if (QUESTS[i].id === id) return QUESTS[i];
+    return null;
+  }
+  var activeQ = [];
+  if (savedQ) {
+    savedQ.forEach(function (q) {
+      if (questDef(q.id) && activeQ.length < 3) activeQ.push({ id: q.id, p: +q.p || 0 });
+    });
+  }
+  function newQuest() {
+    var pool = QUESTS.filter(function (d) {
+      return !activeQ.some(function (q) { return q.id === d.id; });
+    });
+    var d = pool[Math.floor(Math.random() * pool.length)];
+    return { id: d.id, p: 0 };
+  }
+  while (activeQ.length < 3) activeQ.push(newQuest());
+
+  var goalsPanel = document.getElementById("goalsPanel");
+  var goalsRows = document.getElementById("goalsRows");
+  function buildGoals() {
+    var html = "";
+    activeQ.forEach(function (q) {
+      var d = questDef(q.id);
+      html += '<div class="quest-row"><span class="quest-ico">' + d.ico + '</span>'
+        + '<span class="quest-info"><span class="quest-name">' + d.txt + '</span>'
+        + '<span class="quest-prog">' + (d.n > 1 ? Math.min(q.p, d.n) + " / " + d.n : "Not done yet") + '</span></span>'
+        + '<span class="quest-pay">+' + fmtC(d.pay) + "</span></div>";
+    });
+    goalsRows.innerHTML = html;
+  }
+  function questEvent(kind) {
+    var changed = false;
+    for (var i = 0; i < activeQ.length; i++) {
+      var q = activeQ[i], d = questDef(q.id);
+      var match = kind === "pack" ? (q.id === "pack3" || q.id === "pack8") : q.id === kind;
+      if (!match || q.p >= d.n) continue;
+      q.p++;
+      changed = true;
+      if (q.p >= d.n) {
+        wallet += d.pay;
+        popProfit(d.pay);
+        confetti(14);
+        banner("🎯 Goal done: " + d.txt + " — +" + fmtC(d.pay) + "!", 6000);
+        activeQ[i] = newQuest();
+      }
+    }
+    if (changed) {
+      updWallet();
+      if (goalsPanel.classList.contains("open")) buildGoals();
+    }
+  }
+  goalsBtn.addEventListener("click", function () { buildGoals(); goalsPanel.classList.add("open"); });
+  document.getElementById("closeGoals").addEventListener("click", function () { goalsPanel.classList.remove("open"); });
+  goalsPanel.addEventListener("click", function (e) { if (e.target === goalsPanel) goalsPanel.classList.remove("open"); });
+
+  // ---- trending: a hot category rotates — matching items sell for +50% ----
+  var CATS = [
+    { n: "Cameras", es: ["📸", "📷"] },
+    { n: "Music", es: ["🎶", "📻"] },
+    { n: "Games", es: ["🎮", "🕹️"] },
+    { n: "Watches", es: ["⌚", "🕰️"] },
+    { n: "Books", es: ["📚"] },
+    { n: "Art", es: ["🎨", "📜"] },
+    { n: "Jewellery", es: ["💍"] },
+    { n: "Pottery", es: ["🏺", "🥚", "🕯️"] },
+    { n: "Toys", es: ["🚀", "⚽"] }
+  ];
+  var trend = null;
+  function rollTrend(announce) {
+    var nt = CATS[Math.floor(Math.random() * CATS.length)];
+    if (trend && nt.n === trend.n) nt = CATS[(CATS.indexOf(nt) + 1) % CATS.length];
+    trend = nt;
+    document.getElementById("trendTxt").textContent = trend.es[0] + " " + trend.n + " +50%";
+    if (announce && !whBtn.hidden) banner("🔥 Hot right now: " + trend.n + " — they sell for +50%!", 5000);
+  }
+  rollTrend(false);
+  setInterval(function () { rollTrend(true); }, 120000);
+
+  // ---- seller personalities: every restock, a different sort behind the table ----
+  var PERS = [
+    { label: "", floorMul: 1, pat: 3, w: 5 },
+    { label: "🥺 soft touch", floorMul: 0.85, pat: 4, w: 2 },
+    { label: "😤 drives a hard bargain", floorMul: 1.18, pat: 2, w: 2 },
+    { label: "🏃 packing up early", floorMul: 0.72, pat: 3, w: 1 },
+    { label: "🗣️ loves a natter", floorMul: 1, pat: 5, w: 2, hint: true }
+  ];
+  function pickPers() {
+    var tot = 0, i;
+    for (i = 0; i < PERS.length; i++) tot += PERS[i].w;
+    var roll = Math.random() * tot;
+    for (i = 0; i < PERS.length; i++) { roll -= PERS[i].w; if (roll <= 0) return PERS[i]; }
+    return PERS[0];
+  }
+
+  // ---- visiting a real pitch link pays out — more for every NEW pitch you visit ----
+  var rewardPanel = document.getElementById("rewardPanel");
+  document.getElementById("closeReward").addEventListener("click", function () { rewardPanel.classList.remove("open"); });
+  rewardPanel.addEventListener("click", function (e) { if (e.target === rewardPanel) rewardPanel.classList.remove("open"); });
+
+  function showReward(s, got, doneAll) {
+    var dots = "";
+    for (var i = 0; i < stalls.length; i++) dots += i < visitedLinks.length ? "●" : "○";
+    document.getElementById("rewardAmt").textContent = "+" + fmtC(got);
+    document.getElementById("rewardMsg").innerHTML = doneAll
+      ? "That's every pitch visited — legend! 🏆<br>+£250 grand tour bonus on top."
+      : "Cheers for checking out my " + (s.name || "page") + "!";
+    document.getElementById("rewardDots").textContent = dots;
+    document.getElementById("rewardNext").textContent = doneAll
+      ? "All " + stalls.length + " pitches visited 🎉"
+      : "Next new pitch you visit: +" + fmtC(Math.round(25 * (visitedLinks.length + 1) * proMult()));
+    rewardPanel.classList.add("open");
+  }
+
+  function grantLinkReward() {
+    if (!linkReward || Date.now() - linkReward.at < 1500) return;
+    var s = linkReward.s;
+    linkReward = null;
+    findsPill.hidden = false;
+    whBtn.hidden = false;
+    goalsBtn.hidden = false;
+    trendPill.classList.add("show");
+    if (visitedLinks.indexOf(s.name) >= 0) {
+      var nxt = Math.round(25 * (visitedLinks.length + 1) * proMult());
+      updWallet();
+      if (visitedLinks.length < stalls.length) banner("👋 Welcome back! Already counted " + (s.name || "that one") + " — a pitch you've not visited pays " + fmtC(nxt) + ".", 7000);
+      return;
+    }
+    visitedLinks.push(s.name);
+    var got = Math.round(25 * visitedLinks.length * proMult());
+    wallet += got;
+    var doneAll = visitedLinks.length >= stalls.length;
+    if (doneAll) wallet += 250;
+    updWallet();
+    questEvent("visitlink");
+    popProfit(got);
+    confetti(doneAll ? 30 : 12);
+    showReward(s, got, doneAll);
+  }
+  window.addEventListener("focus", grantLinkReward);
+  document.addEventListener("visibilitychange", function () {
+    if (document.visibilityState === "visible") grantLinkReward();
+  });
+
+  function restockAll(force) { stalls.forEach(function (st) { if (st.restock) st.restock(force); }); }
+
+  // ---- the warehouse: a second walkable scene with stations ----
+  function condTag(c) { return c > 1 ? ' <span class="tag-mint">✨ minter</span>' : c < 1 ? ' <span class="tag-tat">😬 tatty</span>' : ""; }
+  // station status lives on the A-board itself — a floating pill just fought the prompt bubble
+  function setSign(id, txt, alert) {
+    document.getElementById(id + "Sub").textContent = txt;
+    document.getElementById(id).classList.toggle("todo", !!alert);
+  }
+
+  // ---- dressing the warehouse: a row of strip lights and a wall with some life in it ----
+  // every unsold thing you own shows up as a box against the back wall
+  var whStockEls = [];
+  function renderStock() {
+    var n = inv.length + listings.length + orders.length;
+    for (var i = 0; i < whStockEls.length; i++) {
+      whStockEls[i].style.display = i < n ? "block" : "none";
+    }
+  }
+
+  function whAdd(layer, cls, css, html) {
+    var d = document.createElement("div");
+    d.className = cls;
+    d.style.cssText = css;
+    if (html) d.innerHTML = html;
+    layer.appendChild(d);
+    return d;
+  }
+
+  (function dressWarehouse() {
+    var LAMP =
+      '<svg width="132" height="96" viewBox="0 0 132 96">'
+      + '<rect x="63" y="0" width="6" height="62" fill="#39435C" stroke="#142A55" stroke-width="2.5"/>'
+      + '<path d="M22 88 L40 61 H92 L110 88 Z" fill="#4E5A78" stroke="#142A55" stroke-width="3" stroke-linejoin="round"/>'
+      + '<rect x="27" y="83" width="78" height="11" rx="5.5" class="tube lit" fill="#FFF3C4" stroke="#142A55" stroke-width="3"/>'
+      + '</svg>'
+      + '<div class="halo lit"></div><div class="cone lit"></div><div class="pool lit"></div>';
+
+    // lamps run the length of the unit; the third one is on its way out, the fifth is gone
+    for (var i = 0; i < 9; i++) {
+      var x = -140 + i * 340;
+      var cls = "whlamp" + (i === 2 ? " dodgy" : i === 5 ? " dead" : "");
+      whAdd(whLight, cls, "left:" + x + "px;--d:" + (-i * 1.7).toFixed(1) + "s", LAMP);
+    }
+
+    // --- the back wall ---
+    whAdd(whWall, "whbeam", "");
+
+    // roller shutter, closed, where the van drives in
+    whAdd(whWall, "whdec", "left:60px;bottom:92px",
+      '<svg width="300" height="250" viewBox="0 0 300 250">'
+      + '<rect x="4" y="4" width="292" height="242" rx="5" fill="#46506B" stroke="#142A55" stroke-width="4"/>'
+      + '<path d="M16 34 H284 M16 62 H284 M16 90 H284 M16 118 H284 M16 146 H284 M16 174 H284 M16 202 H284 M16 230 H284" stroke="#39435C" stroke-width="7"/>'
+      + '<rect x="4" y="0" width="292" height="20" rx="4" fill="#5A6482" stroke="#142A55" stroke-width="4"/>'
+      + '</svg>');
+
+    // pinboard of polaroids from past finds
+    whAdd(whWall, "whdec", "left:640px;bottom:300px",
+      '<svg width="210" height="150" viewBox="0 0 210 150">'
+      + '<rect x="3" y="3" width="204" height="144" rx="6" fill="#8A6238" stroke="#142A55" stroke-width="4"/>'
+      + '<rect x="13" y="13" width="184" height="124" rx="3" fill="#6E4F2E"/>'
+      + '<g transform="translate(22,22) rotate(-5)"><use href="#gPolaroid"/></g>'
+      + '<g transform="translate(118,26) rotate(4) scale(0.85)"><use href="#gCamera"/></g>'
+      + '<g transform="translate(28,86) rotate(3) scale(0.8)"><use href="#gRecords"/></g>'
+      + '<g transform="translate(112,80) rotate(-3) scale(0.85)"><use href="#gFrame"/></g>'
+      + '</svg>');
+
+    // the clock that says it is always too early for a boot sale
+    whAdd(whWall, "whdec", "left:920px;bottom:398px",
+      '<svg width="86" height="86" viewBox="0 0 86 86">'
+      + '<circle cx="43" cy="43" r="39" fill="#F6EFE3" stroke="#142A55" stroke-width="4"/>'
+      + '<path d="M43 43 V22 M43 43 L58 52" stroke="#142A55" stroke-width="4.5" stroke-linecap="round"/>'
+      + '<circle cx="43" cy="43" r="4" fill="#E5484D" stroke="#142A55" stroke-width="2.5"/>'
+      + '</svg>');
+
+    // a whiteboard with the week's tally
+    whAdd(whWall, "whdec", "left:1400px;bottom:300px",
+      '<svg width="230" height="160" viewBox="0 0 230 160">'
+      + '<rect x="3" y="3" width="224" height="154" rx="6" fill="#EDF3FA" stroke="#142A55" stroke-width="4"/>'
+      + '<path d="M22 34 H150 M22 60 H190 M22 86 H120 M22 112 H168" stroke="#8A97B2" stroke-width="6" stroke-linecap="round"/>'
+      + '<path d="M22 130 h14 m10 0 h14 m10 0 h14 m10 0 h14" stroke="#E5484D" stroke-width="6" stroke-linecap="round"/>'
+      + '<rect x="3" y="140" width="224" height="17" fill="#C2CBDA" stroke="#142A55" stroke-width="4"/>'
+      + '</svg>');
+
+    // paper on the wall
+    [
+      ["left:-140px;bottom:380px", "", "FRAGILE", "this way up ↑", 3],
+      ["left:400px;bottom:390px", "", "BUY LOW<br>SELL HIGH", "house rules", 2],
+      ["left:1060px;bottom:385px", "red", "SHIP IT", "same day · every day", -3],
+      ["left:1720px;bottom:395px", "blue", "£10,000", "the big one", -2]
+    ].forEach(function (p) {
+      whAdd(whWall, "whposter " + p[1], p[0] + ";transform:rotate(" + p[4] + "deg)",
+        '<span class="tack"></span><b>' + p[2] + "</b><span>" + p[3] + "</span>");
+    });
+
+    // --- the stock pile: one box on the back wall for every unsold thing you own ---
+    // columns fill bottom-up, so a hoard you never list visibly stacks against the wall
+    var TIER = [[86, 1], [126, 0.9], [162, 0.8]];
+    [360, 480, 900, 1020, 1140, 1260, 1650, 1780].forEach(function (x, ci) {
+      for (var t = 0; t < TIER.length; t++) {
+        var s = TIER[t][1], jog = ((ci + t) % 3) * 6 - 6;
+        whStockEls.push(whAdd(whWall, "whbox",
+          "left:" + (x + jog) + "px;bottom:" + TIER[t][0] + "px;opacity:0.88",
+          '<svg width="' + Math.round(60 * s) + '" height="' + Math.round(44 * s) + '" viewBox="0 0 60 44">'
+          + '<use href="#gBox"/></svg>'));
+      }
+    });
+    renderStock();
+  })();
+
+  function buildWh() {
+    renderStock();
+    document.getElementById("whVanSub").textContent =
+      fmtC(BOOT_FEE) + " in · fresh stock · bag holds " + bagCap();
+    var offerN = pendingOffers();
+    setSign("whLaptop", listings.length
+      ? listings.length + " live" + (offerN ? " ❗" : "") + " 💻"
+      : inv.length ? "List it! 💻" : "Sell 💻", !!(listings.length || inv.length));
+    setSign("whPack", orders.length ? orders.length + " to pack 📦" : "Get paid 📦", !!orders.length);
+    var shopReady = false;
+    for (var k in UPG) { var c = nextCost(UPG[k]); if (c && wallet >= c) shopReady = true; }
+    setSign("whShop", wallet >= PRO_AT ? "Go pro! ⬆️" : shopReady ? "Spend it ⬆️" : "Nothing yet ⬆️",
+      wallet >= PRO_AT || shopReady);
+  }
+
+  var bootPx = null;
+  var BOOT_FEE = 5; // pitch fee — every trip to the boot costs you something
+  var WH_MIN = 140, WH_MAX = 2080, WH_SPAWN = 585;
+  function enterWh() {
+    if (inWh) return;
+    inWh = true;
+    packedThisVisit = 0;
+    bootPx = px;
+    px = WH_SPAWN; target = null; flick = 0;
+    document.body.classList.add("in-wh");
+    updBadges();
+    if (!enterWh.seen) {
+      enterWh.seen = true;
+      banner("🏭 Your warehouse! Walk to a station — 💻 sell · 📦 pack · ⬆️ upgrades · 🚗 the van goes back", 9000);
+    }
+  }
+  function exitWh() {
+    if (!inWh) return;
+    inWh = false;
+    document.body.classList.remove("in-wh");
+    ["shopPanel", "laptopPanel", "packPanel"].forEach(function (id) { document.getElementById(id).classList.remove("open"); });
+    if (bootPx !== null) px = bootPx;
+    target = null; flick = 0;
+    restockAll(true);
+    // leaving with nothing sat unpacked is worth something
+    if (packedThisVisit > 0 && orders.length === 0) awardRep(1, "bench left clear");
+    // a boot run costs you at the gate, and the bag only holds so much
+    wallet = Math.max(0, wallet - BOOT_FEE);
+    updWallet();
+    save();
+    updBadges();
+    banner("🚗 " + fmtC(BOOT_FEE) + " in at the gate — fresh stock on every crate. Bag holds "
+      + bagCap() + " 🎒", 5500);
+  }
+  whBtn.addEventListener("click", function () { if (inWh) exitWh(); else enterWh(); });
+
+  // walk up to a station and use it, same as the boot stalls
+  var whStations = [];
+  [
+    ["whVan", exitWh],
+    ["whLaptop", function () { openLaptop(); }],
+    ["whPack", function () { openPack(); }],
+    ["whShop", function () { toggleShop(true); }]
+  ].forEach(function (def) {
+    var el = document.getElementById(def[0]);
+    var ws = { el: el, x: parseFloat(el.style.left) + parseFloat(el.style.width) / 2, open: def[1] };
+    el.addEventListener("click", function () {
+      if (dragMoved > 10) return;
+      if (Math.abs(ws.x - px) <= NEAR) ws.open();
+      else target = ws.x;
+    });
+    whStations.push(ws);
+  });
+
+  // ---- the laptop: auctions on eBay, listings and cheeky offers on Vinted ----
+  var laptopPanel = document.getElementById("laptopPanel");
+  var lpRows = document.getElementById("lpRows");
+  function openLaptop() { buildLaptop(); laptopPanel.classList.add("open"); }
+  document.getElementById("closeLaptop").addEventListener("click", function () { laptopPanel.classList.remove("open"); buildWh(); });
+  laptopPanel.addEventListener("click", function (e) { if (e.target === laptopPanel) { laptopPanel.classList.remove("open"); buildWh(); } });
+
+  function guidePrice(e) {
+    var it = items[e.i];
+    var tr = !!(trend && trend.es.indexOf(it.e) >= 0);
+    return { g: r5g(it.v * e.cond * proMult() * (tr ? 1.5 : 1)), tr: tr };
+  }
+
+  function buildLaptop() {
+    var canList = listings.length < maxListings();
+    var html = '<div class="lp-h">🗄️ On the shelf (' + inv.length + ")</div>";
+    if (!inv.length) html += '<div class="lp-row lp-dim">Nothing to list — buy stock at the car boot.</div>';
+    inv.forEach(function (e, i) {
+      var it = items[e.i], gp = guidePrice(e);
+      html += '<div class="lp-row"><span class="lp-name">' + it.e + " " + it.n + "</span>" + condTag(e.cond)
+        + (gp.tr ? ' <span class="tag-hot">🔥 trending +50%</span>' : "")
+        + '<div class="lp-meta">Paid ' + fmtC(e.paid) + " · guide price ~" + fmtC(gp.g) + "</div>"
+        + '<div class="lp-btns"><button type="button" data-act="ebay" data-i="' + i + '"' + (canList ? "" : " disabled") + ">🔨 Auction on eBay</button>"
+        + '<button type="button" data-act="vinted" data-i="' + i + '"' + (canList ? "" : " disabled") + ">👗 List on Vinted</button></div></div>";
+    });
+    html += '<div class="lp-h">📡 Live listings (' + listings.length + "/" + maxListings() + ")</div>";
+    if (!listings.length) html += '<div class="lp-row lp-dim">Nothing listed yet.</div>';
+    listings.forEach(function (L, i) {
+      var it = items[L.i];
+      if (L.plat === "ebay") {
+        var secs = Math.max(0, Math.ceil((L.endAt - Date.now()) / 1000));
+        html += '<div class="lp-row live-ebay"><span class="lp-name">🔨 ' + it.e + " " + it.n + "</span>"
+          + '<div class="lp-meta">' + (L.bids
+            ? '<b class="lp-bid">' + fmtC(L.price) + "</b> · " + L.bids + " bid" + (L.bids > 1 ? "s" : "") + " · high bidder <b>" + L.bidder + "</b>"
+            : "Starting at " + fmtC(L.price) + " · no bids yet")
+          + " · ⏱️ " + secs + "s left</div></div>";
+      } else {
+        html += '<div class="lp-row live-vinted"><span class="lp-name">👗 ' + it.e + " " + it.n + "</span>"
+          + '<div class="lp-meta">Listed at ' + fmtC(L.price) + " · 👀 buyers are looking…</div>"
+          + (L.offer
+            ? '<div class="lp-meta">💬 <b>' + L.offerBy + "</b> offers <b>" + fmtC(L.offer) + '</b></div>'
+              + '<div class="lp-btns"><button type="button" data-act="acc" data-i="' + i + '">✅ Accept ' + fmtC(L.offer) + '</button>'
+              + '<button type="button" data-act="dec" data-i="' + i + '">❌ Decline</button></div>'
+            : "")
+          + "</div>";
+      }
+    });
+    if (orders.length) html += '<div class="lp-h">📦 Sold! ' + orders.length + " order" + (orders.length > 1 ? "s" : "") + " waiting at the packing bench</div>";
+    lpRows.innerHTML = html;
+  }
+
+  lpRows.addEventListener("click", function (e) {
+    var b = e.target.closest ? e.target.closest("button[data-act]") : null;
+    if (!b || b.disabled) return;
+    var act = b.getAttribute("data-act"), i = +b.getAttribute("data-i");
+    if (act === "ebay" || act === "vinted") listItem(i, act);
+    else if (act === "acc") {
+      var L = listings[i];
+      if (L && L.offer) soldListing(L, L.offer);
+    } else if (act === "dec") {
+      var L2 = listings[i];
+      if (L2 && L2.offer) {
+        L2.offer = 0; L2.offerBy = "";
+        L2.sellAt += 8000; // they sulk a bit
+        if (Math.random() < 0.5) L2.offerAt = Date.now() + 12000 + Math.random() * 18000;
+        save(); buildLaptop();
+      }
+    }
+  });
+
+  function listItem(invIdx, plat) {
+    if (listings.length >= maxListings()) return;
+    var e = inv.splice(invIdx, 1)[0];
+    if (!e) return;
+    var gp = guidePrice(e);
+    var L = { id: uid++, i: e.i, paid: e.paid, cond: e.cond, plat: plat, tr: gp.tr };
+    if (plat === "ebay") {
+      L.endAt = Date.now() + Math.round((55000 + Math.random() * 20000) / deskSpeed());
+      L.target = r5g(gp.g * (0.85 + Math.random() * 0.45));
+      L.price = r5g(gp.g * 0.2);
+      L.bids = 0; L.bidder = "";
+      L.nextBid = Date.now() + 3000 + Math.random() * 5000;
+    } else {
+      L.price = gp.g;
+      L.sellAt = Date.now() + Math.round((25000 + Math.random() * 35000) / deskSpeed());
+      L.offerAt = Math.random() < 0.55 ? Date.now() + 6000 + Math.random() * 14000 : 0;
+      L.offer = 0; L.offerBy = "";
+    }
+    listings.push(L);
+    save(); buildLaptop(); updBadges();
+  }
+
+  function soldListing(L, price) {
+    var ix = listings.indexOf(L);
+    if (ix >= 0) listings.splice(ix, 1);
+    orders.push({ i: L.i, paid: L.paid, soldFor: price, plat: L.plat, tr: L.tr, by: L.bidder || L.offerBy || pickFrom(BUYERS), to: pickFrom(TOWNS), step: 0 });
+    if (L.plat === "ebay") questEvent("auction");
+    banner((L.plat === "ebay" ? "🔨 Auction ended: " : "👗 Sold on Vinted: ") + items[L.i].n + " went for " + fmtC(price) + "! Pack it at the bench 📦", 7000);
+    save(); updBadges();
+    if (laptopPanel.classList.contains("open")) buildLaptop();
+    if (packPanel.classList.contains("open")) buildPack();
+  }
+
+  // the internet never sleeps — bids and buyers tick along wherever you are
+  setInterval(function () {
+    var now = Date.now(), touched = false;
+    for (var i = listings.length - 1; i >= 0; i--) {
+      var L = listings[i];
+      if (L.plat === "ebay") {
+        if (now >= L.endAt) {
+          L.bids++; L.bidder = pickFrom(BUYERS); // last-second snipe
+          soldListing(L, Math.max(L.price, L.target));
+          touched = true;
+        } else if (now >= L.nextBid) {
+          L.bids++;
+          L.bidder = pickFrom(BUYERS);
+          L.price = Math.min(L.target, r5g(L.price + Math.max(5, (L.target - L.price) * (0.2 + Math.random() * 0.35))));
+          L.nextBid = now + 3000 + Math.random() * 6000;
+          touched = true;
+        }
+      } else {
+        if (L.offerAt && now >= L.offerAt && !L.offer) {
+          L.offer = r5g(L.price * (0.7 + Math.random() * 0.2));
+          L.offerBy = pickFrom(BUYERS);
+          L.offerAt = 0;
+          banner("💬 Offer in on Vinted: " + L.offerBy + " wants " + items[L.i].n + " for " + fmtC(L.offer) + " 💻", 7000);
+          touched = true;
+        }
+        if (now >= L.sellAt) { soldListing(L, L.price); touched = true; }
+      }
+    }
+    if (laptopPanel.classList.contains("open")) buildLaptop(); // live countdowns
+    else if (touched) { save(); updBadges(); }
+  }, 1000);
+
+  // ---- the packing bench: fold, wrap, tape, label — THEN you get paid ----
+  var packPanel = document.getElementById("packPanel");
+  var packRows = document.getElementById("packRows");
+  var PACK_STEPS = ["📦 Fold a box", "🫧 Bubble wrap it", "📏 Tape it up", "🏷️ Stick the label"];
+  function openPack() { buildPack(); packPanel.classList.add("open"); }
+  document.getElementById("closePack").addEventListener("click", function () { packPanel.classList.remove("open"); buildWh(); });
+  packPanel.addEventListener("click", function (e) { if (e.target === packPanel) { packPanel.classList.remove("open"); buildWh(); } });
+
+  function buildPack() {
+    var html = "";
+    if (!orders.length) html = '<div class="lp-row lp-dim">Nothing to pack — sell something from the laptop first 💻</div>';
+    orders.forEach(function (o, i) {
+      var it = items[o.i];
+      var prog = "";
+      for (var st = 0; st < PACK_STEPS.length; st++) prog += st < o.step ? "●" : "○";
+      html += '<div class="lp-row"><span class="lp-name">' + it.e + " " + it.n + "</span>"
+        + '<div class="lp-meta">' + (o.plat === "ebay" ? "🔨 eBay" : "👗 Vinted") + " · sold to <b>" + o.by + "</b>, " + o.to
+        + " · " + fmtC(o.soldFor) + ' · <span class="shop-pips">' + prog + "</span></div>"
+        + '<div class="lp-btns"><button type="button" data-i="' + i + '">' + PACK_STEPS[o.step] + "</button></div></div>";
+    });
+    packRows.innerHTML = html;
+  }
+  packRows.addEventListener("click", function (e) {
+    var b = e.target.closest ? e.target.closest("button[data-i]") : null;
+    if (!b) return;
+    var o = orders[+b.getAttribute("data-i")];
+    if (!o) return;
+    o.step++;
+    if (o.step >= PACK_STEPS.length) completeOrder(o);
+    else { save(); buildPack(); }
+  });
+  function completeOrder(o) {
+    var ix = orders.indexOf(o);
+    if (ix >= 0) orders.splice(ix, 1);
+    var it = items[o.i];
+    wallet += o.soldFor;
+    packed++;
+    packedThisVisit++;
+    var profit = o.soldFor - o.paid;
+    updWallet();
+    var r = 0, why = "";
+    if (profit > 0) { r += 1; why = "sold at a profit"; }
+    if (it.t === 4) { r += 6; why = "Legendary sold"; }
+    else if (it.t === 3) { r += 3; why = "Rare sold"; }
+    awardRep(r, why);
+    popProfit(profit);
+    if (profit >= 300 || it.t === 4) confetti(24);
+    questEvent("pack");
+    if (profit >= 150) questEvent("profit150");
+    if (it.t >= 3) questEvent("tier3");
+    if (o.tr) questEvent("trend");
+    if (it.h) banner("📜 " + it.h, 12000);
+    else banner("🚚 Posted to " + o.by + " in " + o.to + " — " + (profit >= 0 ? "+" : "−") + fmtC(Math.abs(profit)) + " on that one!", 6000);
+    if (packed === 1 && prestige === 0) setTimeout(function () { banner("⬆️ First sale done! The Upgrades Corner makes the next ones bigger…", 7000); }, 6500);
+    save(); buildPack(); updBadges();
+  }
+
+  // ---- upgrades corner ----
+  var proArm = false, wipeArm = false;
+  function buildShop() {
+    var html = '<div class="shop-wallet">💰 ' + fmtC(wallet) + " in the bum-bag</div>";
+    if (prestige > 0) html += '<div class="shop-pro-note">🌟 Pro trader — everything sells for x' + proMult() + "</div>";
+    for (var k in UPG) {
+      var u = UPG[k];
+      var c = nextCost(u);
+      var pips = "";
+      for (var pi2 = 0; pi2 < u.costs.length; pi2++) pips += pi2 < u.lvl ? "●" : "○";
+      var fxTxt = c ? "Next: " + u.fx[u.lvl + 1] : "Now: " + u.fx[u.lvl];
+      html += '<div class="shop-row"><span class="shop-ico">' + u.icon + '</span>'
+        + '<span class="shop-info"><span class="shop-name">' + u.name + ' <i class="shop-pips">' + pips + '</i></span>'
+        + '<span class="shop-desc">' + u.desc + '</span>'
+        + '<span class="shop-fx">' + fxTxt + '</span></span>'
+        + (c
+          ? '<button type="button" class="shop-buy" data-k="' + k + '"' + (wallet < c ? " disabled" : "") + '>' + fmtC(c) + '</button>'
+          : '<button type="button" class="shop-buy maxed" disabled>MAX</button>')
+        + '</div>';
+    }
+    html += '<div class="shop-row"><span class="shop-ico">🌟</span>'
+      + '<span class="shop-info"><span class="shop-name">Go Pro</span>'
+      + '<span class="shop-desc">Reset everything · keep +50% profit forever</span></span>'
+      + '<button type="button" class="shop-buy pro" data-k="pro"' + (wallet < PRO_AT ? " disabled" : "") + '>'
+      + (wallet < PRO_AT ? "£10k" : proArm ? "Sure?" : "GO PRO") + '</button></div>';
+    // a way out for anyone who wants a clean slate — two taps, and it says so plainly
+    html += '<div class="shop-row wipe-row"><span class="shop-ico">🧹</span>'
+      + '<span class="shop-info"><span class="shop-name">Start over</span>'
+      + '<span class="shop-desc">' + (wipeArm
+        ? "This wipes your cash, stock, upgrades and level. There's no undo."
+        : "Wipe this save and begin again from £200") + '</span></span>'
+      + '<button type="button" class="shop-buy wipe" data-k="wipe">'
+      + (wipeArm ? "Wipe it" : "Reset") + '</button></div>';
+    shopRows.innerHTML = html;
+  }
+
+  function hardReset() {
+    // drop the save and reload — rebuilding from defaults beats resetting 20 variables by hand
+    try { localStorage.removeItem(SAVE_KEY); } catch (err) {}
+    location.reload();
+  }
+
+  function goPro() {
+    prestige++;
+    wallet = 200; packed = 0;
+    inv = []; listings = []; orders = []; visitedLinks = [];
+    for (var k in UPG) UPG[k].lvl = 0;
+    updWallet.toldPro = false; // rep and level survive prestige — that's your career, not your float
+    updWallet();
+    buildShop();
+    restockAll(true);
+    confetti(40);
+    banner("🌟 Gone pro! Everything sells for x" + proMult() + " — back to £200, and the pitch visit bonuses reset too. Do it again!", 9000);
+  }
+
+  shopRows.addEventListener("click", function (e) {
+    var b = e.target.closest ? e.target.closest("button[data-k]") : null;
+    if (!b || b.disabled) return;
+    var k = b.getAttribute("data-k");
+    if (k === "pro") {
+      if (!proArm) { proArm = true; wipeArm = false; buildShop(); return; }
+      proArm = false;
+      goPro();
+      return;
+    }
+    if (k === "wipe") {
+      if (!wipeArm) { wipeArm = true; proArm = false; buildShop(); return; }
+      hardReset();
+      return;
+    }
+    var u = UPG[k], c = nextCost(u);
+    if (!c || wallet < c) return;
+    wallet -= c;
+    u.lvl++;
+    updWallet();
+    buildShop();
+    if (k === "van") banner("🚐 Rarer stock will turn up on the crates next restock…", 5000);
+    else banner(u.icon + " " + u.name + " " + u.lvl + "!", 4000);
+  });
+
+  function toggleShop(open) {
+    shopPanel.classList.toggle("open", open);
+    if (open) { proArm = false; wipeArm = false; buildShop(); }
+  }
+  document.getElementById("closeShop").addEventListener("click", function () { toggleShop(false); buildWh(); });
+  shopPanel.addEventListener("click", function (e) { if (e.target === shopPanel) { toggleShop(false); buildWh(); } });
+
+  // the game stays invisible until you poke a seller — this is a links page first
+  var introPanel = document.getElementById("introPanel");
+  function closeIntro() { introPanel.classList.remove("open"); }
+  document.getElementById("closeIntro").addEventListener("click", closeIntro);
+  introPanel.addEventListener("click", function (e) { if (e.target === introPanel) closeIntro(); });
+  function firstContact() {
+    findsPill.hidden = false;
+    whBtn.hidden = false;
+    goalsBtn.hidden = false;
+    trendPill.classList.add("show");
+    if (!introSeen) {
+      introSeen = true;
+      save();
+      introPanel.classList.add("open");
+    }
+  }
+
+  // anything that sold while the tab was closed lands as orders to pack
+  (function resolveOffline() {
+    var now = Date.now(), n = 0;
+    for (var i = listings.length - 1; i >= 0; i--) {
+      var L = listings[i];
+      var done = L.plat === "ebay" ? now >= L.endAt : now >= L.sellAt;
+      if (done) {
+        orders.push({ i: L.i, paid: L.paid, soldFor: L.plat === "ebay" ? Math.max(L.price, L.target) : L.price, plat: L.plat, tr: L.tr, by: pickFrom(BUYERS), to: pickFrom(TOWNS), step: 0 });
+        listings.splice(i, 1);
+        n++;
+      } else if (L.plat === "vinted") {
+        L.offer = 0; L.offerBy = "";
+        if (L.offerAt) L.offerAt = now + 10000 + Math.random() * 20000;
+      }
+    }
+    if (n) setTimeout(function () {
+      banner("💤 While you were away: " + n + " listing" + (n > 1 ? "s" : "") + " sold! Pack " + (n > 1 ? "them" : "it") + " at the warehouse 🏭", 8000);
+    }, 1500);
+  })();
+
+  // returning players pick up right where they left off — HUD straight back on
+  if (introSeen) {
+    findsPill.hidden = false;
+    whBtn.hidden = false;
+    goalsBtn.hidden = false;
+    trendPill.classList.add("show");
+    updWallet();
+  }
+
+  // on touch or small screens the haggle runs in a bottom sheet instead of the little bubble
+  var useSheet = coarse || ("ontouchstart" in window) || window.innerWidth < 700;
+  var sheet = null;
+  if (useSheet) {
+    var sheetRoot = document.getElementById("barter");
+    sheet = {
+      root: sheetRoot,
+      owner: null,
+      text: sheetRoot.querySelector(".say-text"),
+      price: sheetRoot.querySelector(".say-price"),
+      btnRow: sheetRoot.querySelector(".say-btns"),
+      btns: sheetRoot.querySelectorAll(".say-btns button"),
+      art: sheetRoot.querySelector(".sheet-item-use"),
+      chip: sheetRoot.querySelector(".tier-chip"),
+      moveRow: sheetRoot.querySelector(".say-moves"),
+      flaw: sheetRoot.querySelector(".mv-flaw"),
+      cash: sheetRoot.querySelector(".mv-cash")
+    };
+    Array.prototype.forEach.call(sheet.btns, function (b, bi) {
+      b.addEventListener("click", function (e) {
+        e.stopPropagation();
+        if (!sheet.owner) return;
+        if (bi === 3) sheet.owner.hideSay();
+        else sheet.owner.makeOffer(+b.value);
+      });
+    });
+    sheet.flaw.addEventListener("click", function (e) {
+      e.stopPropagation(); if (sheet.owner) sheet.owner.pickFault();
+    });
+    sheet.cash.addEventListener("click", function (e) {
+      e.stopPropagation(); if (sheet.owner) sheet.owner.cashInHand();
+    });
+    ["pointerdown", "pointerup", "click"].forEach(function (ev) {
+      sheetRoot.addEventListener(ev, function (e) { e.stopPropagation(); });
+    });
+  }
+
+  stalls.forEach(function (s, idx) {
+    var npcEl = s.el.querySelector(".npc");
+    var sayEl = s.el.querySelector(".say");
+    if (!npcEl || !sayEl) return;
+    var rareUse = s.el.querySelector(".rare-use");
+    var rareEl = s.el.querySelector(".rare");
+
+    var it, name, emoji, ask, floor, value, quip, tier, story, estF, pers, persHint;
+    var price, patience, maxPat, phase, counters, hideT = null; // phase: 0 fresh, 1 haggling, 2 sold, 3 kicked off
+    var flawUsed, cashUsed; // one-shot haggle moves, reset with the stock
+
+    function fmt(n) { return "£" + n.toLocaleString("en-GB"); }
+    function r5(n) { return Math.max(5, Math.round(n / 5) * 5); }
+    function mood() { return patience >= 3 ? "🙂" : patience === 2 ? "😐" : "😤"; }
+    // how much rope you have left, as pips — a bare emoji hid how close you were to blowing it
+    function pips() {
+      var s = "";
+      for (var i = 0; i < maxPat; i++) s += i < patience ? "●" : "○";
+      return '<span class="pips' + (patience <= 1 ? " low" : "") + '">' + s + "</span>";
+    }
+    function buzz() { if (coarse && navigator.vibrate) { try { navigator.vibrate(10); } catch (err) {} } }
+
+    function assignItem() {
+      // the van sets your usual ceiling, but one pitch in twelve turns up something
+      // above your pay grade — without this you'd never see a gold glow before £500
+      var lucky = maxTier() < 4 && Math.random() < 0.085;
+      it = lucky ? pickItem(maxTier() + 1, true) : pickItem(maxTier());
+      currentItems[idx] = it;
+      name = it.n; emoji = it.e; ask = it.a; value = it.v; quip = it.q; tier = it.t; story = it.h || "";
+      pers = pickPers(); // a different sort of seller every restock
+      persHint = pers.hint ? r5(value * (0.9 + Math.random() * 0.2)) : 0;
+      floor = r5(it.f * (0.9 + Math.random() * 0.2) * (1 - 0.08 * UPG.tongue.lvl) * pers.floorMul);
+      estF = 0.85 + Math.random() * 0.3; // eagle eye lvl 1 sees a rough estimate
+      if (rareUse) rareUse.setAttribute("href", "#" + it.d);
+      if (rareEl) {
+        rareEl.classList.remove("sold", "t1", "t2", "t3", "t4");
+        rareEl.classList.add("t" + tier);
+      }
+      price = ask; patience = pers.pat; maxPat = pers.pat; phase = 0; counters = 0;
+      flawUsed = false; cashUsed = false;
+    }
+    assignItem();
+
+    sayEl.innerHTML = '<div class="say-text"></div><div class="say-price"></div>'
+      + '<div class="say-btns"><button type="button"></button><button type="button"></button>'
+      + '<button type="button"></button><button type="button" class="bye">Walk away</button></div>'
+      + '<div class="say-moves"><button type="button" class="mv-flaw"></button>'
+      + '<button type="button" class="mv-cash"></button></div>';
+    var loc = {
+      text: sayEl.querySelector(".say-text"),
+      price: sayEl.querySelector(".say-price"),
+      btnRow: sayEl.querySelector(".say-btns"),
+      btns: sayEl.querySelectorAll(".say-btns button"),
+      moveRow: sayEl.querySelector(".say-moves"),
+      flaw: sayEl.querySelector(".mv-flaw"),
+      cash: sayEl.querySelector(".mv-cash")
+    };
+    bindHaggle(loc);
+    function bindHaggle(u) {
+      Array.prototype.forEach.call(u.btns, function (b, bi) {
+        b.addEventListener("click", function (e) {
+          e.stopPropagation();
+          if (bi === 3) hide();
+          else makeOffer(+b.value);
+        });
+      });
+      u.flaw.addEventListener("click", function (e) { e.stopPropagation(); pickFault(); });
+      u.cash.addEventListener("click", function (e) { e.stopPropagation(); cashInHand(); });
+    }
+    ["pointerdown", "pointerup", "click"].forEach(function (ev) {
+      sayEl.addEventListener(ev, function (e) { e.stopPropagation(); });
+    });
+
+    function ui() { return sheet || loc; }
+
+    function hide() {
+      if (sheet) {
+        if (sheet.owner === s) { sheet.root.classList.remove("open"); sheet.owner = null; }
+      } else {
+        sayEl.classList.remove("show");
+      }
+    }
+    s.hideSay = hide;
+
+    var TIER_LABEL = { 1: "Find", 2: "Quality", 3: "Rare", 4: "Legendary" };
+    function render(html) {
+      var u = ui();
+      if (sheet) {
+        sheet.owner = s;
+        sheet.art.setAttribute("href", "#" + it.d);
+        sheet.chip.textContent = TIER_LABEL[tier];
+        sheet.chip.className = "tier-chip t" + tier;
+      }
+      u.text.innerHTML = html;
+      var open = phase === 1;
+      u.btnRow.style.display = open ? "flex" : "none";
+      u.moveRow.style.display = open ? "flex" : "none";
+      u.price.style.display = open ? "block" : "none";
+      if (open) {
+        var low = r5(price * 0.55), mid = r5(price * 0.8);
+        var vals = [low, mid, price];
+        var labels = ["Offer " + fmt(low), "Offer " + fmt(mid), "Pay " + fmt(price)];
+        for (var bi = 0; bi < 3; bi++) {
+          u.btns[bi].textContent = labels[bi];
+          u.btns[bi].value = vals[bi];
+          u.btns[bi].disabled = vals[bi] > wallet;
+        }
+        u.flaw.textContent = flawUsed ? "🔍 Already picked at it" : "🔍 Point out a flaw";
+        u.flaw.disabled = flawUsed;
+        var cashAt = cashPrice();
+        u.cash.textContent = cashUsed ? "💷 They've seen your cash"
+          : "💷 Cash in hand · " + fmt(cashAt);
+        u.cash.disabled = cashUsed || cashAt > wallet;
+        var persTxt = pers.label ? " · " + pers.label : "";
+        var eyeTxt = UPG.eye.lvl ? " · 👁️ sells ~" + fmt(r5(value * (UPG.eye.lvl >= 2 ? 1 : estF) * proMult())) : "";
+        u.price.innerHTML = "Asking " + fmt(price) + " " + mood() + " " + pips() + persTxt + eyeTxt;
+      }
+      if (sheet) sheet.root.classList.add("open");
+      else sayEl.classList.add("show");
+      clearTimeout(hideT);
+      if (phase >= 2) hideT = setTimeout(hide, tier === 4 ? 14000 : 8000);
+    }
+
+    function buy(paid, opener) {
+      phase = 2;
+      wallet -= paid;
+      // condition is a gamble you find out about back at the warehouse
+      var roll = Math.random();
+      var tat = UPG.lucky.lvl >= 1 ? 0.1 : 0.25;
+      var mint = UPG.lucky.lvl >= 2 ? 0.4 : 0.25;
+      var cond = tier === 4 ? 1 : roll < tat ? 0.85 : roll > 1 - mint ? 1.2 : 1;
+      if (UPG.eye.lvl >= 2 && cond < 1) cond = 1; // eagle eye 2 never buys tat blind
+      inv.push({ i: items.indexOf(it), paid: paid, cond: cond });
+      updWallet();
+      if (rareEl) rareEl.classList.add("sold");
+      render(opener + " 🤝 " + fmt(paid) + " — <b>" + name + "</b> is in the bag! 🎒 " + inv.length + "/" + bagCap()
+        + (inv.length >= bagCap() ? ' <span class="story">Bag\'s full — take the haul to the warehouse 🏭</span>' : ""));
+      buzz();
+      if (ask - paid >= 50) questEvent("haggle50");
+      // knocking a quarter off is proper work; a modest saving still counts for something
+      if (paid <= ask * 0.75) awardRep(2, "sharp haggling");
+      else if (paid <= ask * 0.85) awardRep(1, "knocked them down");
+      if (inv.length === 1 && packed === 0 && prestige === 0) {
+        banner("🏭 Nice buy! Sell it from the Warehouse — hit the button up top.", 8000);
+      }
+    }
+
+    function walkOff() {
+      phase = 3;
+      render("Off you pop! 😡");
+      buzz();
+      setTimeout(function () { if (phase === 3) { price = ask; patience = pers.pat; phase = 0; counters = 0; } }, 10000);
+    }
+
+    // --- the two haggle moves: one shot each, and they pull in opposite directions ---
+    // pick a fault: knocks the floor down so later offers land lower, but it needles them
+    var FAULTS = ["a chip on the base", "a hairline crack", "the box is knackered",
+      "a bit of rust on it", "it's missing a bit", "someone's written in it", "a proper scuff"];
+    function pickFault() {
+      if (phase !== 1 || flawUsed) return;
+      flawUsed = true;
+      buzz();
+      var f = pickFrom(FAULTS);
+      // sellers who love a natter don't take it personally; hard bargainers do
+      var sting = pers.pat >= 5 ? 0 : 1;
+      floor = Math.max(5, r5(floor * 0.82));
+      price = Math.max(floor, r5(price - ask * 0.12));
+      patience -= sting;
+      if (patience <= 0) return walkOff();
+      render('“' + f.charAt(0).toUpperCase() + f.slice(1) + ', look.” 🔍<br>'
+        + (sting ? "They're not thrilled, but " : "They shrug — fair point. ")
+        + "it's " + fmt(price) + " now.");
+    }
+
+    // cash in hand: closes there and then a bit under the asking price, but only once
+    function cashPrice() { return Math.max(floor, r5(price * 0.92)); }
+    function cashInHand() {
+      if (phase !== 1 || cashUsed) return;
+      if (inv.length >= bagCap()) return render("🎒 Bag's full (" + inv.length + "/" + bagCap() + ")! Sell some of it at the warehouse 🏭 first.");
+      var v = cashPrice();
+      if (v > wallet) return render("Not enough in the bum-bag! 💸 You've got " + fmt(wallet) + ".");
+      cashUsed = true;
+      buy(v, "Cash in hand, " + fmt(v) + "?");
+    }
+    s.pickFault = pickFault;
+    s.cashInHand = cashInHand;
+
+    function makeOffer(v) {
+      if (phase !== 1) return;
+      if (inv.length >= bagCap()) return render("🎒 Bag's full (" + inv.length + "/" + bagCap() + ")! Sell some of it at the warehouse 🏭 first.");
+      if (v > wallet) return render("Not enough in the bum-bag! 💸 You've got " + fmt(wallet) + ".");
+      buzz();
+      if (v >= price) return buy(price, "Done!");
+      if (v >= floor) {
+        if (price - v <= Math.max(10, Math.round(ask * 0.06))) return buy(v, "Go on then.");
+        price = Math.max(floor, r5((price + v) / 2));
+        counters++;
+        render([
+          "Meet me at " + fmt(price) + ".",
+          fmt(price) + ". Final-ish.",
+          fmt(price) + ", and you're robbing me."
+        ][counters % 3]);
+      } else if (v >= floor * 0.75) {
+        patience--;
+        if (patience <= 0) return walkOff();
+        price = Math.max(floor, price - r5(ask * 0.08));
+        render("Cheeky! " + fmt(price) + ". " + mood());
+      } else {
+        patience--;
+        if (patience <= 0) return walkOff();
+        render("Oi. Don't insult me. " + mood());
+      }
+    }
+    s.makeOffer = makeOffer;
+
+    s.offerKey = function (i) {
+      var u = ui();
+      if (phase === 1 && !u.btns[i].disabled) makeOffer(+u.btns[i].value);
+    };
+
+    s.restock = function (force) {
+      if (force || phase === 0) { hide(); assignItem(); }
+    };
+
+    s.talk = function () {
+      buzz();
+      firstContact();
+      updWallet();
+      if (phase === 0) {
+        phase = 1;
+        render("<b>" + name.charAt(0).toUpperCase() + name.slice(1) + "</b> " + emoji + " — “" + quip + "”"
+          + (persHint ? ' <span class="story">🗣️ “Worth about ' + fmt(persHint) + ' to the right person, that.”</span>' : ""));
+      } else if (phase === 1) {
+        render("Make us an offer, then.");
+      } else if (phase === 2) {
+        render("That one's off to a new home! 📦 More stock when you're back from the warehouse.");
+      } else {
+        render("…😤");
+      }
+    };
+    npcEl.addEventListener("click", function (e) { e.stopPropagation(); s.talk(); });
+    if (rareEl) rareEl.addEventListener("click", function (e) { e.stopPropagation(); s.talk(); });
+    npcEl.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); e.stopPropagation(); s.talk(); }
+    });
+  });
+
+  // market churn: untouched pitches quietly swap stock, so there's always something in budget
+  setInterval(function () {
+    if (inWh) return; // the big reset happens when you drive back anyway
+    var st = stalls[Math.floor(Math.random() * stalls.length)];
+    if (st.restock) st.restock();
+  }, 35000);
+
+  document.getElementById("linksBtn").addEventListener("click", function () { panel.classList.add("open"); });
+  document.getElementById("closePanel").addEventListener("click", function () { panel.classList.remove("open"); });
+  panel.addEventListener("click", function (e) { if (e.target === panel) panel.classList.remove("open"); });
+
+  window.addEventListener("resize", function () { viewW = view.clientWidth; computeZoom(); applyHudLabels(); updBadges(); });
+
+  var lastPuff = 0;
+  function spawnPuff(now) {
+    if (now - lastPuff < 90) return;
+    lastPuff = now;
+    var p = document.createElement("div");
+    p.className = "puff";
+    p.style.left = (px - 6 - face * 26) + "px";
+    p.style.bottom = "32px";
+    p.style.setProperty("--dx", (-face * 16) + "px");
+    world.appendChild(p);
+    setTimeout(function () { p.remove(); }, 520);
+  }
+
+  var last = performance.now();
+  var prevPx = px;
+  function loop(now) {
+    var dt = Math.min((now - last) / 1000, 0.04);
+    last = now;
+
+    var dir = (keys.right ? 1 : 0) - (keys.left ? 1 : 0);
+    if (dir !== 0) { target = null; flick = 0; }
+
+    if (dir !== 0) {
+      px += dir * SPEED * (keys.run ? 1.9 : 1) * dt;
+    } else if (dragging && dragMoved > 10) {
+      // position is driven directly by the finger
+      flick = 0;
+    } else if (Math.abs(flick) > 60) {
+      px += flick * dt;
+      flick *= Math.exp(-2.6 * dt);
+    } else if (target !== null) {
+      flick = 0;
+      var d = target - px;
+      if (Math.abs(d) < 8) target = null;
+      else px += (d > 0 ? 1 : -1) * SPEED * dt;
+    }
+
+    if (inWh) px = Math.max(WH_MIN, Math.min(WH_MAX, px)); // the warehouse has walls
+
+    var delta = px - prevPx;
+    prevPx = px;
+    var speed = Math.abs(delta) / Math.max(dt, 0.001);
+    if (Math.abs(delta) > 0.3) {
+      face = delta > 0 ? 1 : -1;
+      player.classList.add("walking");
+      if (speed > 380) spawnPuff(now);
+    } else {
+      player.classList.remove("walking");
+    }
+
+    var visW = viewW / zoom;
+    cam = px - visW * 0.45;
+    // every stall snaps to whichever repeat of the field is closest to the player
+    if (!inWh) {
+      for (var wi = 0; wi < stalls.length; wi++) {
+        var ws = stalls[wi];
+        var wk = Math.round((px - ws.x0) / P);
+        if (wk !== ws.k) {
+          ws.k = wk;
+          ws.x = ws.x0 + wk * P;
+          ws.el.style.left = (ws.baseLeft + wk * P) + "px";
+        }
+      }
+    }
+    world.style.transform = "scale(" + zoom + ") translate3d(" + (-cam) + "px,0,0)";
+    if (inWh) {
+      // the wall sits well back, the lights hang almost overhead
+      whWall.style.transform = "scale(" + zoom + ") translate3d(" + (-cam * 0.55) + "px,0,0)";
+      whLight.style.transform = "scale(" + zoom + ") translate3d(" + (-cam * 0.9) + "px,0,0)";
+    }
+    far1.style.transform = "scale(" + zoom + ") translate3d(" + (-wrap(cam * 0.15, RB)) + "px,0,0)";
+    far2.style.transform = "scale(" + zoom + ") translate3d(" + (-wrap(cam * 0.28, RB)) + "px,0,0)";
+    far3.style.transform = "scale(" + zoom + ") translate3d(" + (-wrap(cam * 0.45, RB)) + "px,0,0)";
+    sky.style.transform = "scale(" + zoom + ") translate3d(" + (-wrap(cam * 0.12, CB)) + "px,0,0)";
+    ground.style.backgroundPosition = (-wrap(cam * zoom, 340 * zoom)) + "px 0px";
+    player.style.transform = "translate3d(" + (px - 34) + "px,0,0)";
+    player.querySelector(".p-inner").style.transform = "scaleX(" + face + ")";
+
+    var interact = inWh ? whStations : stalls;
+    var newNear = null;
+    for (var i = 0; i < interact.length; i++) {
+      if (Math.abs(interact[i].x - px) <= NEAR) { newNear = interact[i]; break; }
+    }
+    if (newNear !== near) {
+      if (near && near.hideSay) near.hideSay();
+      interact.forEach(function (s) { s.el.classList.toggle("near", s === newNear); });
+      if (newNear && coarse && navigator.vibrate) { try { navigator.vibrate(12); } catch (err) {} }
+      near = newNear;
+    }
+
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
