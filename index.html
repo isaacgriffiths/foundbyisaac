@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Found by Isaac — Car Boot</title>
-<meta name="description" content="Walk the car boot sale and browse my pitches — eBay, Vinted, YouTube, TikTok and Instagram. Hand-picked secondhand finds.">
-<meta property="og:title" content="Found by Isaac — Car Boot">
+<title>Found by Isaac · Car Boot</title>
+<meta name="description" content="Walk the car boot sale and browse my pitches · eBay, Vinted, YouTube, TikTok and Instagram. Hand-picked secondhand finds.">
+<meta property="og:title" content="Found by Isaac · Car Boot">
 <meta property="og:description" content="Walk the car boot and browse my pitches. Hand-picked secondhand finds.">
 <meta property="og:url" content="https://foundbyisaac.com">
 <meta property="og:image" content="https://foundbyisaac.com/avatar.jpg">
@@ -16,12 +16,17 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
 <style>
-  /* always a sunny day at the car boot — no dark theme, that's a choice */
+  /* always a sunny day at the car boot - no dark theme, that's a choice */
   :root {
     --sky-top: #4FA6F0;
     --sky-bottom: #C6E8FD;
     --grass: #55A45D;
     --grass-edge: #2E7A3C;
+    /* the three terraced bands climbing away behind the front row */
+    --band1: #5FAF69; --band1e: #3E8A4C;
+    --band2: #6FBA79; --band2e: #4C9C5E;
+    --band3: #80C58A; --band3e: #5BA96B;
+    --tuft: rgb(46 122 60 / 0.75); /* the scrubby bits underfoot */
     --outline: #142A55;
     --ink: #142A55;
     --ink-soft: #3D5688;
@@ -159,9 +164,12 @@
   .cloud { position: absolute; animation: drift 18s ease-in-out infinite alternate; }
   @keyframes drift { from { transform: translateX(0); } to { transform: translateX(28px); } }
 
-  /* the field climbs away behind us — one terraced band per row of pitches */
+  /* the field climbs away behind us - one terraced band per row of pitches */
   #slope { position: absolute; inset: 0; z-index: 1; transform-origin: left bottom; }
   .band { position: absolute; left: 0; width: 6400px; }
+  .band.b1 { background: var(--band1); border-top: 3px solid var(--band1e); }
+  .band.b2 { background: var(--band2); border-top: 3px solid var(--band2e); }
+  .band.b3 { background: var(--band3); border-top: 3px solid var(--band3e); }
   .farlayer { position: absolute; inset: 0; z-index: 1; will-change: transform; transform-origin: left bottom; }
   .bgpitch { position: absolute; }
 
@@ -250,7 +258,7 @@
   @keyframes npcIdle { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
 
   /* the rare find, glowing on its crate */
-  /* the glowing find is clickable too — it starts the haggle, not the link */
+  /* the glowing find is clickable too - it starts the haggle, not the link */
   .rare {
     position: absolute;
     left: 318px; bottom: 0;
@@ -343,7 +351,7 @@
   .say-btns button:disabled { background: #E4E8EF; color: #8A97B2; cursor: not-allowed; }
   .say-btns .bye { background: #F1F6FE; flex: 0 0 auto; }
 
-  /* the two haggle moves sit apart from the price buttons — they aren't offers */
+  /* the two haggle moves sit apart from the price buttons - they aren't offers */
   .say-moves { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
   .say-moves button {
     font-family: var(--display);
@@ -369,7 +377,7 @@
   .profit-up { color: #1F8A3B; }
   .profit-down { color: #D33036; }
 
-  /* floating profit numbers — the big green ones are the whole point */
+  /* floating profit numbers - the big green ones are the whole point */
   .pop {
     position: fixed;
     left: 50%; top: 42%;
@@ -407,7 +415,7 @@
   }
   .story { display: block; margin-top: 6px; font-size: 12.5px; font-weight: 800; color: #6B3FA0; }
   #finds .goal { font-size: 11px; font-weight: 800; color: #3D5688; margin-left: 2px; }
-  /* how far through the level you are — rep, not cash */
+  /* how far through the level you are - rep, not cash */
   .lvlbar {
     display: inline-block; vertical-align: middle;
     width: 40px; height: 7px; margin: -1px 0 0 5px;
@@ -487,18 +495,18 @@
     #barter { padding: 12px 13px 13px; }
     #barter .sheet-art { width: 56px; height: 56px; }
     .pad { width: 56px; height: 56px; font-size: 20px; background: rgb(255 255 255 / 0.88); }
-    /* wide prompt bubbles get clipped at the screen edge — let them wrap instead */
+    /* wide prompt bubbles get clipped at the screen edge - let them wrap instead */
     .prompt { white-space: normal; width: max-content; max-width: 230px; }
   }
 
-  /* very narrow: wrap the HUD into two rows — name + links on top, cash + warehouse below */
+  /* very narrow: wrap the HUD into two rows - name + links on top, cash + warehouse below */
   @media (max-width: 480px) {
     #hud { flex-wrap: wrap; }
     #hud::after { content: ""; width: 100%; order: 1; }
     #linksBtn { margin-left: auto; }
     #finds { order: 2; margin-left: 0; }
     #whBtn { order: 3; margin-left: auto; }
-    /* the two-row HUD is taller — drop the haggle card below it */
+    /* the two-row HUD is taller - drop the haggle card below it */
     #barter { top: calc(116px + env(safe-area-inset-top, 0px)); }
   }
 
@@ -555,7 +563,7 @@
     .stall { transform: scale(0.82); transform-origin: bottom left; }
     .say { right: auto; left: 40px; width: 238px; }
     .say::after { left: 78%; }
-    /* sellers are the game — make them easy to hit with a thumb */
+    /* sellers are the game - make them easy to hit with a thumb */
     .npc { transform: scale(1.45); transform-origin: bottom center; }
   }
   @media (max-width: 400px) {
@@ -625,11 +633,11 @@
     -webkit-tap-highlight-color: transparent;
   }
   .pad:active { background: #FFE9A8; }
-  /* double-tapped and held — you're legging it */
+  /* double-tapped and held - you're legging it */
   .pad.running { background: #FFD75E; box-shadow: 0 0 0 4px rgb(255 215 94 / 0.45), 3px 4px 0 rgb(20 42 85 / 0.35); }
 
   /* ---------- plain links panel + upgrades shop + game intro ---------- */
-  #linksPanel, #shopPanel, #introPanel, #rewardPanel, #goalsPanel, #laptopPanel, #packPanel, #miniPanel {
+  #linksPanel, #shopPanel, #introPanel, #rewardPanel, #goalsPanel, #laptopPanel, #packPanel, #miniPanel, #venuePanel {
     position: fixed; inset: 0;
     z-index: 30;
     display: none;
@@ -638,7 +646,7 @@
     background: rgb(13 27 54 / 0.55);
     padding: 20px;
   }
-  #linksPanel.open, #shopPanel.open, #introPanel.open, #rewardPanel.open, #goalsPanel.open, #laptopPanel.open, #packPanel.open, #miniPanel.open { display: flex; }
+  #linksPanel.open, #shopPanel.open, #introPanel.open, #rewardPanel.open, #goalsPanel.open, #laptopPanel.open, #packPanel.open, #miniPanel.open, #venuePanel.open { display: flex; }
   #miniPanel { z-index: 32; } /* sits over the bench it was launched from */
   .panel-card {
     width: 100%;
@@ -707,7 +715,7 @@
     margin-bottom: 6px;
   }
 
-  /* trending category pill — sits under the HUD once the game is discovered */
+  /* trending category pill - sits under the HUD once the game is discovered */
   #trendPill {
     position: fixed;
     /* clears the .who card (12px hud pad + 53px card + 4px drop shadow) */
@@ -751,6 +759,44 @@
   .shop-fx { font-size: 10.5px; font-weight: 800; color: #1F8A3B; }
 
   /* ---------- the warehouse: a second walkable scene ---------- */
+  /* ---------- venue palettes: the whole field repaints per location ---------- */
+  body.v-fair {
+    --sky-top: #6B4A6E; --sky-bottom: #C9A87C;
+    --grass: #9C6B3F; --grass-edge: #6E4A28;
+    --band1: #A8763F; --band1e: #7A5228;
+    --band2: #B9854A; --band2e: #8A5F30;
+    --band3: #C99860; --band3e: #9A6E3C;
+    --tuft: rgb(110 74 40 / 0.6);
+  }
+  body.v-night {
+    --sky-top: #10142B; --sky-bottom: #35305C;
+    --grass: #3B3F63; --grass-edge: #23263F;
+    --band1: #454A72; --band1e: #2B2F4C;
+    --band2: #4E5480; --band2e: #343A5C;
+    --band3: #585F8E; --band3e: #3D446B;
+    --tuft: rgb(35 38 63 / 0.75);
+  }
+  body.v-sea {
+    --sky-top: #3FBEE8; --sky-bottom: #FFE6B8;
+    --grass: #D9C48C; --grass-edge: #A8905C;
+    --band1: #E0CB93; --band1e: #B09A63;
+    --band2: #E8D6A4; --band2e: #BCA872;
+    --band3: #F0E1B6; --band3e: #C6B482;
+    --tuft: rgb(168 144 92 / 0.7);
+  }
+  body.v-estate {
+    --sky-top: #56617C; --sky-bottom: #97A3B8;
+    --grass: #4C6B4E; --grass-edge: #31492F;
+    --band1: #557655; --band1e: #33502F;
+    --band2: #5F8158; --band2e: #3D5A38;
+    --band3: #6B8D62; --band3e: #476641;
+    --tuft: rgb(49 73 47 / 0.7);
+  }
+  /* the night market is lit by torches, so the finds carry further than the field does */
+  body.v-night .cloud { opacity: 0.25; }
+  body.v-night .bgpitch { opacity: 0.55; }
+  body.v-estate .cloud { opacity: 0.7; }
+
   /* dark up at the roof, warmer down where the lamps reach */
   body.in-wh { background: linear-gradient(#20263A 0%, #2E3650 34%, #414C6B 100%); }
   body.in-wh #sky, body.in-wh #slope, body.in-wh .farlayer, body.in-wh .stall { display: none; }
@@ -795,7 +841,7 @@
     will-change: transform;
     pointer-events: none;
   }
-  /* the wall is the far plane, so knock it back — the lamps do the lifting */
+  /* the wall is the far plane, so knock it back - the lamps do the lifting */
   #whWall { filter: brightness(0.84) saturate(0.9); }
   #whLight { z-index: 2; }  /* cones and floor pools sit on the floor, under the world */
   body.in-wh #whWall, body.in-wh #whLight { display: block; }
@@ -837,7 +883,7 @@
   /* every lit part of one lamp shares a delay, so the flicker reads as one bulb */
   .whlamp .lit { animation: whFlick 11s steps(1, end) infinite var(--d, 0s); }
   .whlamp.dodgy .lit { animation-duration: 4.3s; }
-  /* one bulb in the row has gone entirely — no halo, no cone, no pool */
+  /* one bulb in the row has gone entirely - no halo, no cone, no pool */
   .whlamp.dead .halo, .whlamp.dead .cone, .whlamp.dead .pool { display: none; }
   .whlamp.dead .tube { fill: #6E7791; animation: none; }
   @keyframes whFlick {
@@ -850,7 +896,7 @@
     96.2% { opacity: 1; }
   }
 
-  /* pinned-up wall clutter — posters, a pinboard, a clock */
+  /* pinned-up wall clutter - posters, a pinboard, a clock */
   .whdec, .whbox { position: absolute; }
   .whdec > svg, .whbox > svg { display: block; }
   .whposter {
@@ -884,6 +930,45 @@
   .whposter.blue { background: #4B7BE5; }
   .whposter.blue b { color: #FFFFFF; }
   .whposter.blue span { color: #D5E4FF; }
+
+  /* ---------- where to next: the venue picker ---------- */
+  /* the level line sits at the top so the route to the next venue is never a mystery */
+  .venue-lvl {
+    background: #EEF3FC; border: 2.5px solid var(--outline); border-radius: 12px;
+    padding: 9px 12px; margin: -4px 0 12px;
+    font-size: 12px; font-weight: 800; color: #3D5688; line-height: 1.5;
+  }
+  .venue-lvl b { color: #142A55; }
+  .venue-lvl .vl-bar {
+    display: block; height: 9px; margin-top: 7px;
+    background: #D7E0EF; border: 1.5px solid var(--outline); border-radius: 999px; overflow: hidden;
+  }
+  .venue-lvl .vl-bar i { display: block; height: 100%; background: #4B7BE5; }
+  .venue-row {
+    display: flex; align-items: center; gap: 11px;
+    width: 100%; text-align: left;
+    background: #FFFFFF; border: 2.5px solid var(--outline); border-radius: 14px;
+    padding: 10px 12px; margin-bottom: 8px;
+    cursor: pointer; font: inherit;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .venue-row:hover:not(:disabled) { background: #FFF6DC; }
+  .venue-row:disabled { background: #F4F6FA; border-style: dashed; cursor: not-allowed; }
+  .venue-row .v-ico { font-size: 30px; flex: 0 0 auto; }
+  .venue-row .v-info { flex: 1; min-width: 0; }
+  .venue-row .v-name { display: block; font-family: var(--display); font-weight: 700; font-size: 16px; color: #142A55; }
+  .venue-row:disabled .v-name { color: #8A97B2; }
+  .venue-row .v-desc { display: block; font-size: 11.5px; font-weight: 800; color: var(--ink-soft); line-height: 1.4; margin-top: 2px; }
+  .venue-row .v-stat { display: block; font-size: 11px; font-weight: 800; color: #1F8A3B; margin-top: 3px; }
+  .venue-row .v-fee {
+    flex: 0 0 auto;
+    font-family: var(--display); font-weight: 700; font-size: 15px; color: #142A55;
+    background: #FFD75E; border: 2px solid var(--outline); border-radius: 999px;
+    padding: 6px 12px;
+  }
+  .venue-row:disabled .v-fee { background: #E4E8EF; color: #8A97B2; font-size: 12px; }
+  .venue-row.here { background: #DFF3E1; }
+  .venue-row.here .v-fee { background: #9BE3B0; }
 
   /* ---------- bench mini-games: ten seconds, then back to work ---------- */
   .mini-card { max-width: 420px; text-align: center; }
@@ -992,7 +1077,7 @@
     border-top: 3px dashed #8A6238;
   }
   .seam-fill { position: absolute; left: 0; top: 0; bottom: 0; width: 0; background: #E4E8EF; }
-  /* drawn, not an emoji — the film-reel glyph renders as tofu on Windows */
+  /* drawn, not an emoji - the film-reel glyph renders as tofu on Windows */
   .tape-head {
     position: absolute; top: 50%; left: 0;
     transform: translate(-50%, -50%);
@@ -1072,7 +1157,7 @@
     #introPanel #closeIntro { font-size: 19px; padding: 14px; margin-top: 22px; }
   }
 
-  #closePanel, #closeShop, #closeIntro, #closeReward, #closeGoals, #closeLaptop, #closePack {
+  #closePanel, #closeShop, #closeIntro, #closeReward, #closeGoals, #closeLaptop, #closePack, #closeVenue {
     margin-top: 14px;
     width: 100%;
     font-family: var(--display);
@@ -1086,7 +1171,7 @@
     cursor: pointer;
   }
   /* the laptop card has no side padding, so its close button carries its own margins
-     — this must sit after the shared close-button rule to win the cascade */
+     · this must sit after the shared close-button rule to win the cascade */
   #closeLaptop { width: calc(100% - 32px); margin: 12px 16px 0; }
 
   /* panels must never overflow a small screen */
@@ -1111,7 +1196,7 @@
       <div class="who-sub">HAND-PICKED SECONDHAND FINDS</div>
     </div>
   </div>
-  <div id="finds" title="Your flipping wallet — turn £200 into £10k" hidden>💰 <b id="walletN">£200</b><span id="prestN"></span><span id="bagChip"></span><span class="goal" id="rankN">Boot Sale Newbie</span></div>
+  <div id="finds" title="Your flipping wallet · turn £200 into £10k" hidden>💰 <b id="walletN">£200</b><span id="prestN"></span><span id="bagChip"></span><span class="goal" id="rankN">Boot Sale Newbie</span></div>
   <button id="goalsBtn" type="button" hidden>🎯</button>
   <button id="whBtn" type="button" hidden>🏭 Warehouse</button>
   <button id="linksBtn" type="button">Skip to links</button>
@@ -1512,7 +1597,7 @@
     </svg>
 
     <!-- eBay pitch -->
-    <div class="stall" style="left: 560px; --c: #E5484D;" data-href="https://www.ebay.co.uk/usr/foundbyisaac" tabindex="0" role="link" aria-label="eBay pitch — my eBay store">
+    <div class="stall" style="left: 560px; --c: #E5484D;" data-href="https://www.ebay.co.uk/usr/foundbyisaac" tabindex="0" role="link" aria-label="eBay pitch · my eBay store">
       <div class="shadow"></div>
       <div class="npc" style="color:#4B7BE5;--skin:#F0C8A0;--hair:#5B3A24" tabindex="0" role="button" aria-label="Talk to the eBay seller">
         <svg width="64" height="100" viewBox="0 0 64 100" aria-hidden="true"><use href="#npcBody"/><use href="#npcHairA"/></svg>
@@ -1542,7 +1627,7 @@
     </div>
 
     <!-- Vinted pitch -->
-    <div class="stall" style="left: 1180px; --c: #3FC1C9;" data-href="https://www.vinted.co.uk/member/198218005" tabindex="0" role="link" aria-label="Vinted pitch — my Vinted wardrobe">
+    <div class="stall" style="left: 1180px; --c: #3FC1C9;" data-href="https://www.vinted.co.uk/member/198218005" tabindex="0" role="link" aria-label="Vinted pitch · my Vinted wardrobe">
       <div class="shadow"></div>
       <div class="npc" style="color:#E58AB6;--skin:#8D5A3B;--hair:#1E1410" tabindex="0" role="button" aria-label="Talk to the Vinted seller">
         <svg width="64" height="100" viewBox="0 0 64 100" aria-hidden="true"><use href="#npcBody"/><use href="#npcHairB"/></svg>
@@ -1573,11 +1658,11 @@
       </div>
       <div class="say"></div>
       <div class="aboard"><b>Vinted</b><span>Browse ↗</span></div>
-      <div class="prompt"><b>Browse my Vinted ↗</b><span>vinted.co.uk — foundbyisaac</span></div>
+      <div class="prompt"><b>Browse my Vinted ↗</b><span>vinted.co.uk · foundbyisaac</span></div>
     </div>
 
     <!-- YouTube pitch -->
-    <div class="stall" style="left: 1800px; --c: #4B7BE5;" data-href="https://www.youtube.com/@FoundByIsaac" tabindex="0" role="link" aria-label="YouTube pitch — my YouTube channel">
+    <div class="stall" style="left: 1800px; --c: #4B7BE5;" data-href="https://www.youtube.com/@FoundByIsaac" tabindex="0" role="link" aria-label="YouTube pitch · my YouTube channel">
       <div class="shadow"></div>
       <div class="npc" style="color:#E5484D;--skin:#F0C8A0;--hair:#22254A" tabindex="0" role="button" aria-label="Talk to the YouTube seller">
         <svg width="64" height="100" viewBox="0 0 64 100" aria-hidden="true"><use href="#npcBody"/><use href="#npcCap"/></svg>
@@ -1607,7 +1692,7 @@
     </div>
 
     <!-- TikTok pitch: the big white van -->
-    <div class="stall" style="left: 2420px; --c: #E58AB6;" data-href="https://www.tiktok.com/@foundbyisaaac" tabindex="0" role="link" aria-label="TikTok pitch — my TikTok">
+    <div class="stall" style="left: 2420px; --c: #E58AB6;" data-href="https://www.tiktok.com/@foundbyisaaac" tabindex="0" role="link" aria-label="TikTok pitch · my TikTok">
       <div class="shadow"></div>
       <div class="npc" style="color:#22254A;--skin:#C68642;--hair:#141414" tabindex="0" role="button" aria-label="Talk to the TikTok seller">
         <svg width="64" height="100" viewBox="0 0 64 100" aria-hidden="true"><use href="#npcBody"/><use href="#npcHairA"/></svg>
@@ -1637,7 +1722,7 @@
     </div>
 
     <!-- Instagram pitch -->
-    <div class="stall" style="left: 3040px; --c: #55A45D;" data-href="https://www.instagram.com/foundbyisaac" tabindex="0" role="link" aria-label="Instagram pitch — my Instagram">
+    <div class="stall" style="left: 3040px; --c: #55A45D;" data-href="https://www.instagram.com/foundbyisaac" tabindex="0" role="link" aria-label="Instagram pitch · my Instagram">
       <div class="shadow"></div>
       <div class="npc" style="color:#B79FD8;--skin:#F7D7B0;--hair:#C2703F" tabindex="0" role="button" aria-label="Talk to the Instagram seller">
         <svg width="64" height="100" viewBox="0 0 64 100" aria-hidden="true"><use href="#npcBody"/><use href="#npcHairB"/></svg>
@@ -1666,7 +1751,7 @@
     </div>
 
     <!-- Facebook pitch -->
-    <div class="stall" style="left: 3660px; --c: #FFD75E;" data-href="https://www.facebook.com/profile.php?id=61590784979277" tabindex="0" role="link" aria-label="Facebook pitch — my Facebook page">
+    <div class="stall" style="left: 3660px; --c: #FFD75E;" data-href="https://www.facebook.com/profile.php?id=61590784979277" tabindex="0" role="link" aria-label="Facebook pitch · my Facebook page">
       <div class="shadow"></div>
       <div class="npc" style="color:#3FC1C9;--skin:#7A4A2B;--hair:#8A6238" tabindex="0" role="button" aria-label="Talk to the Facebook seller">
         <svg width="64" height="100" viewBox="0 0 64 100" aria-hidden="true"><use href="#npcBody"/><use href="#npcCap"/></svg>
@@ -1698,7 +1783,7 @@
     </div>
 
     <!-- warehouse stations: the same field becomes an interior when you drive over -->
-    <div class="whstation" id="whVan" style="left: 200px; width: 310px; height: 178px;" tabindex="-1" role="button" aria-label="The van — drive back to the car boot">
+    <div class="whstation" id="whVan" style="left: 200px; width: 310px; height: 178px;" tabindex="-1" role="button" aria-label="The van · drive back to the car boot">
       <div class="shadow"></div>
       <svg width="310" height="178" viewBox="0 0 310 178" aria-hidden="true">
         <use href="#carVanBig" transform="translate(8,36)"/>
@@ -1707,7 +1792,7 @@
       <div class="prompt"><b>🚗 Drive to the car boot</b><span id="whVanSub">£5 in · fresh stock · bag holds 3</span></div>
     </div>
 
-    <div class="whstation" id="whLaptop" style="left: 720px; width: 250px; height: 178px;" tabindex="-1" role="button" aria-label="The laptop — auction on eBay, list on Vinted">
+    <div class="whstation" id="whLaptop" style="left: 720px; width: 250px; height: 178px;" tabindex="-1" role="button" aria-label="The laptop · auction on eBay, list on Vinted">
       <div class="shadow"></div>
       <svg width="250" height="178" viewBox="0 0 250 178" aria-hidden="true">
         <use href="#tableBig" transform="translate(40,124) scale(1.2)"/>
@@ -1726,7 +1811,7 @@
       <div class="prompt"><b>💻 Sell your finds</b><span>eBay auctions · Vinted listings</span></div>
     </div>
 
-    <div class="whstation" id="whPack" style="left: 1240px; width: 260px; height: 178px;" tabindex="-1" role="button" aria-label="Packing bench — pack sold orders to get paid">
+    <div class="whstation" id="whPack" style="left: 1240px; width: 260px; height: 178px;" tabindex="-1" role="button" aria-label="Packing bench · pack sold orders to get paid">
       <div class="shadow"></div>
       <svg width="260" height="178" viewBox="0 0 260 178" aria-hidden="true">
         <use href="#tableBig" transform="translate(36,124) scale(1.25)"/>
@@ -1847,10 +1932,10 @@
 <div id="introPanel" role="dialog" aria-label="How the flip game works">
   <div class="panel-card">
     <h2>🕹️ You found the flip game!</h2>
-    <div class="intro-row"><span class="intro-ico">💰</span>You've got £200 — haggle the sellers down for the glowing finds and fill your bag.</div>
-    <div class="intro-row"><span class="intro-ico">🏭</span>Take your haul to the Warehouse — auction it on eBay or list it on Vinted from the laptop.</div>
+    <div class="intro-row"><span class="intro-ico">💰</span>You've got £200 · haggle the sellers down for the glowing finds and fill your bag.</div>
+    <div class="intro-row"><span class="intro-ico">🏭</span>Take your haul to the Warehouse · auction it on eBay or list it on Vinted from the laptop.</div>
     <div class="intro-row"><span class="intro-ico">📦</span>Sold! Pack the order at the bench to get paid. Driving back resets the stalls with fresh stock.</div>
-    <div class="intro-row"><span class="intro-ico">💷</span>Visiting my real pages pays your game wallet — £25, then £50, then £75… every new pitch pays more.</div>
+    <div class="intro-row"><span class="intro-ico">💷</span>Visiting my real pages pays your game wallet · £25, then £50, then £75… every new pitch pays more.</div>
     <div class="intro-row"><span class="intro-ico">🏆</span>Turn it all into £10,000 and go pro.</div>
     <button id="closeIntro" type="button">Let's haggle!</button>
   </div>
@@ -1875,9 +1960,9 @@
   </div>
 </div>
 
-<div id="laptopPanel" role="dialog" aria-label="The laptop — list and sell your finds">
+<div id="laptopPanel" role="dialog" aria-label="The laptop · list and sell your finds">
   <div class="panel-card laptop-card">
-    <div class="lp-bar"><span class="lp-dots">● ● ●</span><span class="lp-url">🔒 flipnet.co.uk — sell your finds</span></div>
+    <div class="lp-bar"><span class="lp-dots">● ● ●</span><span class="lp-url">🔒 flipnet.co.uk · sell your finds</span></div>
     <div id="lpRows"></div>
     <button id="closeLaptop" type="button">Step away from the laptop</button>
   </div>
@@ -1888,6 +1973,15 @@
     <h2>📦 Packing Bench</h2>
     <div id="packRows"></div>
     <button id="closePack" type="button">Back to the warehouse</button>
+  </div>
+</div>
+
+<div id="venuePanel" role="dialog" aria-label="Where to next">
+  <div class="panel-card">
+    <h2>🚗 Where to next?</h2>
+    <div class="venue-lvl" id="venueLvl"></div>
+    <div id="venueRows"></div>
+    <button id="closeVenue" type="button">Stay in the warehouse</button>
   </div>
 </div>
 
@@ -1902,7 +1996,7 @@
 
 <script>
 (function () {
-  var P = 3720, SPEED = 300, NEAR = 195; // the field repeats every P px — walk forever either way
+  var P = 3720, SPEED = 300, NEAR = 195; // the field repeats every P px · walk forever either way
   function wrap(v, b) { return ((v % b) + b) % b; }
 
   var view = document.getElementById("view");
@@ -1919,7 +2013,7 @@
   var hint = document.getElementById("hint");
   var panel = document.getElementById("linksPanel");
 
-  // fluffy clouds — a block that tiles so the sky wraps seamlessly
+  // fluffy clouds - a block that tiles so the sky wraps seamlessly
   var CB = 2900;
   var cloudDefs = [[40, 46, 210], [420, 110, 150], [780, 40, 250], [1180, 130, 170], [1560, 60, 220], [1920, 120, 150], [2280, 50, 240], [2620, 100, 180]];
   var cloudHtml = "";
@@ -1930,18 +2024,13 @@
   }
   sky.innerHTML = cloudHtml;
 
-  // we're at the bottom of the slope — terraced bands rise behind, one per row of pitches
-  [
-    [92, 60, "#5FAF69", "#3E8A4C"],
-    [152, 50, "#6FBA79", "#4C9C5E"],
-    [202, 42, "#80C58A", "#5BA96B"]
-  ].forEach(function (b) {
+  // we're at the bottom of the slope - terraced bands rise behind, one per row of pitches
+  // colours live in CSS vars so a venue palette repaints the whole field
+  [[92, 60], [152, 50], [202, 42]].forEach(function (b, i) {
     var d = document.createElement("div");
-    d.className = "band";
+    d.className = "band b" + (i + 1);
     d.style.bottom = b[0] + "px";
     d.style.height = b[1] + "px";
-    d.style.background = b[2];
-    d.style.borderTop = "3px solid " + b[3];
     slope.appendChild(d);
   });
 
@@ -1992,13 +2081,13 @@
   // scale the whole scene to the screen so the field isn't a thin strip under a huge sky
   function computeZoom() {
     zoom = Math.max(1, Math.min(2.5, view.clientHeight / 560));
-    // how tall the visible scene is in world units — the warehouse ceiling hangs off this
+    // how tall the visible scene is in world units - the warehouse ceiling hangs off this
     document.body.style.setProperty("--vu", Math.round(view.clientHeight / zoom));
     ground.style.height = Math.round(92 * zoom) + "px";
     slope.style.transform = "scale(" + zoom + ")";
     ground.style.backgroundImage =
-      "radial-gradient(ellipse " + 9 * zoom + "px " + 4 * zoom + "px at " + 60 * zoom + "px " + 34 * zoom + "px, rgb(46 122 60 / 0.75) 98%, transparent), " +
-      "radial-gradient(ellipse " + 7 * zoom + "px " + 3 * zoom + "px at " + 220 * zoom + "px " + 66 * zoom + "px, rgb(46 122 60 / 0.75) 98%, transparent)";
+      "radial-gradient(ellipse " + 9 * zoom + "px " + 4 * zoom + "px at " + 60 * zoom + "px " + 34 * zoom + "px, var(--tuft) 98%, transparent), " +
+      "radial-gradient(ellipse " + 7 * zoom + "px " + 3 * zoom + "px at " + 220 * zoom + "px " + 66 * zoom + "px, var(--tuft) 98%, transparent)";
     ground.style.backgroundSize = 340 * zoom + "px " + 92 * zoom + "px";
   }
   computeZoom();
@@ -2046,7 +2135,7 @@
       if (e.key === "l" || e.key === "L") { openLaptop(); return; }
       if (e.key === "p" || e.key === "P") { openPack(); return; }
       if (e.key === "Escape") { exitWh(); return; }
-      // arrows and E fall through — you walk the warehouse like the boot
+      // arrows and E fall through - you walk the warehouse like the boot
     }
     if (e.key === "Shift") keys.run = true; // hold shift to leg it
     if (e.key === "ArrowLeft" || e.key === "a" || e.key === "A") { keys.left = true; dismissHint(); e.preventDefault(); }
@@ -2132,9 +2221,9 @@
 
   // ---- flip tycoon mini game ----
   // Haggle for the glowing find, flip it, spend profit on upgrades, go pro at £10k.
-  // the stock: tiers 1-4. Legendaries (t4) are real finds — the actual stories are in `h`.
+  // the stock: tiers 1-4. Legendaries (t4) are real finds - the actual stories are in `h`.
   var items = [
-    // tier 1a — pocket-money finds: always something to flip, even skint
+    // tier 1a - pocket-money finds: always something to flip, even skint
     { d: "r13", n: "a carrier bag of paperbacks", e: "📚", a: 8, f: 5, v: 20, t: 1, q: "Fifty pee each, or the bag for less." },
     { d: "r3", n: "a stack of scratched 45s", e: "🎶", a: 10, f: 5, v: 25, t: 1, q: "The skips add character." },
     { d: "r2", n: "a Polaroid with no film", e: "📸", a: 12, f: 5, v: 30, t: 1, q: "Untested. That's vintage for 'works'." },
@@ -2154,7 +2243,7 @@
     { d: "r12", n: "a Walkman with a chewed belt", e: "📻", a: 15, f: 10, v: 45, t: 1, q: "Plays a bit slow. That's lo-fi." },
     { d: "r5", n: "a mystery box of tat", e: "🏺", a: 5, f: 5, v: 10, t: 1, q: "Could be anything. Probably isn't." },
     { d: "r6", n: "a Tamagotchi, still alive", e: "🎮", a: 15, f: 10, v: 40, t: 1, q: "Fed it this morning. Your problem now." },
-    // tier 1b — everyday stock
+    // tier 1b - everyday stock
     { d: "r2", n: "a Polaroid 600 box camera", e: "📸", a: 45, f: 30, v: 65, t: 1, q: "Flash still pops. Film's your problem." },
     { d: "r1", n: "a Zenit-E with leather case", e: "📷", a: 55, f: 40, v: 70, t: 1, q: "Built like a tank, weighs like one too." },
     { d: "r13", n: "a book-club 'first edition'", e: "📚", a: 60, f: 45, v: 40, t: 1, q: "Says first edition right there on it…" },
@@ -2170,7 +2259,7 @@
     { d: "r15", n: "a box of costume brooches", e: "💍", a: 20, f: 15, v: 45, t: 1, q: "Granny glamour. Very in." },
     { d: "r13", n: "an atlas from 1938", e: "📚", a: 30, f: 20, v: 50, t: 1, q: "Full of countries that've gone." },
     { d: "r0", n: "an alabaster egg collection", e: "🥚", a: 25, f: 15, v: 35, t: 1, q: "Ten eggs, no chickens." },
-    // tier 1c — proper finds
+    // tier 1c - proper finds
     { d: "r12", n: "a Roberts transistor radio", e: "📻", a: 60, f: 45, v: 90, t: 1, q: "Still gets Radio 2 lovely and clear." },
     { d: "r12", n: "a 1950s valve radio", e: "📻", a: 85, f: 60, v: 110, t: 1, q: "Warms up like a fireplace." },
     { d: "r7", n: "a railwayman's pocket watch", e: "🕰️", a: 90, f: 65, v: 85, t: 1, q: "Kept the 07:42 on time for forty years." },
@@ -2186,9 +2275,9 @@
     { d: "r2", n: "an SX-70 with film jammed", e: "📸", a: 65, f: 45, v: 100, t: 1, q: "The jam's free." },
     { d: "r8", n: "an oil painting of cows", e: "🎨", a: 90, f: 65, v: 140, t: 1, q: "Big in farmhouse kitchens." },
     { d: "r4", n: "a diver's watch, misted", e: "⌚", a: 95, f: 70, v: 150, t: 1, q: "It's been places, this." },
-    // tier 2 — quality gear
+    // tier 2 - quality gear
     { d: "r7", n: "a Victorian pocket watch", e: "🕰️", a: 120, f: 90, v: 150, t: 2, q: "Still ticks. Hear that? Quality." },
-    { d: "r11", n: "a pair of Georgian candlesticks", e: "🕯️", a: 140, f: 100, v: 180, t: 2, q: "Solid silver — feel the weight." },
+    { d: "r11", n: "a pair of Georgian candlesticks", e: "🕯️", a: 140, f: 100, v: 180, t: 2, q: "Solid silver · feel the weight." },
     { d: "r6", n: "a boxed original Game Boy", e: "🎮", a: 200, f: 150, v: 260, t: 2, q: "Someone's 1990 regret, your gain." },
     { d: "r6", n: "Pokémon Yellow, boxed", e: "🎮", a: 150, f: 110, v: 240, t: 2, q: "Pikachu still follows you about." },
     { d: "r2", n: "a Polaroid SX-70", e: "📸", a: 180, f: 140, v: 220, t: 2, q: "Folds flat like a chocolate bar." },
@@ -2212,7 +2301,7 @@
     { d: "r10", n: "a Boba Fett, unpunched", e: "🚀", a: 340, f: 260, v: 450, t: 2, q: "Card's flat as Norfolk." },
     { d: "r14", n: "a boxed Dreamcast", e: "🕹️", a: 150, f: 110, v: 220, t: 2, q: "Ahead of its time. Still is." },
     { d: "r2", n: "a Polaroid Big Shot", e: "📸", a: 200, f: 150, v: 280, t: 2, q: "Warhol's favourite, this model." },
-    // tier 3 — rare finds
+    // tier 3 - rare finds
     { d: "r2", n: "a gold Polaroid SX-70", e: "📸", a: 320, f: 250, v: 400, t: 3, q: "Gold-plated. Sinatra had one, apparently." },
     { d: "r1", n: "a Leica M3 rangefinder", e: "📷", a: 600, f: 480, v: 650, t: 3, q: "Glass is spotless. Sharper than my prices." },
     { d: "r4", n: "an Omega Seamaster '69", e: "⌚", a: 620, f: 480, v: 540, t: 3, q: "Worn once, allegedly. To a wedding." },
@@ -2223,7 +2312,7 @@
     { d: "r3", n: "a Beatles 'butcher cover'", e: "🎶", a: 700, f: 550, v: 1200, t: 3, q: "Don't ask how I got it." },
     { d: "r12", n: "a pre-war Ekco round radio", e: "📻", a: 450, f: 340, v: 700, t: 3, q: "Design museums fight over these." },
     { d: "r11", n: "solid silver Georgian pair", e: "🕯️", a: 500, f: 380, v: 750, t: 3, q: "Feel that. That's money, that is." },
-    { d: "r9", n: "a '66 final programme and ticket", e: "⚽", a: 550, f: 420, v: 850, t: 3, q: "They think it's all over — it's laminated." },
+    { d: "r9", n: "a '66 final programme and ticket", e: "⚽", a: 550, f: 420, v: 850, t: 3, q: "They think it's all over · it's laminated." },
     { d: "r15", n: "an Art Deco diamond ring", e: "💍", a: 800, f: 620, v: 1300, t: 3, q: "Sparkles like trouble." },
     { d: "r1", n: "a Nikon SP rangefinder", e: "📷", a: 750, f: 580, v: 1000, t: 3, q: "Rarer than the Leica. Don't tell Leica." },
     { d: "r13", n: "a signed Ian Fleming", e: "📚", a: 900, f: 700, v: 1600, t: 3, q: "Shaken, not stirred, not cheap." },
@@ -2232,35 +2321,35 @@
     { d: "r4", n: "a Cartier Tank with papers", e: "⌚", a: 950, f: 750, v: 1400, t: 3, q: "Papers! At a car boot!" },
     { d: "r5", n: "a Troika chimney vase", e: "🏺", a: 380, f: 280, v: 550, t: 3, q: "Cornish. Brutalist. Brilliant." },
     { d: "r7", n: "a Breguet pocket watch (says so)", e: "🕰️", a: 600, f: 470, v: 520, t: 3, q: "Says Breguet right on it…" },
-    // tier 4 — legendary: real finds, real prices (the easter eggs)
+    // tier 4 - legendary: real finds, real prices (the easter eggs)
     { d: "r0", n: "a heavy little gold egg", e: "🥚", a: 850, f: 700, v: 9500, t: 4,
       q: "Bloke I got it off wanted it melted for scrap. Feels… important.",
-      h: "Real find: a US scrap dealer paid $14,000 at a flea market for a gold egg to melt down — it was the lost Third Imperial Fabergé Egg, worth $33 MILLION." },
+      h: "Real find: a US scrap dealer paid $14,000 at a flea market for a gold egg to melt down · it was the lost Third Imperial Fabergé Egg, worth $33 MILLION." },
     { d: "r5", n: "a small dusty yellow vase", e: "🏺", a: 10, f: 5, v: 4000, t: 4,
       q: "Tenner and it's yours. Nice yellow, that. Imperial, almost.",
       h: "Real find: a Qianlong imperial vase bought for £10 at a car boot sale sold at auction for £50,000 in 2016." },
     { d: "r13", n: "a tatty old kids' book", e: "📚", a: 5, f: 5, v: 4500, t: 4,
       q: "Ex-library. 'Philosopher's something'. Quid's fine.",
-      h: "Real find: a £1 discarded library copy of Harry Potter and the Philosopher's Stone — one of only 500 first prints — sold for £28,500 at auction." },
+      h: "Real find: a £1 discarded library copy of Harry Potter and the Philosopher's Stone · one of only 500 first prints · sold for £28,500 at auction." },
     { d: "r15", n: "a chunky costume ring", e: "💍", a: 10, f: 5, v: 6500, t: 4,
       q: "Big glass one, that. Tenner. Looks the part though, dunnit?",
-      h: "Real find: the 'Tenner Ring' — a 26-carat diamond bought for £10 at a London car boot sale in the 80s, sold at Sotheby's for £656,750 in 2017." },
+      h: "Real find: the 'Tenner Ring' · a 26-carat diamond bought for £10 at a London car boot sale in the 80s, sold at Sotheby's for £656,750 in 2017." },
     { d: "r8", n: "a gloomy old portrait", e: "🎨", a: 300, f: 240, v: 7500, t: 4,
       q: "House clearance job. Heavier than it looks.",
-      h: "Real find: a priest paid £400 for a dusty portrait that turned out to be a genuine Van Dyck — valued at £400,000 on Antiques Roadshow." },
+      h: "Real find: a priest paid £400 for a dusty portrait that turned out to be a genuine Van Dyck · valued at £400,000 on Antiques Roadshow." },
     { d: "r4", n: "a chunky old dive watch", e: "⌚", a: 10, f: 5, v: 5500, t: 4,
       q: "Charity shop reject, that. Big though, innit?",
       h: "Real find: a LeCoultre Deep Sea Alarm bought for $5.99 in a Goodwill charity shop sold at auction for $35,000." },
     { d: "r3", n: "a plain acetate disc", e: "🎶", a: 5, f: 5, v: 5000, t: 4,
       q: "No label. Someone's demo. 50p?",
-      h: "Real find: a 75-cent flea-market acetate turned out to be the Velvet Underground's first studio recording — it sold for $25,000." },
+      h: "Real find: a 75-cent flea-market acetate turned out to be the Velvet Underground's first studio recording · it sold for $25,000." },
     { d: "r8", n: "a print of an old document", e: "📜", a: 10, f: 5, v: 7000, t: 4,
       q: "Nice frame, that. Print's basically free.",
-      h: "Real find: a $4 flea-market picture had an original 1823 printing of the Declaration of Independence hidden behind it — it sold for $2.42 MILLION." }
+      h: "Real find: a $4 flea-market picture had an original 1823 printing of the Declaration of Independence hidden behind it · it sold for $2.42 MILLION." }
   ];
   var currentItems = {};
   var TIER_W = { 1: 10, 2: 5, 3: 2, 4: 1 };
-  // exact=true draws only from that tier — used for the lucky pitch, where a weighted
+  // exact=true draws only from that tier - used for the lucky pitch, where a weighted
   // draw would nearly always fall back to tier 1 and the bump would never be felt
   function pickItem(maxTier, exact) {
     var pool = [], total = 0;
@@ -2298,12 +2387,13 @@
 
   var wallet = 200, prestige = 0, introSeen = false, packed = 0, rep = 0;
   var packedThisVisit = 0; // clearing the bench before you drive off is worth rep
+  var tipsSeen = {}, savedVenue = 0; // declared up here because the save loads before the venue block
   var inv = [], listings = [], orders = [], visitedLinks = [], uid = 1, inWh = false;
   var UPG = {
     tongue: { icon: "🗣️", name: "Silver Tongue", desc: "Sellers cave to lower prices", costs: [300, 800, 2000], lvl: 0,
-      fx: ["—", "sellers go 8% lower", "sellers go 16% lower", "sellers go 24% lower"] },
+      fx: ["·", "sellers go 8% lower", "sellers go 16% lower", "sellers go 24% lower"] },
     eye:    { icon: "👁️", name: "Eagle Eye", desc: "Spot resale value before you buy", costs: [600, 1500], lvl: 0,
-      fx: ["—", "rough resale estimate", "exact value · never buy tat blind"] },
+      fx: ["·", "rough resale estimate", "exact value · never buy tat blind"] },
     van:    { icon: "🚐", name: "The Van", desc: "Rarer stock turns up on the crates", costs: [500, 1500, 4000], lvl: 0,
       fx: ["everyday stock", "+ Quality stock", "+ Rare stock", "+ Legendary finds"] },
     bag:    { icon: "🎒", name: "Bigger Bag", desc: "Carry more finds per boot run", costs: [250, 700, 1800], lvl: 0,
@@ -2315,7 +2405,7 @@
   };
   var PRO_AT = 10000;
   function proMult() { return 1 + prestige * 0.5; }
-  function maxTier() { return Math.min(4, 1 + UPG.van.lvl + lvlTierBonus()); }
+  function maxTier() { return Math.min(4, 1 + UPG.van.lvl + lvlTierBonus() + (venue ? VENUES[venue].tier : 0)); }
   function bagCap() { return [3, 5, 8, 12][UPG.bag.lvl]; }
   function maxListings() { return 2 + UPG.desk.lvl; }
   function deskSpeed() { return 1 + UPG.desk.lvl * 0.35; }
@@ -2331,6 +2421,7 @@
     try {
       localStorage.setItem(SAVE_KEY, JSON.stringify({
         w: wallet, p: prestige, i: introSeen ? 1 : 0, pk: packed, rp: rep,
+        vn: venue, tp: Object.keys(tipsSeen),
         t: UPG.tongue.lvl, e: UPG.eye.lvl, v: UPG.van.lvl, b: UPG.bag.lvl, d: UPG.desk.lvl, l: UPG.lucky.lvl,
         lk: visitedLinks, q: activeQ, inv: inv, li: listings, or: orders
       }));
@@ -2342,6 +2433,8 @@
     if (sv) {
       wallet = +sv.w || 200; prestige = +sv.p || 0; introSeen = !!sv.i; packed = +sv.pk || 0;
       rep = Math.max(0, +sv.rp || 0);
+      savedVenue = +sv.vn || 0;
+      if (sv.tp && sv.tp.length) sv.tp.forEach(function (k) { tipsSeen[k] = 1; });
       UPG.tongue.lvl = +sv.t || 0; UPG.eye.lvl = +sv.e || 0; UPG.van.lvl = +sv.v || 0;
       UPG.bag.lvl = +sv.b || 0; UPG.desk.lvl = +sv.d || 0; UPG.lucky.lvl = +sv.l || 0;
       if (sv.lk && sv.lk.length) visitedLinks = sv.lk.slice(0, 12);
@@ -2393,7 +2486,7 @@
     if (ni > lvlIdx) {
       lvlIdx = ni;
       var top = lvlIdx === LEVELS.length - 1;
-      banner("📈 Level " + (lvlIdx + 1) + " — " + LEVELS[lvlIdx][1] + "! "
+      banner("📈 Level " + (lvlIdx + 1) + " · " + LEVELS[lvlIdx][1] + "! "
         + (top ? "Top of the game." : lvlIdx % 2 === 0
           ? "Better stock turns up on the crates from now on. 💎"
           : "One more level and the crates start carrying better stock."), 8000);
@@ -2409,7 +2502,7 @@
     rankN.innerHTML = "Lv" + (lvlIdx + 1) + " " + LEVELS[lvlIdx][1]
       + (nxt ? ' <i class="lvlbar"><b style="width:'
         + Math.max(0, Math.min(100, Math.round(100 * (rep - cur) / (nxt - cur)))) + '%"></b></i>' : " ⭐");
-    rankN.title = nxt ? rep + " / " + nxt + " rep to " + LEVELS[lvlIdx + 1][1] : rep + " rep — top level";
+    rankN.title = nxt ? rep + " / " + nxt + " rep to " + LEVELS[lvlIdx + 1][1] : rep + " rep · top level";
   }
 
   function banner(text, ms) {
@@ -2541,7 +2634,7 @@
         wallet += d.pay;
         popProfit(d.pay);
         confetti(14);
-        banner("🎯 Goal done: " + d.txt + " — +" + fmtC(d.pay) + "!", 6000);
+        banner("🎯 Goal done: " + d.txt + " · +" + fmtC(d.pay) + "!", 6000);
         activeQ[i] = newQuest();
       }
     }
@@ -2554,7 +2647,7 @@
   document.getElementById("closeGoals").addEventListener("click", function () { goalsPanel.classList.remove("open"); });
   goalsPanel.addEventListener("click", function (e) { if (e.target === goalsPanel) goalsPanel.classList.remove("open"); });
 
-  // ---- trending: a hot category rotates — matching items sell for +50% ----
+  // ---- trending: a hot category rotates - matching items sell for +50% ----
   var CATS = [
     { n: "Cameras", es: ["📸", "📷"] },
     { n: "Music", es: ["🎶", "📻"] },
@@ -2572,7 +2665,7 @@
     if (trend && nt.n === trend.n) nt = CATS[(CATS.indexOf(nt) + 1) % CATS.length];
     trend = nt;
     document.getElementById("trendTxt").textContent = trend.es[0] + " " + trend.n + " +50%";
-    if (announce && !whBtn.hidden) banner("🔥 Hot right now: " + trend.n + " — they sell for +50%!", 5000);
+    if (announce && !whBtn.hidden) banner("🔥 Hot right now: " + trend.n + " · they sell for +50%!", 5000);
   }
   rollTrend(false);
   setInterval(function () { rollTrend(true); }, 120000);
@@ -2593,7 +2686,7 @@
     return PERS[0];
   }
 
-  // ---- visiting a real pitch link pays out — more for every NEW pitch you visit ----
+  // ---- visiting a real pitch link pays out - more for every NEW pitch you visit ----
   var rewardPanel = document.getElementById("rewardPanel");
   document.getElementById("closeReward").addEventListener("click", function () { rewardPanel.classList.remove("open"); });
   rewardPanel.addEventListener("click", function (e) { if (e.target === rewardPanel) rewardPanel.classList.remove("open"); });
@@ -2603,7 +2696,7 @@
     for (var i = 0; i < stalls.length; i++) dots += i < visitedLinks.length ? "●" : "○";
     document.getElementById("rewardAmt").textContent = "+" + fmtC(got);
     document.getElementById("rewardMsg").innerHTML = doneAll
-      ? "That's every pitch visited — legend! 🏆<br>+£250 grand tour bonus on top."
+      ? "That's every pitch visited · legend! 🏆<br>+£250 grand tour bonus on top."
       : "Cheers for checking out my " + (s.name || "page") + "!";
     document.getElementById("rewardDots").textContent = dots;
     document.getElementById("rewardNext").textContent = doneAll
@@ -2623,7 +2716,7 @@
     if (visitedLinks.indexOf(s.name) >= 0) {
       var nxt = Math.round(25 * (visitedLinks.length + 1) * proMult());
       updWallet();
-      if (visitedLinks.length < stalls.length) banner("👋 Welcome back! Already counted " + (s.name || "that one") + " — a pitch you've not visited pays " + fmtC(nxt) + ".", 7000);
+      if (visitedLinks.length < stalls.length) banner("👋 Welcome back! Already counted " + (s.name || "that one") + " · a pitch you've not visited pays " + fmtC(nxt) + ".", 7000);
       return;
     }
     visitedLinks.push(s.name);
@@ -2644,9 +2737,47 @@
 
   function restockAll(force) { stalls.forEach(function (st) { if (st.restock) st.restock(force); }); }
 
+  // ---- the venues you can drive to ----
+  // The Sunday Field is home and always open: my real pitches live there, so it can
+  // never be locked behind a level. Everything above it costs more at the gate and
+  // pays it back in what turns up on the crates.
+  var VENUES = [
+    { id: "field", cls: "", name: "The Sunday Field", ico: "🌤️", fee: 5, lvl: 0, tier: 0, luck: 1,
+      desc: "Home turf. My pitches are here.", stock: "Honest stock, cheap in" },
+    { id: "fair", cls: "v-fair", name: "Indoor Antiques Fair", ico: "🏛️", fee: 15, lvl: 1, tier: 1, luck: 1.5,
+      desc: "Dealers who know exactly what they've got.", stock: "Better stock, harder haggling" },
+    { id: "night", cls: "v-night", name: "Night Flea Market", ico: "🌙", fee: 25, lvl: 2, tier: 1, luck: 2.2,
+      desc: "Torchlight only. You buy on the glow and hope.", stock: "Rare finds turn up in the dark" },
+    { id: "sea", cls: "v-sea", name: "Seaside Sunday", ico: "🌊", fee: 35, lvl: 3, tier: 2, luck: 2.6,
+      desc: "Holiday tat and proper maritime finds, side by side.", stock: "Rare and Legendary, if you dig" },
+    { id: "estate", cls: "v-estate", name: "Estate Clearance", ico: "🏚️", fee: 60, lvl: 4, tier: 2, luck: 3.4,
+      desc: "A whole house going at once, rain or shine.", stock: "The richest pickings anywhere" }
+  ];
+  var venue = 0;
+  function V() { return VENUES[venue]; }
+  // a saved venue only stands up if you're still high enough level for it
+  if (VENUES[savedVenue] && lvlIdx >= VENUES[savedVenue].lvl) venue = savedVenue;
+  function venueOpen(v) { return lvlIdx >= v.lvl; }
+  function nextVenue() {
+    for (var i = 0; i < VENUES.length; i++) if (!venueOpen(VENUES[i])) return VENUES[i];
+    return null;
+  }
+  function applyVenue() {
+    VENUES.forEach(function (v) { if (v.cls) document.body.classList.remove(v.cls); });
+    if (V().cls) document.body.classList.add(V().cls);
+  }
+
+  // ---- one-shot tips: the game explains itself once, then shuts up ----
+  function tip(key, text, ms) {
+    if (tipsSeen[key]) return;
+    tipsSeen[key] = 1;
+    save();
+    banner(text, ms);
+  }
+
   // ---- the warehouse: a second walkable scene with stations ----
   function condTag(c) { return c > 1 ? ' <span class="tag-mint">✨ minter</span>' : c < 1 ? ' <span class="tag-tat">😬 tatty</span>' : ""; }
-  // station status lives on the A-board itself — a floating pill just fought the prompt bubble
+  // station status lives on the A-board itself - a floating pill just fought the prompt bubble
   function setSign(id, txt, alert) {
     document.getElementById(id + "Sub").textContent = txt;
     document.getElementById(id).classList.toggle("todo", !!alert);
@@ -2754,8 +2885,9 @@
 
   function buildWh() {
     renderStock();
+    var nv = nextVenue();
     document.getElementById("whVanSub").textContent =
-      fmtC(BOOT_FEE) + " in · fresh stock · bag holds " + bagCap();
+      nv ? "Pick a boot · next: " + nv.name + " at Lv" + (nv.lvl + 1) : "Pick a boot ⭐";
     var offerN = pendingOffers();
     setSign("whLaptop", listings.length
       ? listings.length + " live" + (offerN ? " ❗" : "") + " 💻"
@@ -2768,7 +2900,6 @@
   }
 
   var bootPx = null;
-  var BOOT_FEE = 5; // pitch fee — every trip to the boot costs you something
   var WH_MIN = 140, WH_MAX = 2080, WH_SPAWN = 585;
   function enterWh() {
     if (inWh) return;
@@ -2778,35 +2909,76 @@
     px = WH_SPAWN; target = null; flick = 0;
     document.body.classList.add("in-wh");
     updBadges();
-    if (!enterWh.seen) {
-      enterWh.seen = true;
-      banner("🏭 Your warehouse! Walk to a station — 💻 sell · 📦 pack · ⬆️ upgrades · 🚗 the van goes back", 9000);
-    }
+    tip("wh", "🏭 Your warehouse. Walk to a station: 💻 sell · 📦 pack · ⬆️ upgrades · 🚗 the van picks where you go next", 10000);
   }
-  function exitWh() {
+  function exitWh(toIdx) {
     if (!inWh) return;
+    var v = VENUES[toIdx] || V();
+    if (!venueOpen(v)) return;
+    venue = VENUES.indexOf(v);
+    applyVenue();
     inWh = false;
     document.body.classList.remove("in-wh");
-    ["shopPanel", "laptopPanel", "packPanel"].forEach(function (id) { document.getElementById(id).classList.remove("open"); });
+    ["shopPanel", "laptopPanel", "packPanel", "venuePanel"].forEach(function (id) { document.getElementById(id).classList.remove("open"); });
     if (bootPx !== null) px = bootPx;
     target = null; flick = 0;
     restockAll(true);
     // leaving with nothing sat unpacked is worth something
     if (packedThisVisit > 0 && orders.length === 0) awardRep(1, "bench left clear");
-    // a boot run costs you at the gate, and the bag only holds so much
-    wallet = Math.max(0, wallet - BOOT_FEE);
+    // the gate takes its cut, and the bag only holds so much
+    wallet = Math.max(0, wallet - v.fee);
     updWallet();
     save();
     updBadges();
-    banner("🚗 " + fmtC(BOOT_FEE) + " in at the gate — fresh stock on every crate. Bag holds "
-      + bagCap() + " 🎒", 5500);
+    // you get told what a place is the first time you go, and never again
+    tip("v-" + v.id, v.ico + " " + v.name + ". " + v.stock + ". Bag holds " + bagCap() + " 🎒", 6000);
   }
-  whBtn.addEventListener("click", function () { if (inWh) exitWh(); else enterWh(); });
+
+  // ---- the venue picker ----
+  var venuePanel = document.getElementById("venuePanel");
+  var venueRows = document.getElementById("venueRows");
+  function buildVenues() {
+    var nxt = lvlIdx + 1 < LEVELS.length ? LEVELS[lvlIdx + 1] : null;
+    var nv = nextVenue();
+    var cur = LEVELS[lvlIdx][0];
+    var pct = nxt ? Math.max(0, Math.min(100, Math.round(100 * (rep - cur) / (nxt[0] - cur)))) : 100;
+    document.getElementById("venueLvl").innerHTML = nxt
+      ? "<b>Lv" + (lvlIdx + 1) + " " + LEVELS[lvlIdx][1] + "</b> · " + (nxt[0] - rep) + " more rep to <b>Lv"
+        + (lvlIdx + 2) + " " + nxt[1] + "</b>"
+        + (nv && nv.lvl === lvlIdx + 1 ? ", which opens " + nv.ico + " " + nv.name : "")
+        + '<i class="vl-bar"><i style="width:' + pct + '%"></i></i>'
+        + "<br>Rep comes from selling at a profit, haggling hard and packing tidy."
+      : "<b>Lv" + LEVELS.length + " " + LEVELS[lvlIdx][1] + "</b> · every venue is open to you. ⭐";
+    venueRows.innerHTML = VENUES.map(function (v, i) {
+      var open = venueOpen(v);
+      return '<button type="button" class="venue-row' + (i === venue ? " here" : "") + '" data-v="' + i + '"'
+        + (open ? "" : " disabled") + '>'
+        + '<span class="v-ico">' + (open ? v.ico : "🔒") + "</span>"
+        + '<span class="v-info"><span class="v-name">' + v.name + "</span>"
+        + '<span class="v-desc">' + v.desc + "</span>"
+        + (open ? '<span class="v-stat">' + v.stock + "</span>" : "") + "</span>"
+        + '<span class="v-fee">' + (open ? fmtC(v.fee) : "Lv" + (v.lvl + 1)) + "</span></button>";
+    }).join("");
+  }
+  function openVenues() { buildVenues(); venuePanel.classList.add("open"); }
+  function closeVenues() { venuePanel.classList.remove("open"); }
+  document.getElementById("closeVenue").addEventListener("click", closeVenues);
+  venuePanel.addEventListener("click", function (e) { if (e.target === venuePanel) closeVenues(); });
+  venueRows.addEventListener("click", function (e) {
+    var b = e.target.closest ? e.target.closest(".venue-row") : null;
+    if (!b || b.disabled) return;
+    var i = +b.getAttribute("data-v");
+    if (wallet < VENUES[i].fee) return banner("💸 " + fmtC(VENUES[i].fee) + " to get in and you've got " + fmtC(wallet) + ". Sell something first.", 5000);
+    exitWh(i);
+  });
+
+  whBtn.addEventListener("click", function () { if (inWh) openVenues(); else enterWh(); });
+  applyVenue(); // a reload drops you back at the venue you were last stood in
 
   // walk up to a station and use it, same as the boot stalls
   var whStations = [];
   [
-    ["whVan", exitWh],
+    ["whVan", openVenues],
     ["whLaptop", function () { openLaptop(); }],
     ["whPack", function () { openPack(); }],
     ["whShop", function () { toggleShop(true); }]
@@ -2837,7 +3009,7 @@
   function buildLaptop() {
     var canList = listings.length < maxListings();
     var html = '<div class="lp-h">🗄️ On the shelf (' + inv.length + ")</div>";
-    if (!inv.length) html += '<div class="lp-row lp-dim">Nothing to list — buy stock at the car boot.</div>';
+    if (!inv.length) html += '<div class="lp-row lp-dim">Nothing to list · buy stock at the car boot.</div>';
     inv.forEach(function (e, i) {
       var it = items[e.i], gp = guidePrice(e);
       html += '<div class="lp-row"><span class="lp-name">' + it.e + " " + it.n + "</span>" + condTag(e.cond)
@@ -2876,7 +3048,7 @@
     var b = e.target.closest ? e.target.closest("button[data-act]") : null;
     if (!b || b.disabled) return;
     var act = b.getAttribute("data-act"), i = +b.getAttribute("data-i");
-    // writing a listing takes a photo or some copy — either way, doing it well pays
+    // writing a listing takes a photo or some copy - either way, doing it well pays
     if (act === "ebay" || act === "vinted") {
       playMini(pickFrom(LIST_POOL)(), function (score) { listItem(i, act, score); });
     }
@@ -2916,7 +3088,7 @@
       L.offer = 0; L.offerBy = "";
     }
     listings.push(L);
-    if (photo >= 0.85) banner("✨ Cracking listing — that'll fetch more. Live at " + fmtC(L.price), 5000);
+    if (photo >= 0.85) banner("✨ Cracking listing · that'll fetch more. Live at " + fmtC(L.price), 5000);
     else if (photo < 0.3) banner("😬 Scrappy listing, that one. Live at " + fmtC(L.price), 5000);
     save(); buildLaptop(); updBadges();
   }
@@ -2932,7 +3104,7 @@
     if (packPanel.classList.contains("open")) buildPack();
   }
 
-  // the internet never sleeps — bids and buyers tick along wherever you are
+  // the internet never sleeps - bids and buyers tick along wherever you are
   setInterval(function () {
     var now = Date.now(), touched = false;
     for (var i = listings.length - 1; i >= 0; i--) {
@@ -3009,7 +3181,7 @@
     game.start(host, function (s) { miniFinish(s); }, timeLeft);
   }
 
-  // 1. sequence — read the numbers off the flaps and fold them in order
+  // 1. sequence - read the numbers off the flaps and fold them in order
   function gFold() {
     return {
       title: "📦 Fold the box", hint: "Tap the flaps 1 → 4", cls: "fold",
@@ -3037,7 +3209,7 @@
     };
   }
 
-  // 2. decision — smallest box it actually fits in, not the first one you see
+  // 2. decision - smallest box it actually fits in, not the first one you see
   function gPickBox() {
     return {
       title: "📦 Pick the right box", hint: "Smallest one it'll actually fit in", cls: "pick",
@@ -3065,7 +3237,7 @@
     };
   }
 
-  // 3. timing — stop the needle on the right postage band
+  // 3. timing - stop the needle on the right postage band
   function gWeigh() {
     return {
       title: "⚖️ Weigh the parcel", hint: "Stop the needle on the right band", cls: "weigh",
@@ -3093,7 +3265,7 @@
     };
   }
 
-  // 4. drag — run the tape head along the seam without wandering off it
+  // 4. drag - run the tape head along the seam without wandering off it
   function gTape() {
     return {
       title: "📏 Tape the seam", hint: "Drag from the left edge to the right, stay on the line", cls: "tape",
@@ -3138,7 +3310,7 @@
     };
   }
 
-  // 5. drag-to-target — get the label squarely onto the box, not half off the edge
+  // 5. drag-to-target - get the label squarely onto the box, not half off the edge
   function gLabel() {
     return {
       title: "🏷️ Stick the label", hint: "Drag the label onto the dashed patch", cls: "dlabel",
@@ -3183,7 +3355,7 @@
     };
   }
 
-  // 6. typing — write the listing out, monkeytype style
+  // 6. typing - write the listing out, monkeytype style
   var TYPE_LINES = [
     "vintage brass candlestick, no dents",
     "1970s pyrex bowl, tiny chip on rim",
@@ -3196,7 +3368,7 @@
   ];
   function gType() {
     return {
-      title: "⌨️ Write the listing", hint: "Type it out — accuracy pays more than speed", cls: "type",
+      title: "⌨️ Write the listing", hint: "Type it out · accuracy pays more than speed", cls: "type",
       start: function (host, done, timeLeft) {
         var line = pickFrom(TYPE_LINES);
         host.innerHTML = '<div class="tw"></div>'
@@ -3227,7 +3399,7 @@
     };
   }
 
-  // 5. the laptop's one — match the rings and the photo comes out sharp
+  // 5. the laptop's one - match the rings and the photo comes out sharp
   function gFocus() {
     return {
       title: "📸 Focus the shot", hint: "Snap it when the ring meets the dashed mark", cls: "focus",
@@ -3278,7 +3450,7 @@
 
   function buildPack() {
     var html = "";
-    if (!orders.length) html = '<div class="lp-row lp-dim">Nothing to pack — sell something from the laptop first 💻</div>';
+    if (!orders.length) html = '<div class="lp-row lp-dim">Nothing to pack · sell something from the laptop first 💻</div>';
     orders.forEach(function (o, i) {
       var it = items[o.i];
       if (!okTasks(o.mg)) o.mg = pickTasks(); // older saves, or anything that got mangled
@@ -3312,7 +3484,7 @@
     wallet += o.soldFor;
     packed++;
     packedThisVisit++;
-    // a tidy parcel is worth real money — buyers pay for presentation
+    // a tidy parcel is worth real money - buyers pay for presentation
     var q = (o.q || 0) / PACK_TASKS;
     var bonus = Math.round(o.soldFor * 0.15 * q);
     if (bonus > 0) wallet += bonus;
@@ -3331,8 +3503,8 @@
     if (it.t >= 3) questEvent("tier3");
     if (o.tr) questEvent("trend");
     if (it.h) banner("📜 " + it.h, 12000);
-    else banner("🚚 Posted to " + o.by + " in " + o.to + " — " + (profit >= 0 ? "+" : "−") + fmtC(Math.abs(profit)) + " on that one!", 6000);
-    if (packed === 1 && prestige === 0) setTimeout(function () { banner("⬆️ First sale done! The Upgrades Corner makes the next ones bigger…", 7000); }, 6500);
+    else banner("🚚 Posted to " + o.by + " in " + o.to + " · " + (profit >= 0 ? "+" : "−") + fmtC(Math.abs(profit)) + " on that one!", 6000);
+    setTimeout(function () { tip("firstsale", "⬆️ First sale done. The Upgrades Corner makes the next ones bigger.", 7000); }, 6500);
     save(); buildPack(); updBadges();
   }
 
@@ -3340,7 +3512,7 @@
   var proArm = false, wipeArm = false;
   function buildShop() {
     var html = '<div class="shop-wallet">💰 ' + fmtC(wallet) + " in the bum-bag</div>";
-    if (prestige > 0) html += '<div class="shop-pro-note">🌟 Pro trader — everything sells for x' + proMult() + "</div>";
+    if (prestige > 0) html += '<div class="shop-pro-note">🌟 Pro trader · everything sells for x' + proMult() + "</div>";
     for (var k in UPG) {
       var u = UPG[k];
       var c = nextCost(u);
@@ -3361,7 +3533,7 @@
       + '<span class="shop-desc">Reset everything · keep +50% profit forever</span></span>'
       + '<button type="button" class="shop-buy pro" data-k="pro"' + (wallet < PRO_AT ? " disabled" : "") + '>'
       + (wallet < PRO_AT ? "£10k" : proArm ? "Sure?" : "GO PRO") + '</button></div>';
-    // a way out for anyone who wants a clean slate — two taps, and it says so plainly
+    // a way out for anyone who wants a clean slate - two taps, and it says so plainly
     html += '<div class="shop-row wipe-row"><span class="shop-ico">🧹</span>'
       + '<span class="shop-info"><span class="shop-name">Start over</span>'
       + '<span class="shop-desc">' + (wipeArm
@@ -3373,7 +3545,7 @@
   }
 
   function hardReset() {
-    // drop the save and reload — rebuilding from defaults beats resetting 20 variables by hand
+    // drop the save and reload - rebuilding from defaults beats resetting 20 variables by hand
     try { localStorage.removeItem(SAVE_KEY); } catch (err) {}
     location.reload();
   }
@@ -3383,12 +3555,12 @@
     wallet = 200; packed = 0;
     inv = []; listings = []; orders = []; visitedLinks = [];
     for (var k in UPG) UPG[k].lvl = 0;
-    updWallet.toldPro = false; // rep and level survive prestige — that's your career, not your float
+    updWallet.toldPro = false; // rep and level survive prestige · that's your career, not your float
     updWallet();
     buildShop();
     restockAll(true);
     confetti(40);
-    banner("🌟 Gone pro! Everything sells for x" + proMult() + " — back to £200, and the pitch visit bonuses reset too. Do it again!", 9000);
+    banner("🌟 Gone pro! Everything sells for x" + proMult() + " · back to £200, and the pitch visit bonuses reset too. Do it again!", 9000);
   }
 
   shopRows.addEventListener("click", function (e) {
@@ -3423,7 +3595,7 @@
   document.getElementById("closeShop").addEventListener("click", function () { toggleShop(false); buildWh(); });
   shopPanel.addEventListener("click", function (e) { if (e.target === shopPanel) { toggleShop(false); buildWh(); } });
 
-  // the game stays invisible until you poke a seller — this is a links page first
+  // the game stays invisible until you poke a seller - this is a links page first
   var introPanel = document.getElementById("introPanel");
   function closeIntro() { introPanel.classList.remove("open"); }
   document.getElementById("closeIntro").addEventListener("click", closeIntro);
@@ -3460,7 +3632,7 @@
     }, 1500);
   })();
 
-  // returning players pick up right where they left off — HUD straight back on
+  // returning players pick up right where they left off - HUD straight back on
   if (introSeen) {
     findsPill.hidden = false;
     whBtn.hidden = false;
@@ -3520,7 +3692,7 @@
     function fmt(n) { return "£" + n.toLocaleString("en-GB"); }
     function r5(n) { return Math.max(5, Math.round(n / 5) * 5); }
     function mood() { return patience >= 3 ? "🙂" : patience === 2 ? "😐" : "😤"; }
-    // how much rope you have left, as pips — a bare emoji hid how close you were to blowing it
+    // how much rope you have left, as pips - a bare emoji hid how close you were to blowing it
     function pips() {
       var s = "";
       for (var i = 0; i < maxPat; i++) s += i < patience ? "●" : "○";
@@ -3530,8 +3702,8 @@
 
     function assignItem() {
       // the van sets your usual ceiling, but one pitch in twelve turns up something
-      // above your pay grade — without this you'd never see a gold glow before £500
-      var lucky = maxTier() < 4 && Math.random() < 0.085;
+      // above your pay grade - without this you'd never see a gold glow before £500
+      var lucky = maxTier() < 4 && Math.random() < 0.085 * V().luck;
       it = lucky ? pickItem(maxTier() + 1, true) : pickItem(maxTier());
       currentItems[idx] = it;
       name = it.n; emoji = it.e; ask = it.a; value = it.v; quip = it.q; tier = it.t; story = it.h || "";
@@ -3641,16 +3813,14 @@
       inv.push({ i: items.indexOf(it), paid: paid, cond: cond });
       updWallet();
       if (rareEl) rareEl.classList.add("sold");
-      render(opener + " 🤝 " + fmt(paid) + " — <b>" + name + "</b> is in the bag! 🎒 " + inv.length + "/" + bagCap()
-        + (inv.length >= bagCap() ? ' <span class="story">Bag\'s full — take the haul to the warehouse 🏭</span>' : ""));
+      render(opener + " 🤝 " + fmt(paid) + " · <b>" + name + "</b> is in the bag! 🎒 " + inv.length + "/" + bagCap()
+        + (inv.length >= bagCap() ? ' <span class="story">Bag\'s full · take the haul to the warehouse 🏭</span>' : ""));
       buzz();
       if (ask - paid >= 50) questEvent("haggle50");
       // knocking a quarter off is proper work; a modest saving still counts for something
       if (paid <= ask * 0.75) awardRep(2, "sharp haggling");
       else if (paid <= ask * 0.85) awardRep(1, "knocked them down");
-      if (inv.length === 1 && packed === 0 && prestige === 0) {
-        banner("🏭 Nice buy! Sell it from the Warehouse — hit the button up top.", 8000);
-      }
+      tip("firstbuy", "🏭 Nice buy. Sell it from the Warehouse, button up top.", 8000);
     }
 
     function walkOff() {
@@ -3676,7 +3846,7 @@
       patience -= sting;
       if (patience <= 0) return walkOff();
       render('“' + f.charAt(0).toUpperCase() + f.slice(1) + ', look.” 🔍<br>'
-        + (sting ? "They're not thrilled, but " : "They shrug — fair point. ")
+        + (sting ? "They're not thrilled, but " : "They shrug · fair point. ")
         + "it's " + fmt(price) + " now.");
     }
 
@@ -3736,7 +3906,7 @@
       updWallet();
       if (phase === 0) {
         phase = 1;
-        render("<b>" + name.charAt(0).toUpperCase() + name.slice(1) + "</b> " + emoji + " — “" + quip + "”"
+        render("<b>" + name.charAt(0).toUpperCase() + name.slice(1) + "</b> " + emoji + " · “" + quip + "”"
           + (persHint ? ' <span class="story">🗣️ “Worth about ' + fmt(persHint) + ' to the right person, that.”</span>' : ""));
       } else if (phase === 1) {
         render("Make us an offer, then.");
