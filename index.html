@@ -2091,7 +2091,7 @@
   .ward-note { font-size: 11.5px; font-weight: 800; color: var(--ink-soft); text-align: center; margin-top: 10px; line-height: 1.45; }
   #wardFile { display: none; }
 
-  #closePanel, #closeShop, #closeIntro, #closeReward, #closeGoals, #closeLaptop, #closePack, #closeVenue, #closeDex, #closeWard, #closeDexPop {
+  #closePanel, #closeShop, #closeIntro, #closeReward, #closeGoals, #closeLaptop, #closePack, #closeVenue, #closeDex, #closeWard, #closeDexPop, #closeCasino, #closeDine, #closeStudy {
     margin-top: 14px;
     width: 100%;
     font-family: var(--display);
@@ -3980,7 +3980,7 @@
     </div>
 
     <!-- the card room: green baize, a chandelier of its own, and your money on it -->
-    <div class="whstation mn" id="mnCards" style="left: 700px; width: 330px; height: 200px;" tabindex="-1" role="button" aria-label="The card room · play for real money">
+    <div class="whstation mn" id="mnCards" style="left: 900px; width: 330px; height: 200px;" tabindex="-1" role="button" aria-label="The card room · play for real money">
       <div class="shadow"></div>
       <svg width="330" height="200" viewBox="0 0 330 200" aria-hidden="true">
         <ellipse cx="165" cy="112" rx="132" ry="44" fill="#1F6B3E" stroke="#142A55" stroke-width="4.5"/>
@@ -4013,16 +4013,24 @@
     </div>
 
     <!-- the dining room: someone cooks, you eat, the sellers feel it tomorrow -->
-    <div class="whstation mn" id="mnDine" style="left: 1420px; width: 340px; height: 210px;" tabindex="-1" role="button" aria-label="The dining room · eat, and it tells at the next boot sale">
+    <div class="whstation mn" id="mnDine" style="left: 1800px; width: 340px; height: 210px;" tabindex="-1" role="button" aria-label="The dining room · eat, and it tells at the next boot sale">
       <div class="shadow"></div>
       <svg width="340" height="210" viewBox="0 0 340 210" aria-hidden="true">
         <path d="M22 118 H318 L306 138 H34 Z" fill="#F6EFE3" stroke="#142A55" stroke-width="4" stroke-linejoin="round"/>
         <rect x="16" y="106" width="308" height="16" rx="5" fill="#7A4E2C" stroke="#142A55" stroke-width="4"/>
         <path d="M46 138 V202 M294 138 V202" stroke="#5C3A22" stroke-width="13" stroke-linecap="round"/>
         <path d="M46 138 V202 M294 138 V202" stroke="#142A55" stroke-width="3" stroke-linecap="round" opacity="0.4"/>
-        <!-- the chairs, one either end -->
-        <path d="M8 106 V38 h22 V106" fill="none" stroke="#5C3A22" stroke-width="9" stroke-linejoin="round"/>
-        <path d="M310 106 V38 h22 V106" fill="none" stroke="#5C3A22" stroke-width="9" stroke-linejoin="round"/>
+        <!-- a high-backed chair at each end, slats and all -->
+        <g stroke="#142A55" stroke-width="3" stroke-linejoin="round">
+          <rect x="2" y="26" width="40" height="86" rx="6" fill="#5C3A22"/>
+          <rect x="10" y="36" width="24" height="66" rx="4" fill="#6E4064"/>
+          <path d="M18 44 v50 M26 44 v50" stroke="#5C3A22" stroke-width="4"/>
+          <rect x="0" y="112" width="44" height="14" rx="4" fill="#7A4E2C"/>
+          <rect x="298" y="26" width="40" height="86" rx="6" fill="#5C3A22"/>
+          <rect x="306" y="36" width="24" height="66" rx="4" fill="#6E4064"/>
+          <path d="M314 44 v50 M322 44 v50" stroke="#5C3A22" stroke-width="4"/>
+          <rect x="296" y="112" width="44" height="14" rx="4" fill="#7A4E2C"/>
+        </g>
         <!-- a cover, a candelabra and a glass laid out -->
         <g transform="translate(78,72)">
           <ellipse cx="30" cy="42" rx="34" ry="10" fill="#FFFFFF" stroke="#142A55" stroke-width="3"/>
@@ -4047,9 +4055,9 @@
     </div>
 
     <!-- the study: the one room that buys you something forever -->
-    <div class="whstation mn" id="mnStudy" style="left: 2140px; width: 320px; height: 240px;" tabindex="-1" role="button" aria-label="The study · things the house keeps for good">
+    <div class="whstation mn" id="mnStudy" style="left: 2700px; width: 430px; height: 240px;" tabindex="-1" role="button" aria-label="The study · things the house keeps for good">
       <div class="shadow"></div>
-      <svg width="320" height="240" viewBox="0 0 320 240" aria-hidden="true">
+      <svg width="430" height="240" viewBox="0 0 430 240" aria-hidden="true">
         <rect x="10" y="4" width="180" height="204" rx="6" fill="#5C3A22" stroke="#142A55" stroke-width="4.5"/>
         <rect x="22" y="16" width="156" height="180" rx="3" fill="#4A2E1A"/>
         <path d="M22 62 H178 M22 116 H178 M22 170 H178" stroke="#5C3A22" stroke-width="7"/>
@@ -4073,10 +4081,20 @@
         <!-- a wing chair, a side table and the decanter on it -->
         <path d="M206 208 V120 q0 -26 26 -26 h44 q26 0 26 26 v88" fill="#5A3350" stroke="#142A55" stroke-width="4.5" stroke-linejoin="round"/>
         <path d="M214 208 V150 h84 v58" fill="#6E4064" stroke="#142A55" stroke-width="3.5" stroke-linejoin="round"/>
-        <g transform="translate(240,44)">
-          <path d="M6 20 h32 v10 q14 10 14 26 v14 h-60 V56 q0 -16 14 -26 Z" fill="#C9A227" stroke="#142A55" stroke-width="3" stroke-linejoin="round" opacity="0.85"/>
-          <rect x="14" y="4" width="16" height="18" rx="3" fill="#E3C567" stroke="#142A55" stroke-width="3"/>
-          <path d="M-8 52 h60" stroke="#8A3B14" stroke-width="5" opacity="0.6"/>
+        <!-- a side table by the arm of the chair, and the decanter stood on it -->
+        <g transform="translate(318,150)">
+          <ellipse cx="46" cy="10" rx="46" ry="11" fill="#7A4E2C" stroke="#142A55" stroke-width="3.5"/>
+          <path d="M46 20 V50 M22 58 h48" stroke="#5C3A22" stroke-width="8" stroke-linecap="round"/>
+          <path d="M46 20 V50 M22 58 h48" stroke="#142A55" stroke-width="2.5" stroke-linecap="round" opacity="0.4"/>
+          <g transform="translate(24,-42)">
+            <path d="M6 18 h32 v8 q13 9 13 24 v12 q0 4 -5 4 h-48 q-5 0 -5 -4 V50 q0 -15 13 -24 Z" fill="#C9A227" stroke="#142A55" stroke-width="3" stroke-linejoin="round"/>
+            <path d="M-1 50 h46 v14 q0 4 -5 4 h-36 q-5 0 -5 -4 Z" fill="#8A3B14" opacity="0.75"/>
+            <rect x="13" y="2" width="16" height="17" rx="3" fill="#E3C567" stroke="#142A55" stroke-width="3"/>
+          </g>
+          <g transform="translate(74,-20)">
+            <path d="M0 0 h20 l-3 15 -2 11 h-10 l-2 -11 Z" fill="#CFE7F8" stroke="#142A55" stroke-width="2.5" stroke-linejoin="round"/>
+            <path d="M2 3 h16 l-2 9 h-12 Z" fill="#8A3B14"/>
+          </g>
         </g>
       </svg>
       <div class="aboard"><b>The Study</b><span id="mnStudySub">Sit a while 🥃</span></div>
@@ -5498,7 +5516,7 @@
   // where you were stood last time: the boot x, the warehouse x, and which of the two
   var savedPx = null, savedWhPx = null, savedInWh = false, whPx = 585;
   // the house is a scene of its own, so it needs its own remembered spot on the floor
-  var MANOR_MIN = 140, MANOR_MAX = 2560, MANOR_SPAWN = 320;
+  var MANOR_MIN = 140, MANOR_MAX = 3120, MANOR_SPAWN = 340;
   var inManor = false, manorPx = null, savedManorPx = null, savedInManor = false;
   // what the card room plays for. Up here with the rest of the house state because the
   // station signs read it, and those get built before the room itself does.
@@ -6582,7 +6600,7 @@
       + '<div class="halo glow"></div><div class="cone glow"></div><div class="pool glow"></div>';
 
     // one over the hall, one over each room, and one spare down the far end
-    for (var i = 0; i < 8; i++) {
+    for (var i = 0; i < 10; i++) {
       whAdd(mnLight, "mnchand", "left:" + (-120 + i * 400) + "px;--d:" + (-i * 0.8).toFixed(1) + "s", CHAND);
     }
 
@@ -6590,8 +6608,9 @@
     whAdd(mnWall, "mnrail", "");
     whAdd(mnWall, "mndado", "");
 
-    // the fireplace, roughly behind the card room, because of course it is
-    whAdd(mnWall, "mnfire", "left:1060px;bottom:92px",
+    // the fireplace lives past the study, at the far end of the hall, because that is
+    // the only run of wall long enough for it that no room is stood in front of
+    whAdd(mnWall, "mnfire", "left:2260px;bottom:92px",
       '<svg width="300" height="290" viewBox="0 0 300 290">'
       + '<rect x="10" y="34" width="280" height="256" rx="6" fill="#D8D2C4" stroke="#142A55" stroke-width="4.5"/>'
       + '<rect x="0" y="6" width="300" height="34" rx="7" fill="#EDE7D8" stroke="#142A55" stroke-width="4.5"/>'
@@ -6605,39 +6624,40 @@
       + '<circle cx="150" cy="60" r="15" fill="#D9A441" stroke="#142A55" stroke-width="3.5"/>'
       + "</svg>");
 
-    // sash windows, with a night you are no longer out working in
-    [140, 1820, 2380].forEach(function (x) {
-      whAdd(mnWall, "mnwin", "left:" + x + "px;bottom:266px;width:180px;height:290px",
+    // sash windows, with a night you are no longer out working in. They hang above
+    // everything on the floor, so they only have to miss the other things on the wall.
+    [80, 860, 1780].forEach(function (x) {
+      whAdd(mnWall, "mnwin", "left:" + x + "px;bottom:330px;width:180px;height:290px",
         "<span></span>");
     });
 
     // portraits of the things that actually paid for the place
     [
-      ["left:560px;bottom:300px", "🏺", "Lot 1"],
-      ["left:800px;bottom:326px", "🎸", "The one that went"],
-      ["left:1500px;bottom:308px", "⌚", "Bought for £4"],
-      ["left:2120px;bottom:316px", "💎", "Never sold"],
-      ["left:2620px;bottom:302px", "📻", "The first one"]
+      ["left:420px;bottom:334px", "🏺", "Lot 1"],
+      ["left:700px;bottom:360px", "🎸", "The one that went"],
+      ["left:1260px;bottom:342px", "⌚", "Bought for £4"],
+      ["left:2060px;bottom:350px", "💎", "Never sold"],
+      ["left:2620px;bottom:336px", "📻", "The first one"]
     ].forEach(function (p) {
       whAdd(mnWall, "mnframe", p[0] + ";width:118px", '<i style="height:92px">' + p[1] + "</i><b>" + p[2] + "</b>");
     });
 
-    // a suit of armour, because a man who buys a house buys the lot
-    whAdd(mnWall, "mndec", "left:1760px;bottom:92px",
-      '<svg width="110" height="250" viewBox="0 0 110 250">'
-      + '<rect x="24" y="234" width="62" height="14" rx="4" fill="#4A2E1A" stroke="#142A55" stroke-width="3"/>'
-      + '<path d="M32 96 h46 l10 78 h-66 Z" fill="#B6BECC" stroke="#142A55" stroke-width="3.5" stroke-linejoin="round"/>'
-      + '<path d="M22 176 h66 l-6 58 h-54 Z" fill="#C2CBDA" stroke="#142A55" stroke-width="3.5" stroke-linejoin="round"/>'
-      + '<path d="M55 30 q-20 0 -20 26 v30 h40 V56 q0 -26 -20 -26 Z" fill="#CBD2DC" stroke="#142A55" stroke-width="3.5"/>'
-      + '<path d="M40 56 h30 M42 70 h26" stroke="#142A55" stroke-width="3.5" stroke-linecap="round"/>'
-      + '<path d="M55 30 v-18" stroke="#E5484D" stroke-width="6" stroke-linecap="round"/>'
-      + '<path d="M92 120 v104" stroke="#8A97B2" stroke-width="8" stroke-linecap="round"/>'
-      + '<path d="M92 120 v104" stroke="#142A55" stroke-width="2.5" stroke-linecap="round" opacity="0.5"/>'
-      + '<path d="M78 120 h28" stroke="#C9A227" stroke-width="7" stroke-linecap="round"/>'
+    // a marble bust of nobody in particular, on a plinth, in the gap between the card
+    // room and the dining room
+    whAdd(mnWall, "mndec", "left:1010px;bottom:92px",
+      '<svg width="120" height="260" viewBox="0 0 120 260">'
+      + '<rect x="16" y="242" width="88" height="16" rx="4" fill="#B6BECC" stroke="#142A55" stroke-width="3.5"/>'
+      + '<rect x="26" y="96" width="68" height="148" fill="#D8D2C4" stroke="#142A55" stroke-width="3.5"/>'
+      + '<path d="M26 108 h68 M26 232 h68" stroke="#B6BECC" stroke-width="5"/>'
+      + '<rect x="18" y="82" width="84" height="18" rx="4" fill="#EDE7D8" stroke="#142A55" stroke-width="3.5"/>'
+      + '<path d="M34 82 q6 -34 26 -34 q20 0 26 34 Z" fill="#EDE7D8" stroke="#142A55" stroke-width="3.5" stroke-linejoin="round"/>'
+      + '<circle cx="60" cy="30" r="21" fill="#EDE7D8" stroke="#142A55" stroke-width="3.5"/>'
+      + '<path d="M40 24 q6 -18 20 -18 q14 0 20 18 q-20 -8 -40 0 Z" fill="#D8D2C4" stroke="#142A55" stroke-width="3"/>'
+      + '<path d="M52 32 v6 M68 32 v6" stroke="#142A55" stroke-width="3" stroke-linecap="round"/>'
       + "</svg>");
 
-    // a longcase clock that has never once been wrong
-    whAdd(mnWall, "mndec", "left:2280px;bottom:92px",
+    // a longcase clock that has never once been wrong, in the gap outside the study
+    whAdd(mnWall, "mndec", "left:1570px;bottom:92px",
       '<svg width="96" height="300" viewBox="0 0 96 300">'
       + '<rect x="8" y="66" width="80" height="230" rx="6" fill="#5C3A22" stroke="#142A55" stroke-width="4"/>'
       + '<path d="M8 66 L48 26 L88 66 Z" fill="#7A4E2C" stroke="#142A55" stroke-width="4" stroke-linejoin="round"/>'
