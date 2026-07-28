@@ -1067,6 +1067,13 @@
   .wk-txt i { display: block; font-style: normal; font-family: var(--display); font-weight: 700; font-size: 12px; color: #1F8A3B; }
   .wk-bar { height: 5px; background: #E4E8EF; border-radius: 999px; overflow: hidden; margin-top: 4px; }
   .wk-bar i { display: block; height: 100%; width: 0; background: #1F8A3B; border-radius: 999px; transition: width 0.9s linear; }
+  /* and the same news inside the bench and the laptop, on the row they're actually on */
+  .wk-strip {
+    margin-top: 8px; padding: 6px 10px;
+    background: #FFF6DC; border: 2px dashed #C2703F; border-radius: 9px;
+    font-size: 11px; font-weight: 800; color: #8A3B14;
+  }
+  .wk-strip b { font-family: var(--display); font-weight: 700; font-size: 12.5px; color: #8A3B14; }
 
   /* ---------- warehouse dressing: strip lights and a decorated back wall ----------
      two parallax layers, built in JS. --vu is the visible height in world units,
@@ -5580,6 +5587,10 @@
         + (e.sh ? ' <span class="tag-shiny">✨ SHINY</span>' : "") + condTag(e.cond)
         + (gp.tr ? ' <span class="tag-hot">🔥 trending +50%</span>' : "")
         + '<div class="lp-meta">Paid ' + fmtC(e.paid) + " · guide price ~" + fmtC(gp.g) + "</div>"
+        // Shazza always works from the front of the shelf, so say so on that row
+        + (i === 0 && STAFF.lister.lvl && canList
+          ? workStrip("listStrip", "📸 Shazza's photographing this one · under guide", listerAt, listerMs())
+          : "")
         + '<div class="lp-btns"><button type="button" data-act="ebay" data-i="' + i + '"' + (canList ? "" : " disabled") + ">🔨 Auction on eBay</button>"
         + '<button type="button" data-act="vinted" data-i="' + i + '"' + (canList ? "" : " disabled") + ">👗 List on Vinted</button>"
         + '<button type="button" class="lp-junk" data-act="scrap" data-i="' + i + '">🗑️ Scrap it · ~' + fmtC(scrapVal(e)) + "</button></div></div>";
@@ -6438,6 +6449,10 @@
       html += '<div class="lp-row"><span class="lp-name">' + it.e + " " + it.n + "</span>"
         + '<div class="lp-meta">' + (o.plat === "ebay" ? "🔨 eBay" : "👗 Vinted") + " · sold to <b>" + o.by + "</b>, " + o.to
         + " · " + fmtC(o.soldFor) + ' · <span class="shop-pips">' + prog + "</span></div>"
+        // Barry always takes the oldest parcel, so say which one that is
+        + (i === 0 && STAFF.packer.lvl
+          ? workStrip("packStrip", "🧑‍🏭 Barry's on this one · no tidy-parcel bonus", packerAt, packerMs())
+          : "")
         + '<div class="lp-btns"><button type="button" data-i="' + i + '">'
         + PACK_POOL[packGameIdx(o.mg[o.step])]().title + "</button></div></div>";
     });
@@ -6575,6 +6590,26 @@
     paintWorkers(now);
   }
 
+  // the same news inside the bench and the laptop: a strip on the row they're on now.
+  // The countdown is patched in place every second rather than rebuilt, so it can't
+  // steal focus from a button you're about to press.
+  function workStrip(id, label, at, ms) {
+    var left = Math.max(0, Math.ceil((at - Date.now()) / 1000));
+    var pct = ms ? Math.max(0, Math.min(100, Math.round(100 * (ms - (at - Date.now())) / ms))) : 0;
+    return '<div class="wk-strip" id="' + id + '" data-at="' + at + '" data-ms="' + ms + '">'
+      + label + " · <b>" + left + "s left</b>"
+      + '<span class="wk-bar"><i style="width:' + pct + '%"></i></span></div>';
+  }
+  function repaintStrip(id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    var at = +el.getAttribute("data-at"), ms = +el.getAttribute("data-ms");
+    var left = Math.max(0, Math.ceil((at - Date.now()) / 1000));
+    el.querySelector("b").textContent = left + "s left";
+    el.querySelector(".wk-bar i").style.width =
+      (ms ? Math.max(0, Math.min(100, Math.round(100 * (ms - (at - Date.now())) / ms))) : 0) + "%";
+  }
+
   // the card over a worker's head: the outline of what's in their hands and the countdown
   function paintWorker(wrap, id, lvl, at, ms, job, idleTxt) {
     var el = document.getElementById(wrap);
@@ -6601,6 +6636,8 @@
     paintWorker("whLister", "lister", STAFF.lister.lvl, listerAt, listerMs(),
       busyL ? { i: inv[0].i, verb: "📸 listing" } : null,
       !inv.length ? "nothing on the shelf to list" : "laptop's full · " + listings.length + " already live");
+    repaintStrip("packStrip");
+    repaintStrip("listStrip");
   }
   setInterval(staffTick, 1000);
 
