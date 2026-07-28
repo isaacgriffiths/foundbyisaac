@@ -2250,12 +2250,16 @@
         <circle cx="48" cy="32" r="16" fill="#4E7A46" stroke="#3B598F" stroke-width="2.5"/>
         <circle cx="20" cy="20" r="6" fill="#669159"/>
       </g>
+      <!-- a line has to be tied to something, or the washing just hangs in the sky -->
       <g id="estWash">
-        <path d="M2 6 Q90 26 178 6" fill="none" stroke="#CBD2DC" stroke-width="3"/>
-        <path d="M26 15 h22 v26 h-22 Z" fill="#8FC9F5" stroke="#3B598F" stroke-width="2.5"/>
-        <path d="M66 18 h26 v22 h-26 Z" fill="#F6EFE3" stroke="#3B598F" stroke-width="2.5"/>
-        <path d="M112 16 h20 v30 h-20 Z" fill="#E5B0C8" stroke="#3B598F" stroke-width="2.5"/>
-        <path d="M148 12 h18 v20 h-18 Z" fill="#FFD75E" stroke="#3B598F" stroke-width="2.5"/>
+        <path d="M10 8 V104" stroke="#8A6238" stroke-width="8" stroke-linecap="round"/>
+        <path d="M170 8 V104" stroke="#8A6238" stroke-width="8" stroke-linecap="round"/>
+        <path d="M4 14 H16 M164 14 H176" stroke="#8A6238" stroke-width="6" stroke-linecap="round"/>
+        <path d="M10 14 Q90 34 170 14" fill="none" stroke="#CBD2DC" stroke-width="3.5"/>
+        <path d="M32 24 h22 v26 h-22 Z" fill="#8FC9F5" stroke="#3B598F" stroke-width="2.5"/>
+        <path d="M68 28 h26 v22 h-26 Z" fill="#F6EFE3" stroke="#3B598F" stroke-width="2.5"/>
+        <path d="M110 27 h20 v30 h-20 Z" fill="#E5B0C8" stroke="#3B598F" stroke-width="2.5"/>
+        <path d="M144 22 h18 v20 h-18 Z" fill="#FFD75E" stroke="#3B598F" stroke-width="2.5"/>
       </g>
       <g id="estMower">
         <path d="M8 30 H62 L58 52 H12 Z" fill="#E5484D" stroke="#142A55" stroke-width="3" stroke-linejoin="round"/>
@@ -4099,7 +4103,7 @@
   var EST_STREET_END = 640;   // as far right as you can still see down the road
   var EST_ROAD_END = 1180;    // the frontage gives way to the open garage door
   var EST_GAR_END = 2460;     // and the side door puts you out in the back garden
-  var EST_END = 3620;         // the bottom of the garden, and the end of the map
+  var EST_END = 4020;         // the bottom of the garden, and the end of the map
   var EST_MIN = 150, EST_MAX = EST_END - 170, EST_SPAWN = 560;
   var estateNow = false, estateBuilt = false;
 
@@ -4330,13 +4334,14 @@
     }
     // everything out here stands on the back edge of the lawn, same as the fence does,
     // so nothing hangs in the air behind it
-    estArt(EST_GAR_END + 290, 94, "estShed", 200, 200, "0 0 148 150");
-    estArt(EST_GAR_END + 130, 94, "estTree", 150, 244, "0 0 80 130");
-    estArt(EST_GAR_END + 660, 94, "estTree", 116, 188, "0 0 80 130");
-    estArt(EST_GAR_END + 300, 96, "estBush", 92, 62, "0 0 70 50");
-    estArt(EST_GAR_END + 620, 96, "estBush", 78, 52, "0 0 70 50");
-    estArt(EST_GAR_END + 210, 208, "estWash", 260, 72, "0 0 180 50");
-    estArt(EST_GAR_END + 50, 96, "estMower", 108, 78, "0 0 88 62");
+    // spaced out down the garden so nothing is stood on top of anything else
+    estArt(EST_GAR_END + 40, 96, "estMower", 108, 78, "0 0 88 62");
+    // the line's posts stand on the lawn like everything else back here
+    estArt(EST_GAR_END + 170, 94, "estWash", 250, 156, "0 0 180 112");
+    estArt(EST_GAR_END + 440, 94, "estTree", 150, 244, "0 0 80 130");
+    estArt(EST_GAR_END + 620, 94, "estShed", 200, 200, "0 0 148 150");
+    estArt(EST_GAR_END + 880, 96, "estBush", 92, 62, "0 0 70 50");
+    estArt(EST_GAR_END + 980, 94, "estTree", 116, 188, "0 0 80 130");
 
     // --- and right at the bottom of the garden, the pool ---
     // One of those above-ground jobs, stood on the lawn like everything else out here.
@@ -4433,7 +4438,8 @@
   // The endless venues space their pitches a field-loop apart. The estate is one house,
   // so its pitches are dealt out along it instead: two out on the drive, three down the
   // garage, two in the back garden.
-  var EST_STALL_X = [300, 800, 1280, 1660, 2040, 2620, 3080];
+  // the last two leave the bottom of the garden clear, so the pool has room of its own
+  var EST_STALL_X = [300, 800, 1280, 1660, 2040, 2600, 3020];
   function layoutStalls() {
     stalls.forEach(function (s, i) {
       var left = estateNow ? (EST_STALL_X[i] !== undefined ? EST_STALL_X[i] : s.origLeft) : s.origLeft;
