@@ -179,6 +179,8 @@
   #sky { position: absolute; inset: 0; z-index: 0; will-change: transform; transform-origin: left top; }
   .cloud { position: absolute; animation: drift 18s ease-in-out infinite alternate; }
   @keyframes drift { from { transform: translateX(0); } to { transform: translateX(28px); } }
+  /* indoors the sky layer holds the hall's high windows instead of clouds */
+  .hallwin { position: absolute; }
 
   /* the field climbs away behind us - one terraced band per row of pitches */
   #slope { position: absolute; inset: 0; z-index: 1; transform-origin: left bottom; }
@@ -204,6 +206,10 @@
   .stall:focus-visible { outline: 3px solid #4B7BE5; outline-offset: 6px; border-radius: 12px; }
 
   .pitch-svg { display: block; position: absolute; left: 0; bottom: 0; color: var(--c); }
+  /* indoors the cars stay in the car park: each pitch swaps its motor for more tables */
+  .pitch-svg .sc-in { display: none; }
+  body.v-fair .pitch-svg .sc-out { display: none; }
+  body.v-fair .pitch-svg .sc-in { display: inline; }
 
   .stall .shadow, .whstation .shadow {
     position: absolute;
@@ -835,9 +841,10 @@
 
   /* ---------- the warehouse: a second walkable scene ---------- */
   /* ---------- venue palettes: the whole field repaints per location ---------- */
+  /* a sports hall: shadowed roof up top, plastered wall, varnished wood floor */
   body.v-fair {
-    --sky-top: #6B4A6E; --sky-bottom: #C9A87C;
-    --grass: #9C6B3F; --grass-edge: #6E4A28;
+    --sky-top: #5D5470; --sky-bottom: #D9C6A0;
+    --grass: #C6935C; --grass-edge: #8A6238;
     --band1: #A8763F; --band1e: #7A5228;
     --band2: #B9854A; --band2e: #8A5F30;
     --band3: #C99860; --band3e: #9A6E3C;
@@ -1457,6 +1464,25 @@
         <path d="M4 12 H12 Q16 12 16 17 V26 H0 V17 Q0 12 4 12 Z" fill="currentColor" stroke="#3B598F" stroke-width="2" stroke-linejoin="round"/>
         <path d="M3 26 H7 V34 H3 Z M9 26 H13 V34 H9 Z" fill="#2F3B5C" stroke="#3B598F" stroke-width="1.5"/>
       </g>
+      <!-- the sports hall the antiques fair moved into: wall bars, gym bench, high window -->
+      <g id="bgWallbars">
+        <rect x="6" y="4" width="9" height="122" rx="3" fill="#C89B66" stroke="#3B598F" stroke-width="2.5"/>
+        <rect x="81" y="4" width="9" height="122" rx="3" fill="#C89B66" stroke="#3B598F" stroke-width="2.5"/>
+        <path d="M15 18 H81 M15 34 H81 M15 50 H81 M15 66 H81 M15 82 H81 M15 98 H81 M15 114 H81" stroke="#3B598F" stroke-width="7.5" stroke-linecap="round"/>
+        <path d="M15 18 H81 M15 34 H81 M15 50 H81 M15 66 H81 M15 82 H81 M15 98 H81 M15 114 H81" stroke="#C89B66" stroke-width="4" stroke-linecap="round"/>
+      </g>
+      <g id="bgBench">
+        <rect x="2" y="8" width="116" height="9" rx="3" fill="#C89B66" stroke="#3B598F" stroke-width="2.5"/>
+        <rect x="10" y="17" width="9" height="13" fill="#B98A57" stroke="#3B598F" stroke-width="2"/>
+        <rect x="101" y="17" width="9" height="13" fill="#B98A57" stroke="#3B598F" stroke-width="2"/>
+        <rect x="2" y="30" width="116" height="4" rx="2" fill="#B98A57" stroke="#3B598F" stroke-width="2"/>
+      </g>
+      <g id="hallWindow">
+        <path d="M255 140 L395 140 L265 900 L25 900 Z" fill="#FFE9A8" opacity="0.2"/>
+        <rect x="250" y="14" width="150" height="122" rx="8" fill="#FFF3C4" stroke="#3B598F" stroke-width="5" opacity="0.95"/>
+        <path d="M325 18 V132 M254 75 H396" stroke="#3B598F" stroke-width="4"/>
+        <path d="M262 30 L296 24" stroke="#FFFFFF" stroke-width="6" stroke-linecap="round" opacity="0.7"/>
+      </g>
     </defs>
   </svg>
 
@@ -1715,8 +1741,21 @@
         <svg width="64" height="100" viewBox="0 0 64 100" aria-hidden="true"><use href="#npcBody"/><use href="#npcHairA"/></svg>
       </div>
       <svg class="pitch-svg" width="430" height="178" viewBox="0 0 430 178" aria-hidden="true">
-        <use href="#carSide" transform="translate(0,36)"/>
-        <use href="#gBox" transform="translate(24,68) scale(0.72)"/>
+        <g class="sc-out">
+          <use href="#carSide" transform="translate(0,36)"/>
+          <use href="#gBox" transform="translate(24,68) scale(0.72)"/>
+        </g>
+        <g class="sc-in">
+          <use href="#gRecords" transform="translate(10,92) scale(0.85)"/>
+          <use href="#gRadio" transform="translate(70,92) scale(0.9)"/>
+          <use href="#gBooks" transform="translate(126,95) scale(0.9)"/>
+          <use href="#gGameboy" transform="translate(184,80) scale(0.9)"/>
+          <use href="#tableBig" transform="translate(4,126)"/>
+          <use href="#tableBig" transform="translate(148,126)"/>
+          <use href="#gBox" transform="translate(16,140) scale(0.7)"/>
+          <use href="#gBox" transform="translate(160,144) scale(0.62)"/>
+          <use href="#gFrame" transform="translate(232,120) scale(0.95)"/>
+        </g>
         <g transform="translate(288,0)">
           <use href="#gPolaroid" transform="translate(6,86) scale(0.95)"/>
           <use href="#gGameboy" transform="translate(72,81) scale(0.9)"/>
@@ -1745,10 +1784,26 @@
         <svg width="64" height="100" viewBox="0 0 64 100" aria-hidden="true"><use href="#npcBody"/><use href="#npcHairB"/></svg>
       </div>
       <svg class="pitch-svg" width="430" height="178" viewBox="0 0 430 178" aria-hidden="true">
-        <use href="#carHatch" transform="translate(0,36)"/>
-        <rect x="38" y="96" width="38" height="10" rx="4" fill="#E58AB6" stroke="#142A55" stroke-width="2.5"/>
-        <rect x="40" y="86" width="36" height="10" rx="4" fill="#FBF6EC" stroke="#142A55" stroke-width="2.5"/>
-        <rect x="39" y="76" width="37" height="10" rx="4" fill="#FFD75E" stroke="#142A55" stroke-width="2.5"/>
+        <g class="sc-out">
+          <use href="#carHatch" transform="translate(0,36)"/>
+          <rect x="38" y="96" width="38" height="10" rx="4" fill="#E58AB6" stroke="#142A55" stroke-width="2.5"/>
+          <rect x="40" y="86" width="36" height="10" rx="4" fill="#FBF6EC" stroke="#142A55" stroke-width="2.5"/>
+          <rect x="39" y="76" width="37" height="10" rx="4" fill="#FFD75E" stroke="#142A55" stroke-width="2.5"/>
+        </g>
+        <g class="sc-in">
+          <rect x="16" y="116" width="38" height="10" rx="4" fill="#E58AB6" stroke="#142A55" stroke-width="2.5"/>
+          <rect x="18" y="106" width="36" height="10" rx="4" fill="#FBF6EC" stroke="#142A55" stroke-width="2.5"/>
+          <rect x="17" y="96" width="37" height="10" rx="4" fill="#FFD75E" stroke="#142A55" stroke-width="2.5"/>
+          <use href="#gTrainer" transform="translate(66,98) scale(0.9)"/>
+          <rect x="130" y="116" width="34" height="10" rx="3" fill="#B79FD8" stroke="#142A55" stroke-width="2.5"/>
+          <rect x="132" y="106" width="32" height="10" rx="3" fill="#3FC1C9" stroke="#142A55" stroke-width="2.5"/>
+          <use href="#gPolaroid" transform="translate(176,88) scale(0.9)"/>
+          <use href="#tableBig" transform="translate(4,126)"/>
+          <use href="#tableBig" transform="translate(148,126)"/>
+          <use href="#gBox" transform="translate(20,142) scale(0.65)"/>
+          <use href="#gBooks" transform="translate(158,146) scale(0.65)"/>
+          <use href="#gBox" transform="translate(236,148) scale(0.55)"/>
+        </g>
         <g transform="translate(288,0)">
           <rect x="8" y="116" width="34" height="10" rx="3" fill="#E58AB6" stroke="#142A55" stroke-width="2.5"/>
           <rect x="10" y="106" width="32" height="10" rx="3" fill="#FBF6EC" stroke="#142A55" stroke-width="2.5"/>
@@ -1780,8 +1835,21 @@
         <svg width="64" height="100" viewBox="0 0 64 100" aria-hidden="true"><use href="#npcBody"/><use href="#npcCap"/></svg>
       </div>
       <svg class="pitch-svg" width="430" height="178" viewBox="0 0 430 178" aria-hidden="true">
-        <use href="#carSaloon" transform="translate(0,36)"/>
-        <use href="#gCamera" transform="translate(24,66) scale(0.42)"/>
+        <g class="sc-out">
+          <use href="#carSaloon" transform="translate(0,36)"/>
+          <use href="#gCamera" transform="translate(24,66) scale(0.42)"/>
+        </g>
+        <g class="sc-in">
+          <use href="#gCamera" transform="translate(8,95) scale(0.42)"/>
+          <use href="#gController" transform="translate(70,105) scale(0.65)"/>
+          <use href="#gRadio" transform="translate(118,92) scale(0.9)"/>
+          <use href="#gGameboy" transform="translate(182,80) scale(0.9)"/>
+          <use href="#tableBig" transform="translate(4,126)"/>
+          <use href="#tableBig" transform="translate(148,126)"/>
+          <use href="#gRecords" transform="translate(14,144) scale(0.6)"/>
+          <use href="#gBox" transform="translate(162,142) scale(0.65)"/>
+          <use href="#gBox" transform="translate(238,148) scale(0.55)"/>
+        </g>
         <g transform="translate(288,0)">
           <use href="#gRecords" transform="translate(4,92) scale(0.8)"/>
           <use href="#gController" transform="translate(58,98) scale(0.85)"/>
@@ -1810,7 +1878,21 @@
         <svg width="64" height="100" viewBox="0 0 64 100" aria-hidden="true"><use href="#npcBody"/><use href="#npcHairA"/></svg>
       </div>
       <svg class="pitch-svg" width="430" height="178" viewBox="0 0 430 178" aria-hidden="true">
-        <use href="#carVanBig" transform="translate(0,36)"/>
+        <g class="sc-out">
+          <use href="#carVanBig" transform="translate(0,36)"/>
+        </g>
+        <g class="sc-in">
+          <use href="#gGameboy" transform="translate(12,80) scale(0.9)"/>
+          <use href="#gPolaroid" transform="translate(52,88) scale(0.9)"/>
+          <use href="#gController" transform="translate(112,105) scale(0.65)"/>
+          <use href="#gBooks" transform="translate(152,95) scale(0.9)"/>
+          <use href="#gTrainer" transform="translate(210,98) scale(0.9)"/>
+          <use href="#tableBig" transform="translate(4,126)"/>
+          <use href="#tableBig" transform="translate(148,126)"/>
+          <use href="#gBox" transform="translate(18,142) scale(0.65)"/>
+          <use href="#gRecords" transform="translate(164,146) scale(0.55)"/>
+          <use href="#gBox" transform="translate(240,148) scale(0.55)"/>
+        </g>
         <g transform="translate(288,0)">
           <use href="#gGameboy" transform="translate(2,81) scale(0.9)"/>
           <use href="#gRadio" transform="translate(42,90) scale(0.95)"/>
@@ -1840,7 +1922,20 @@
         <svg width="64" height="100" viewBox="0 0 64 100" aria-hidden="true"><use href="#npcBody"/><use href="#npcHairB"/></svg>
       </div>
       <svg class="pitch-svg" width="430" height="178" viewBox="0 0 430 178" aria-hidden="true">
-        <use href="#carPickup" transform="translate(0,36)"/>
+        <g class="sc-out">
+          <use href="#carPickup" transform="translate(0,36)"/>
+        </g>
+        <g class="sc-in">
+          <use href="#gPolaroid" transform="translate(10,88) scale(0.95)"/>
+          <use href="#gFrame" transform="translate(70,83) scale(0.9)"/>
+          <use href="#gCamera" transform="translate(118,95) scale(0.42)"/>
+          <use href="#gBooks" transform="translate(174,95) scale(0.9)"/>
+          <use href="#tableBig" transform="translate(4,126)"/>
+          <use href="#tableBig" transform="translate(148,126)"/>
+          <use href="#gBox" transform="translate(20,142) scale(0.65)"/>
+          <use href="#gBox" transform="translate(158,144) scale(0.6)"/>
+          <use href="#gFrame" transform="translate(232,122) scale(0.95)"/>
+        </g>
         <g transform="translate(288,0)">
           <use href="#gPolaroid" transform="translate(4,86) scale(0.95)"/>
           <use href="#gFrame" transform="translate(68,83) scale(0.9)"/>
@@ -1869,10 +1964,25 @@
         <svg width="64" height="100" viewBox="0 0 64 100" aria-hidden="true"><use href="#npcBody"/><use href="#npcCap"/></svg>
       </div>
       <svg class="pitch-svg" width="430" height="178" viewBox="0 0 430 178" aria-hidden="true">
-        <use href="#carSaloon" transform="translate(0,36)"/>
-        <rect x="28" y="88" width="42" height="12" rx="2" fill="#E5484D" stroke="#142A55" stroke-width="2.5"/>
-        <rect x="32" y="76" width="36" height="12" rx="2" fill="#4B7BE5" stroke="#142A55" stroke-width="2.5"/>
-        <rect x="30" y="64" width="34" height="12" rx="2" fill="#3FC1C9" stroke="#142A55" stroke-width="2.5"/>
+        <g class="sc-out">
+          <use href="#carSaloon" transform="translate(0,36)"/>
+          <rect x="28" y="88" width="42" height="12" rx="2" fill="#E5484D" stroke="#142A55" stroke-width="2.5"/>
+          <rect x="32" y="76" width="36" height="12" rx="2" fill="#4B7BE5" stroke="#142A55" stroke-width="2.5"/>
+          <rect x="30" y="64" width="34" height="12" rx="2" fill="#3FC1C9" stroke="#142A55" stroke-width="2.5"/>
+        </g>
+        <g class="sc-in">
+          <rect x="14" y="114" width="42" height="12" rx="2" fill="#E5484D" stroke="#142A55" stroke-width="2.5"/>
+          <rect x="18" y="102" width="36" height="12" rx="2" fill="#4B7BE5" stroke="#142A55" stroke-width="2.5"/>
+          <rect x="16" y="90" width="34" height="12" rx="2" fill="#3FC1C9" stroke="#142A55" stroke-width="2.5"/>
+          <use href="#gFrame" transform="translate(66,83) scale(0.9)"/>
+          <use href="#gBooks" transform="translate(114,95) scale(0.9)"/>
+          <use href="#gRadio" transform="translate(172,92) scale(0.9)"/>
+          <use href="#tableBig" transform="translate(4,126)"/>
+          <use href="#tableBig" transform="translate(148,126)"/>
+          <use href="#gRecords" transform="translate(22,146) scale(0.55)"/>
+          <use href="#gBox" transform="translate(162,142) scale(0.65)"/>
+          <use href="#gTrainer" transform="translate(234,140) scale(0.8)"/>
+        </g>
         <g transform="translate(288,0)">
           <use href="#gFrame" transform="translate(4,88) scale(0.8)"/>
           <use href="#gBooks" transform="translate(44,95) scale(0.9)"/>
@@ -2138,7 +2248,19 @@
       cloudHtml += '<svg class="cloud" style="left:' + (c[0] + ck * CB) + 'px;top:' + c[1] + 'px;animation-delay:-' + (i * 2.6) + 's" width="' + c[2] + '" height="' + Math.round(c[2] * 0.47) + '" viewBox="0 0 150 70"><use href="#cloud"/></svg>';
     });
   }
-  sky.innerHTML = cloudHtml;
+  // indoors there is no sky: high hall windows instead, each throwing a shaft of light
+  var indoorNow = false; // set by applyVenue - an indoor venue refurnishes the whole scene
+  function hallSkyHtml() {
+    var html = "";
+    for (var hk = 0; hk < 3; hk++) {
+      [60, 560, 1060, 1560, 2060, 2560].forEach(function (wx) {
+        html += '<svg class="hallwin" style="left:' + (wx + hk * CB) + 'px;top:0" width="420" height="900" viewBox="0 0 420 900"><use href="#hallWindow"/></svg>';
+      });
+    }
+    return html;
+  }
+  function buildSky() { sky.innerHTML = indoorNow ? hallSkyHtml() : cloudHtml; }
+  buildSky();
 
   // we're at the bottom of the slope - terraced bands rise behind, one per row of pitches
   // colours live in CSS vars so a venue palette repaints the whole field
@@ -2155,7 +2277,43 @@
   var carColors = ["#E0938F", "#8FB7E8", "#9CCF9E", "#E8C57F", "#B79FD8", "#8FD0D4", "#EFA98A"];
   var figColors = ["#B23B5E", "#2F5FD0", "#3E8A4C", "#8A5FB0", "#C2703F"];
   var RB = 2600; // background rows repeat every RB px within their own layer
+  // indoors nobody parked on the pitches: ranks of tables instead, with the hall's
+  // own kit - wall bars on the back wall, gym benches - showing between them
+  function buildHallRow(el, scale, bottom, seed) {
+    var slots = [], hx = 40 + seed * 70, hi = 0;
+    while (hx < RB - 240 * scale) {
+      slots.push([Math.round(hx), hi]);
+      hx += (210 + ((hi * 41 + seed * 23) % 70)) * scale;
+      hi++;
+    }
+    var html = "";
+    for (var k = 0; k < 3; k++) {
+      slots.forEach(function (p) {
+        var pi = p[1], left = p[0] + k * RB;
+        // the deepest row sits against the wall, so that is where the gym kit lives
+        var kind = seed === 2 ? (pi % 3 === 0 ? "bars" : pi % 3 === 1 ? "pitch" : "bench")
+          : seed === 1 ? (pi % 4 === 3 ? "bench" : "pitch")
+          : "pitch";
+        if (kind === "bars") {
+          html += '<svg class="bgpitch" style="left:' + left + 'px;bottom:' + bottom + 'px" width="' + Math.round(96 * scale) + '" height="' + Math.round(130 * scale) + '" viewBox="0 0 96 130"><use href="#bgWallbars"/></svg>';
+        } else if (kind === "bench") {
+          html += '<svg class="bgpitch" style="left:' + left + 'px;bottom:' + bottom + 'px" width="' + Math.round(120 * scale) + '" height="' + Math.round(36 * scale) + '" viewBox="0 0 120 36"><use href="#bgBench"/></svg>';
+        } else {
+          var tblL = (pi + seed) % 2 ? "bgTableA" : "bgTableB";
+          var tblR = (pi + seed) % 2 ? "bgTableB" : "bgTableA";
+          var fig = (pi * 3 + seed) % 3 !== 0
+            ? '<use href="#bgFig" transform="translate(58,13)" style="color:' + figColors[(pi * 2 + seed) % figColors.length] + '"/>'
+            : "";
+          html += '<svg class="bgpitch" style="left:' + left + 'px;bottom:' + bottom + 'px" width="' + Math.round(136 * scale) + '" height="' + Math.round(50 * scale) + '" viewBox="0 0 136 50">' + fig
+            + '<use href="#' + tblL + '" transform="translate(4,13)"/>'
+            + '<use href="#' + tblR + '" transform="translate(70,13)"/></svg>';
+        }
+      });
+    }
+    el.innerHTML = html;
+  }
   function buildRow(el, scale, bottom, seed) {
+    if (indoorNow) return buildHallRow(el, scale, bottom, seed);
     var pitches = [], x = 30 + seed * 55, i = 0;
     while (x < RB - 220 * scale) {
       pitches.push([Math.round(x), i]);
@@ -2179,9 +2337,12 @@
     }
     el.innerHTML = html;
   }
-  buildRow(far1, 0.34, 206, 2);
-  buildRow(far2, 0.46, 156, 1);
-  buildRow(far3, 0.62, 96, 0);
+  function buildRows() {
+    buildRow(far1, 0.34, 206, 2);
+    buildRow(far2, 0.46, 156, 1);
+    buildRow(far3, 0.62, 96, 0);
+  }
+  buildRows();
   var stalls = Array.prototype.slice.call(document.querySelectorAll(".stall")).map(function (el) {
     var baseLeft = parseFloat(el.style.left);
     return { el: el, baseLeft: baseLeft, x0: baseLeft + el.offsetWidth / 2, x: baseLeft + el.offsetWidth / 2, k: 0, href: el.getAttribute("data-href"), name: (el.getAttribute("aria-label") || "").split(" pitch")[0] };
@@ -2194,6 +2355,20 @@
   var dragging = false, dragMoved = 0, dragLastX = 0, dragLastT = 0, dragVel = 0, flick = 0;
   var zoom = 1;
 
+  // grass tufts outdoors; indoors the same strip is a hall floor with court markings
+  function paintGround() {
+    if (indoorNow) {
+      ground.style.backgroundImage =
+        "linear-gradient(transparent " + Math.round(12 * zoom) + "px, rgb(246 239 227 / 0.75) " + Math.round(12 * zoom) + "px, rgb(246 239 227 / 0.75) " + Math.round(15 * zoom) + "px, transparent " + Math.round(15 * zoom) + "px), " +
+        "repeating-linear-gradient(90deg, transparent 0, transparent " + Math.round(420 * zoom) + "px, rgb(75 123 229 / 0.45) " + Math.round(420 * zoom) + "px, rgb(75 123 229 / 0.45) " + Math.round(423 * zoom) + "px)";
+      ground.style.backgroundSize = "auto";
+    } else {
+      ground.style.backgroundImage =
+        "radial-gradient(ellipse " + 9 * zoom + "px " + 4 * zoom + "px at " + 60 * zoom + "px " + 34 * zoom + "px, var(--tuft) 98%, transparent), " +
+        "radial-gradient(ellipse " + 7 * zoom + "px " + 3 * zoom + "px at " + 220 * zoom + "px " + 66 * zoom + "px, var(--tuft) 98%, transparent)";
+      ground.style.backgroundSize = 340 * zoom + "px " + 92 * zoom + "px";
+    }
+  }
   // scale the whole scene to the screen so the field isn't a thin strip under a huge sky
   function computeZoom() {
     zoom = Math.max(1, Math.min(2.5, view.clientHeight / 560));
@@ -2202,10 +2377,7 @@
     document.body.style.setProperty("--iz", (1 / zoom).toFixed(4));
     ground.style.height = Math.round(92 * zoom) + "px";
     slope.style.transform = "scale(" + zoom + ")";
-    ground.style.backgroundImage =
-      "radial-gradient(ellipse " + 9 * zoom + "px " + 4 * zoom + "px at " + 60 * zoom + "px " + 34 * zoom + "px, var(--tuft) 98%, transparent), " +
-      "radial-gradient(ellipse " + 7 * zoom + "px " + 3 * zoom + "px at " + 220 * zoom + "px " + 66 * zoom + "px, var(--tuft) 98%, transparent)";
-    ground.style.backgroundSize = 340 * zoom + "px " + 92 * zoom + "px";
+    paintGround();
   }
   computeZoom();
 
@@ -2947,9 +3119,18 @@
     for (var i = 0; i < VENUES.length; i++) if (lvlIdx < VENUES[i].lvl) return VENUES[i];
     return null;
   }
+  // which venues are indoors: those get hall scenery instead of sky, cars and grass
+  var SCENES = { fair: { indoor: true } };
   function applyVenue() {
     VENUES.forEach(function (v) { if (v.cls) document.body.classList.remove(v.cls); });
     if (V().cls) document.body.classList.add(V().cls);
+    var indoor = !!(SCENES[V().id] || {}).indoor;
+    if (indoor !== indoorNow) {
+      indoorNow = indoor;
+      buildSky();
+      buildRows();
+      paintGround();
+    }
   }
 
   // ---- one-shot tips: the game explains itself once, then shuts up ----
