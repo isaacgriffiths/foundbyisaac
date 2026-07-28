@@ -635,13 +635,15 @@
   }
 
   /* richer venues lay every crate out at once, each with its own find on top.
-     The one you're haggling for wears a ring so you can see which is which. */
-  .rare.picked::before {
-    content: ""; position: absolute; left: -7px; right: -7px; top: 26px; bottom: -5px;
-    border: 3px solid #FFD75E; border-radius: 12px;
-    box-shadow: 0 0 10px rgb(255 215 94 / 0.65);
-  }
+     Which one you're on is shown by the picture on the card, not a ring on the field. */
   .rare.gone { opacity: 0.4; }
+
+  /* the find you're haggling over, pictured on the card itself */
+  .say-head { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .say-art {
+    display: block; width: 52px; height: 52px; flex: 0 0 auto;
+    background: #F1F6FE; border: 2.5px solid var(--outline); border-radius: 12px;
+  }
 
   /* flick between the crates on this pitch */
   .say-swap { display: none; align-items: center; justify-content: center; gap: 10px; margin-bottom: 7px; }
@@ -1304,6 +1306,9 @@
   }
   .mini-stake[hidden] { display: none; }
 
+  /* scrapping is the sad option, so it doesn't get to look like the good ones */
+  .lp-btns .lp-junk { background: #F1F6FE; color: #3D5688; font-size: 12px; }
+
   /* clean the lens: scrub the smudges off */
   .wipe .photo {
     position: relative; height: 190px; max-width: 300px; margin: 0 auto;
@@ -1383,6 +1388,21 @@
     background: #3E4A5C; border: 3px solid var(--outline); border-radius: 10px;
   }
   .pbin.chomp { background: #55A45D; }
+
+  /* weigh it in: the bail-out for stock that isn't going to sell */
+  .scrapg { position: relative; height: 210px; }
+  .scrapg .sitem {
+    position: absolute; left: 14px; top: 24px; width: 62px; height: 62px;
+    display: grid; place-items: center; font-size: 32px;
+    background: #FBF6EC; border: 3px solid var(--outline); border-radius: 12px;
+    cursor: grab; touch-action: none;
+  }
+  .scrapg .sbin {
+    position: absolute; right: 12px; bottom: 10px; width: 108px; height: 128px;
+    display: grid; place-items: center; font-size: 44px;
+    background: #3E4A5C; border: 3px solid var(--outline); border-radius: 12px;
+  }
+  .scrapg .sbin.chomp { background: #55A45D; }
 
   /* punch in the postcode */
   .pcode .ptarget {
@@ -4657,7 +4677,8 @@
         + (gp.tr ? ' <span class="tag-hot">🔥 trending +50%</span>' : "")
         + '<div class="lp-meta">Paid ' + fmtC(e.paid) + " · guide price ~" + fmtC(gp.g) + "</div>"
         + '<div class="lp-btns"><button type="button" data-act="ebay" data-i="' + i + '"' + (canList ? "" : " disabled") + ">🔨 Auction on eBay</button>"
-        + '<button type="button" data-act="vinted" data-i="' + i + '"' + (canList ? "" : " disabled") + ">👗 List on Vinted</button></div></div>";
+        + '<button type="button" data-act="vinted" data-i="' + i + '"' + (canList ? "" : " disabled") + ">👗 List on Vinted</button>"
+        + '<button type="button" class="lp-junk" data-act="scrap" data-i="' + i + '">🗑️ Scrap it · ~' + fmtC(scrapVal(e)) + "</button></div></div>";
     });
     html += '<div class="lp-h">📡 Live listings (' + listings.length + "/" + maxListings() + ")</div>";
     if (!listings.length) html += '<div class="lp-row lp-dim">Nothing listed yet.</div>';
@@ -4694,6 +4715,13 @@
       playMini(pickFrom(LIST_POOL)(), function (score) { listItem(i, act, score); },
         "🎁 Score 70%+ and the listing gets a random boost · higher price, hotter bids or a keen buyer");
     }
+    // the bail-out: instant cash for stock you've gone off, at a small loss
+    else if (act === "scrap") {
+      var se = inv[i];
+      if (!se) return;
+      playMini(gScrap(items[se.i].e), function (score) { scrapItem(i, score); },
+        "🗑️ Cash straight away, no listing and no packing · but always less than you paid");
+    }
     else if (act === "acc") {
       var L = listings[i];
       if (L && L.offer) soldListing(L, L.offer);
@@ -4707,6 +4735,22 @@
       }
     }
   });
+
+  // scrapping never turns a profit: that's the point, it's a way out of dead stock,
+  // not a strategy. A clean drop into the skip gets you nearer the top of the band.
+  function scrapVal(e, score) { return Math.max(1, Math.round(e.paid * (0.7 + 0.2 * (score || 0.5)))); }
+  function scrapItem(invIdx, score) {
+    var e = inv[invIdx];
+    if (!e) return;
+    inv.splice(invIdx, 1);
+    var it2 = items[e.i];
+    var got = scrapVal(e, score);
+    wallet += got;
+    updWallet();
+    popProfit(got - e.paid);
+    banner("🗑️ " + it2.n + " weighed in for " + fmtC(got) + " · you paid " + fmtC(e.paid) + ". Cash in hand, mind.", 6500);
+    save(); buildLaptop(); updBadges();
+  }
 
   var vipNext = false; // a delighted buyer talks you up, and the next listing benefits
   function listItem(invIdx, plat, photo) {
@@ -5409,6 +5453,41 @@
     };
   }
 
+  // 17. the bail-out - shove it in the skip and take what the scrappie gives you
+  function gScrap(emoji) {
+    return {
+      title: "🗑️ Weigh it in", hint: "Drag it into the skip · quick cash, no packing", cls: "scrapg",
+      start: function (host, done, timeLeft) {
+        host.innerHTML = '<div class="sbin">🗑️</div><div class="sitem">' + (emoji || "📦") + "</div>";
+        var bin = host.querySelector(".sbin"), el = host.querySelector(".sitem"), drag = false;
+        el.addEventListener("pointerdown", function (e) {
+          drag = true;
+          try { el.setPointerCapture(e.pointerId); } catch (err) {}
+        });
+        el.addEventListener("pointermove", function (e) {
+          if (!drag) return;
+          var hr = host.getBoundingClientRect();
+          el.style.left = (e.clientX - hr.left - 31) + "px";
+          el.style.top = (e.clientY - hr.top - 31) + "px";
+        });
+        ["pointerup", "pointercancel"].forEach(function (ev) {
+          el.addEventListener(ev, function () {
+            if (!drag) return;
+            drag = false;
+            var pr = el.getBoundingClientRect(), br = bin.getBoundingClientRect();
+            var cx = pr.left + pr.width / 2, cy = pr.top + pr.height / 2;
+            if (cx > br.left && cx < br.right && cy > br.top && cy < br.bottom) {
+              el.remove();
+              bin.classList.add("chomp");
+              if (navigator.vibrate) { try { navigator.vibrate(8); } catch (err) {} }
+              done(timeLeft());
+            }
+          });
+        });
+      }
+    };
+  }
+
   // three tasks per parcel, drawn at random from the pool with no repeats, so no two
   // parcels play the same. The draw is stored on the order so it survives a reload.
   // New games join at the END of PACK_POOL: saved orders store pool indexes.
@@ -5857,7 +5936,6 @@
       if (o.shiny) el.classList.add("shiny");
       if (o.sold) el.classList.add("sold", "gone");
       if (crateEmpty && i === 0) el.classList.add("empty");
-      if (i === sel && slots.length > 1 && !o.sold) el.classList.add("picked");
     }
     function paintCrates() { for (var i = 0; i < crateEls.length; i++) paintCrate(i); }
     // switch which crate you're haggling over, skipping any already sold
@@ -5912,6 +5990,8 @@
 
     sayEl.innerHTML = '<div class="say-swap"><button type="button" class="sw-prev" aria-label="Previous crate">‹</button>'
       + '<b class="sw-lbl"></b><button type="button" class="sw-next" aria-label="Next crate">›</button></div>'
+      + '<div class="say-head"><svg class="say-art" viewBox="-3 -3 42 42" aria-hidden="true"><use class="say-item-use" href="#r0"/></svg>'
+      + '<span class="tier-chip"></span></div>'
       + '<div class="say-text"></div><div class="say-price"></div>'
       + '<div class="say-offer"><button type="button" class="st-dn" aria-label="Lower your offer">−</button>'
       + '<b class="st-val"></b><button type="button" class="st-up" aria-label="Raise your offer">+</button></div>'
@@ -5941,7 +6021,9 @@
         swap: root.querySelector(".say-swap"),
         swPrev: root.querySelector(".sw-prev"),
         swNext: root.querySelector(".sw-next"),
-        swLbl: root.querySelector(".sw-lbl")
+        swLbl: root.querySelector(".sw-lbl"),
+        art: root.querySelector(".say-item-use"),
+        chip: root.querySelector(".tier-chip")
       };
     }
     function bindHaggle(u) {
@@ -5984,12 +6066,16 @@
     var TIER_LABEL = { 1: "Find", 2: "Quality", 3: "Rare", 4: "Legendary" };
     function render(html) {
       var u = ui();
-      if (sheet) {
-        sheet.owner = s;
-        sheet.art.setAttribute("href", "#" + it.d);
-        sheet.art.style.color = it.c || "#8FB7E8";
-        sheet.chip.textContent = shiny ? "✨ SHINY" : TIER_LABEL[tier];
-        sheet.chip.className = "tier-chip t" + tier + (shiny ? " shiny" : "");
+      if (sheet) sheet.owner = s;
+      // the card carries a picture of the find, so on a multi-crate pitch you can
+      // see at a glance which one the arrows have you on
+      if (u.art) {
+        u.art.setAttribute("href", "#" + it.d);
+        u.art.style.color = it.c || "#8FB7E8";
+      }
+      if (u.chip) {
+        u.chip.textContent = shiny ? "✨ SHINY" : TIER_LABEL[tier];
+        u.chip.className = "tier-chip t" + tier + (shiny ? " shiny" : "");
       }
       u.text.innerHTML = html;
       // the crate switcher only appears where there's more than one crate to switch to
