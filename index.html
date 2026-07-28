@@ -616,6 +616,13 @@
     #barter { top: calc(116px + env(safe-area-inset-top, 0px)); }
   }
 
+  /* richer venues pile spare crates beside the glowing one: buy, and the next is opened */
+  .rare-extra { position: absolute; left: 268px; bottom: 0; width: 96px; height: 60px; display: none; pointer-events: none; }
+  body.vcr2 .rare-extra { display: block; }
+  .rare-extra .x2 { display: none; }
+  body.vcr3 .rare-extra .x2 { display: inline; }
+  body.in-wh .rare-extra { display: none; }
+
   .rare.sold .rare-item { animation: none; filter: none; }
   .rare.sold .spark { display: none; }
   .rare.sold::after {
@@ -2767,7 +2774,212 @@
       h: "My actual stock: Pokémon Game Boy cartridges · the games videos always do numbers." },
     { d: "rUni", n: "a Swarovski crystal unicorn", e: "🦄", a: 45, f: 30, v: 200, t: 3, me: 1,
       q: "Catch the light on that. Go on. Magic.",
-      h: "My actual stock: the Swarovski crystal unicorn · my best performing video ever." }
+      h: "My actual stock: the Swarovski crystal unicorn · my best performing video ever." },
+    // ---- the big restock: the pool tripled so you stop meeting the same vase ----
+    // tier 1 additions - pocket-money tat and honest little earners (and a few traps)
+    { d: "r13", n: "a shoebox of Beanos", e: "📚", a: 8, f: 5, v: 22, t: 1, q: "Couple of annuals in there too." },
+    { d: "r3", n: "a crate of 70s LPs, pot luck", e: "🎶", a: 12, f: 6, v: 30, t: 1, q: "Sleeves are 90% of the value." },
+    { d: "r6", n: "a knock-off 'GameBou'", e: "🎮", a: 10, f: 5, v: 8, t: 1, q: "Does everything the real one does." },
+    { d: "rMug", n: "a mixed box of mugs", e: "☕", a: 6, f: 5, v: 16, t: 1, q: "There's always one keeper in there." },
+    { d: "r11", n: "a set of horse brasses", e: "🕯️", a: 10, f: 5, v: 24, t: 1, q: "Straight off someone's beams." },
+    { d: "r12", n: "a Teasmade, 1978", e: "📻", a: 12, f: 6, v: 34, t: 1, q: "Wakes you with a brew. Terrifying." },
+    { d: "r7", n: "a carriage clock, engraved", e: "🕰️", a: 14, f: 8, v: 30, t: 1, q: "To Derek, 25 years. Poor Derek." },
+    { d: "r9", n: "a bag of football programmes", e: "⚽", a: 10, f: 5, v: 28, t: 1, q: "Lower leagues, upper shelf." },
+    { d: "r2", n: "a disposable camera, used?", e: "📸", a: 5, f: 5, v: 12, t: 1, q: "Mystery photos included." },
+    { d: "r5", n: "a Cornishware jug", e: "🏺", a: 15, f: 8, v: 40, t: 1, q: "Stripes never go out of style." },
+    { d: "r8", n: "a paint-by-numbers Alps", e: "🎨", a: 6, f: 5, v: 14, t: 1, q: "Someone stayed in the lines. Mostly." },
+    { d: "r10", n: "a headless Action Man", e: "🚀", a: 5, f: 5, v: 10, t: 1, q: "Head sold separately. Somewhere." },
+    { d: "r15", n: "a tin of odd earrings", e: "💍", a: 8, f: 5, v: 20, t: 1, q: "Pairs are for amateurs." },
+    { d: "r4", n: "a Casio F-91W", e: "⌚", a: 6, f: 5, v: 18, t: 1, q: "Never needs winding. Never dies." },
+    { d: "r14", n: "a Mega Drive, no leads", e: "🕹️", a: 15, f: 8, v: 42, t: 1, q: "Leads are two quid online. Allegedly." },
+    { d: "rCAH", n: "a Monopoly, 1985", e: "🃏", a: 8, f: 5, v: 22, t: 1, q: "Dog's missing. Iron's fuming." },
+    { d: "rCart", n: "a loose Tetris cartridge", e: "🎮", a: 6, f: 5, v: 18, t: 1, q: "The purest game ever made." },
+    { d: "rWii", n: "a Wii Fit board", e: "🎮", a: 8, f: 5, v: 20, t: 1, q: "It weighs you AND judges you." },
+    { d: "rHenry", n: "a well-loved Hetty", e: "🩷", a: 20, f: 12, v: 50, t: 1, q: "Henry's sister. Same smile." },
+    { d: "rShak", n: "a fondue set, avocado green", e: "🫕", a: 10, f: 5, v: 8, t: 1, q: "Once a decade it's fashionable." },
+    { d: "r13", n: "a wall of Reader's Digests", e: "📚", a: 5, f: 5, v: 6, t: 1, q: "Forty years. Unread. Immaculate." },
+    { d: "r3", n: "a Now That's What I Call 44", e: "🎶", a: 5, f: 5, v: 10, t: 1, q: "Peak Now. Don't argue with me." },
+    { d: "r12", n: "a Walkman that chews tapes", e: "📻", a: 10, f: 5, v: 28, t: 1, q: "Only chews the good ones." },
+    { d: "r5", n: "a hedgehog egg cup family", e: "🏺", a: 8, f: 5, v: 24, t: 1, q: "Four of them. A dynasty." },
+    { d: "r6", n: "a Tamagotchi, deceased", e: "🎮", a: 6, f: 5, v: 22, t: 1, q: "New battery, new life. Circle of life." },
+    { d: "r9", n: "a Subbuteo box, part full", e: "⚽", a: 12, f: 6, v: 32, t: 1, q: "Both teams limp but willing." },
+    { d: "r11", n: "a brass ship's bell", e: "🕯️", a: 15, f: 8, v: 38, t: 1, q: "Loud. The neighbours will confirm." },
+    { d: "r8", n: "a crying boy print", e: "🎨", a: 5, f: 5, v: 4, t: 1, q: "Allegedly cursed. Price reflects." },
+    { d: "r10", n: "a bag of mixed Lego", e: "🚀", a: 14, f: 8, v: 40, t: 1, q: "There's a minifig head in there worth the lot." },
+    { d: "r15", n: "a charm bracelet, plated", e: "💍", a: 10, f: 5, v: 26, t: 1, q: "Every charm a story. Probably fibs." },
+    { d: "r2", n: "a Polaroid 600, sticky", e: "📸", a: 12, f: 6, v: 32, t: 1, q: "Film's dearer than the camera. Sorry." },
+    { d: "r7", n: "a cuckoo clock, shy bird", e: "🕰️", a: 15, f: 8, v: 36, t: 1, q: "Cuckoos when it fancies." },
+    { d: "r14", n: "a PS2 with one pad", e: "🕹️", a: 18, f: 10, v: 45, t: 1, q: "Best selling console ever. Fact." },
+    { d: "rCAH", n: "a Trivial Pursuit, 1984", e: "🃏", a: 6, f: 5, v: 16, t: 1, q: "Answers are all still true. Ish." },
+    { d: "rCart", n: "a Game Genie", e: "🎮", a: 10, f: 5, v: 30, t: 1, q: "Cheating, but vintage cheating." },
+    { d: "r13", n: "a stack of Ladybird books", e: "📚", a: 6, f: 5, v: 18, t: 1, q: "Peter and Jane. National treasures." },
+    { d: "r3", n: "a box of 78s, heavy", e: "🎶", a: 10, f: 5, v: 26, t: 1, q: "Mind your back and your foot." },
+    { d: "r12", n: "a rotary phone, mustard", e: "📻", a: 12, f: 6, v: 34, t: 1, q: "Takes a full minute to dial 999." },
+    { d: "r5", n: "a Toby jug with a chip", e: "🏺", a: 8, f: 5, v: 20, t: 1, q: "The chip gives him character." },
+    { d: "r6", n: "a Simon says game", e: "🎮", a: 10, f: 5, v: 28, t: 1, q: "Still bossy after forty years." },
+    { d: "r9", n: "a set of snooker balls", e: "⚽", a: 12, f: 6, v: 30, t: 1, q: "Full set. I racked them to check." },
+    { d: "r11", n: "a companion set, fireside", e: "🕯️", a: 10, f: 5, v: 26, t: 1, q: "Poker, brush, tongs. The gang's all here." },
+    { d: "r8", n: "a framed map of Yorkshire", e: "🎨", a: 8, f: 5, v: 22, t: 1, q: "God's own county, modest frame." },
+    { d: "r10", n: "a Stretch Armstrong, tired", e: "🚀", a: 8, f: 5, v: 18, t: 1, q: "Stretches. Doesn't spring back." },
+    { d: "r15", n: "a signet ring, brass", e: "💍", a: 6, f: 5, v: 5, t: 1, q: "Looks gold in the right light." },
+    { d: "r4", n: "a Sekonda, boxed", e: "⌚", a: 10, f: 5, v: 24, t: 1, q: "Reliable as rain in August." },
+    { d: "rMug", n: "a Charles and Di wedding mug", e: "☕", a: 5, f: 5, v: 15, t: 1, q: "A moment in history, dishwasher safe." },
+    { d: "rWii", n: "a stack of Wii shovelware", e: "🎮", a: 5, f: 5, v: 4, t: 1, q: "Forty games. Three good ones." },
+    { d: "rShak", n: "a pressure cooker, veteran", e: "🍲", a: 10, f: 5, v: 24, t: 1, q: "Whistles like a referee." },
+    { d: "rHenry", n: "a Henry hose and poles", e: "🔴", a: 6, f: 5, v: 18, t: 1, q: "The hoover's out there somewhere, missing these." },
+    { d: "r2", n: "a camera bag of filters", e: "📸", a: 8, f: 5, v: 24, t: 1, q: "One of them's the good one." },
+    { d: "r7", n: "a mantel clock, loud tick", e: "🕰️", a: 12, f: 6, v: 28, t: 1, q: "You'll stop hearing it. Eventually." },
+    { d: "r13", n: "a Wisden, 1987", e: "📚", a: 10, f: 5, v: 26, t: 1, q: "A good year for leg spin." },
+    { d: "r3", n: "a ukulele with three strings", e: "🎶", a: 8, f: 5, v: 20, t: 1, q: "Three's enough for most songs." },
+    { d: "r5", n: "a Wade Whimsies herd", e: "🏺", a: 10, f: 5, v: 28, t: 1, q: "Tiny. Collectable. Dangerous underfoot." },
+    { d: "r12", n: "a CB radio, breaker breaker", e: "📻", a: 14, f: 8, v: 34, t: 1, q: "Ten-four good buddy. Untested." },
+    { d: "r6", n: "a Game & Watch, worn", e: "🎮", a: 18, f: 10, v: 48, t: 1, q: "Ball. The one that started it all." },
+    { d: "r9", n: "a cricket bat, knocked in", e: "⚽", a: 12, f: 6, v: 30, t: 1, q: "Middled everything since 1993." },
+    { d: "r14", n: "a Dreamcast pad and VMU", e: "🕹️", a: 10, f: 5, v: 26, t: 1, q: "The little screen still beeps." },
+    { d: "rCAH", n: "a Guess Who, complete", e: "🃏", a: 6, f: 5, v: 15, t: 1, q: "Does he wear glasses? He does." },
+    { d: "rCart", n: "a copy of Mario Land", e: "🎮", a: 12, f: 6, v: 34, t: 1, q: "Label's faded. Fun isn't." },
+    { d: "r8", n: "a watercolour of a harbour", e: "🎨", a: 10, f: 5, v: 26, t: 1, q: "Local artist. Local harbour. Lovely." },
+    { d: "r10", n: "a diecast tractor, boxed", e: "🚜", a: 12, f: 6, v: 30, t: 1, q: "Britains. The good ones." },
+    { d: "r11", n: "a pair of brass candle snuffers", e: "🕯️", a: 6, f: 5, v: 16, t: 1, q: "For dramatic exits." },
+    { d: "r15", n: "a locket with someone's nan in it", e: "💍", a: 8, f: 5, v: 22, t: 1, q: "Photo's free. She seems nice." },
+    { d: "r4", n: "a Swatch, 1989", e: "⌚", a: 12, f: 6, v: 32, t: 1, q: "Louder than the eighties." },
+    { d: "rMug", n: "a Sports Direct mug, giant", e: "☕", a: 5, f: 5, v: 3, t: 1, q: "Holds a full kettle. Worthless. Iconic." },
+    { d: "r13", n: "a boxed encyclopedia set", e: "📚", a: 10, f: 5, v: 8, t: 1, q: "Everything true until 1994." },
+    { d: "r3", n: "a harmonica in C", e: "🎶", a: 6, f: 5, v: 16, t: 1, q: "Blues sold separately." },
+    { d: "r5", n: "a carnival glass bowl", e: "🏺", a: 12, f: 6, v: 32, t: 1, q: "Petrol colours. Nan magnet." },
+    { d: "r12", n: "a lava lamp, slow", e: "📻", a: 10, f: 5, v: 26, t: 1, q: "Takes an hour to get going. Same." },
+    { d: "r6", n: "a bag of Pogs and slammers", e: "🎮", a: 5, f: 5, v: 14, t: 1, q: "The 90s in a bag." },
+    { d: "r9", n: "a dartboard and stray darts", e: "🎯", a: 10, f: 5, v: 24, t: 1, q: "Five darts. Three fly straight." },
+    { d: "r2", n: "an Instax with two shots left", e: "📸", a: 14, f: 8, v: 34, t: 1, q: "Choose those two wisely." },
+    { d: "r7", n: "an egg timer, brass", e: "🕰️", a: 5, f: 5, v: 12, t: 1, q: "Three minutes, no notes." },
+    { d: "r10", n: "a Rubik's cube, solved once", e: "🚀", a: 5, f: 5, v: 12, t: 1, q: "Solved in '82. Never again." },
+    { d: "r8", n: "a macramé owl", e: "🦉", a: 6, f: 5, v: 18, t: 1, q: "Seventies. Staring. Superb." },
+    { d: "r14", n: "a GameCube, indigo", e: "🕹️", a: 20, f: 12, v: 55, t: 1, q: "Has a handle. Consoles should have handles." },
+    { d: "rShak", n: "a Soda Stream, retro", e: "🥤", a: 12, f: 6, v: 30, t: 1, q: "Get busy with the fizzy." },
+    { d: "rWii", n: "a box of Wii remotes", e: "🎮", a: 15, f: 8, v: 40, t: 1, q: "Straps included. Tellies beware." },
+    { d: "r11", n: "a trench art shell case", e: "🕯️", a: 14, f: 8, v: 36, t: 1, q: "History you can polish." },
+    { d: "r15", n: "a mood ring, stuck on blue", e: "💍", a: 5, f: 5, v: 11, t: 1, q: "Permanently calm. Aspirational." },
+    { d: "rCAH", n: "an Operation with a working nose", e: "🃏", a: 8, f: 5, v: 20, t: 1, q: "Steady hands, big rewards." },
+    // tier 2 additions - proper stock for the fair and the night market
+    { d: "r7", n: "a railway station clock", e: "🕰️", a: 150, f: 110, v: 230, t: 2, q: "Kept a whole platform punctual." },
+    { d: "r3", n: "a Northern Soul white label", e: "🎶", a: 160, f: 120, v: 240, t: 2, q: "Nobody knows it. That's the point." },
+    { d: "r6", n: "a boxed Game Boy Color, teal", e: "🎮", a: 130, f: 95, v: 210, t: 2, q: "Teal! Like the shakers. Fate." },
+    { d: "r2", n: "a Polaroid Land 250", e: "📸", a: 140, f: 100, v: 220, t: 2, q: "Zeiss finder. Folds like origami." },
+    { d: "r1", n: "an Olympus Trip 35", e: "📷", a: 110, f: 80, v: 170, t: 2, q: "David Bailey sold these. Sort of." },
+    { d: "r5", n: "a Poole Dolphin, huge", e: "🏺", a: 120, f: 90, v: 190, t: 2, q: "The big one. Mantelpiece royalty." },
+    { d: "r13", n: "a Folio Society box set", e: "📚", a: 140, f: 100, v: 210, t: 2, q: "Slipcases mint. Barely sniffed." },
+    { d: "r9", n: "a signed Bobby Charlton photo", e: "⚽", a: 180, f: 130, v: 280, t: 2, q: "Provenance: my mate Trevor." },
+    { d: "r10", n: "a Corgi Batmobile, 1966", e: "🚀", a: 200, f: 150, v: 300, t: 2, q: "Missiles present and correct." },
+    { d: "r11", n: "a pair of Trench lighters", e: "🕯️", a: 130, f: 95, v: 200, t: 2, q: "Both spark first time." },
+    { d: "r12", n: "a Roberts Revival, red", e: "📻", a: 120, f: 90, v: 180, t: 2, q: "The colour sells it before I do." },
+    { d: "r15", n: "a cameo brooch, carved", e: "💍", a: 110, f: 80, v: 170, t: 2, q: "Someone's great-great-someone." },
+    { d: "r4", n: "a Seiko 5 automatic", e: "⌚", a: 120, f: 90, v: 185, t: 2, q: "Wind-up merchant, the good kind." },
+    { d: "r14", n: "an N64 with GoldenEye", e: "🕹️", a: 150, f: 110, v: 240, t: 2, q: "Slappers only. You know the rules." },
+    { d: "r8", n: "an original pub mirror, Guinness", e: "🎨", a: 140, f: 100, v: 220, t: 2, q: "Off a pub wall, officially. Ish." },
+    { d: "rCart", n: "a Pokémon Blue, saved game", e: "🎮", a: 110, f: 80, v: 180, t: 2, q: "Someone's whole childhood on that save." },
+    { d: "rCAH", n: "a chess set, weighted", e: "♟️", a: 120, f: 90, v: 190, t: 2, q: "Feels expensive every move." },
+    { d: "rMug", n: "a full Bridgewater breakfast set", e: "☕", a: 160, f: 120, v: 260, t: 2, q: "Toast rack and all. Posh mornings." },
+    { d: "r7", n: "a ship's chronometer", e: "🕰️", a: 250, f: 190, v: 380, t: 2, q: "Crossed oceans. Now crossing a table." },
+    { d: "r3", n: "a Beatles Please Please Me, mono", e: "🎶", a: 260, f: 200, v: 400, t: 2, q: "Black and gold label. Look closer." },
+    { d: "r1", n: "a Pentax K1000, student-proof", e: "📷", a: 130, f: 95, v: 200, t: 2, q: "Every photography course, ever." },
+    { d: "r5", n: "a Troika marmalade pot", e: "🏺", a: 180, f: 130, v: 280, t: 2, q: "Cornwall's angriest pottery." },
+    { d: "r13", n: "a signed Terry Pratchett", e: "📚", a: 220, f: 160, v: 350, t: 2, q: "Signed at a con in '98. GNU." },
+    { d: "r9", n: "a 1970 World Cup coin set", e: "⚽", a: 120, f: 90, v: 185, t: 2, q: "Esso's finest. Complete." },
+    { d: "r10", n: "a tinplate robot, boxed", e: "🤖", a: 240, f: 180, v: 380, t: 2, q: "Walks, sparks, terrifies the cat." },
+    { d: "r12", n: "a Grundig reel-to-reel", e: "📻", a: 160, f: 120, v: 240, t: 2, q: "Somebody's wedding is still on the spool." },
+    { d: "r15", n: "a jet mourning necklace", e: "💍", a: 140, f: 100, v: 220, t: 2, q: "Whitby's finest. Gothic gold." },
+    { d: "r4", n: "a Tissot Visodate", e: "⌚", a: 260, f: 200, v: 390, t: 2, q: "Dresses up any wrist it meets." },
+    { d: "r14", n: "a SNES, unyellowed", e: "🕹️", a: 180, f: 130, v: 280, t: 2, q: "Kept in a cupboard. The dream." },
+    { d: "r8", n: "a ship in a storm, oils", e: "🎨", a: 200, f: 150, v: 320, t: 2, q: "You can hear the waves. Almost." },
+    { d: "r6", n: "a Game Gear, recapped", e: "🎮", a: 140, f: 100, v: 220, t: 2, q: "Screen's brand new. Batteries still cry." },
+    { d: "r2", n: "an SX-70 Sonar", e: "📸", a: 220, f: 160, v: 340, t: 2, q: "Focuses itself. Witchcraft." },
+    { d: "r11", n: "a Georgian toast rack", e: "🕯️", a: 150, f: 110, v: 240, t: 2, q: "Toast has never had it so good." },
+    { d: "rHenry", n: "a James the hoover, yellow", e: "💛", a: 110, f: 80, v: 180, t: 2, q: "Rarer than Henry. Sunnier too." },
+    { d: "rWii", n: "a boxed Wii, Sports and Resort", e: "🎮", a: 120, f: 90, v: 190, t: 2, q: "Both discs. Family arguments included." },
+    { d: "r7", n: "a skeleton pocket watch", e: "🕰️", a: 280, f: 210, v: 420, t: 2, q: "You can watch it think." },
+    { d: "r3", n: "a 12-string in a hard case", e: "🎶", a: 190, f: 140, v: 300, t: 2, q: "Twice the strings, twice the tune." },
+    { d: "r5", n: "a majolica jardiniere", e: "🏺", a: 210, f: 160, v: 330, t: 2, q: "Big enough to lose a cat in." },
+    { d: "r13", n: "an atlas from 1901", e: "📚", a: 170, f: 125, v: 270, t: 2, q: "Half the countries have moved." },
+    { d: "r9", n: "boxing gloves, signed, faded", e: "🥊", a: 150, f: 110, v: 230, t: 2, q: "Signature's a mystery. Gloves aren't." },
+    { d: "r10", n: "a Dinky Supertoys Foden", e: "🚚", a: 190, f: 140, v: 300, t: 2, q: "Paint's honest. Wheels true." },
+    { d: "r12", n: "a jukebox wall box", e: "📻", a: 230, f: 170, v: 360, t: 2, q: "Diner in a box. B7 for Elvis." },
+    { d: "r15", n: "an opal ring, small fire", e: "💍", a: 190, f: 140, v: 300, t: 2, q: "Unlucky? Only if you sell it cheap." },
+    { d: "r4", n: "a Zenith El Primero, tired", e: "⌚", a: 340, f: 260, v: 500, t: 2, q: "Needs a service. Deserves one." },
+    { d: "r14", n: "an Xbox crystal, modded", e: "🕹️", a: 130, f: 95, v: 200, t: 2, q: "Does things Microsoft never intended." },
+    { d: "r8", n: "a limited screen print, 34/100", e: "🎨", a: 180, f: 130, v: 280, t: 2, q: "Low number, high hopes." },
+    { d: "r6", n: "a Nokia 3310, immortal", e: "📱", a: 110, f: 80, v: 170, t: 2, q: "Charged last month. Still going." },
+    { d: "rCAH", n: "a backgammon set, briefcase", e: "🃏", a: 130, f: 95, v: 200, t: 2, q: "Very seventies. Very slick." },
+    { d: "rCart", n: "a Zelda cartridge, gold", e: "🎮", a: 170, f: 125, v: 270, t: 2, q: "The gold one. It glows on its own." },
+    { d: "r1", n: "a Yashica Mat twin lens", e: "📷", a: 200, f: 150, v: 310, t: 2, q: "Look down, feel fancy." },
+    { d: "r11", n: "an Arts and Crafts fender", e: "🕯️", a: 160, f: 120, v: 250, t: 2, q: "Hammered by hand, ages ago." },
+    { d: "r5", n: "a 'Clarice Cliff' bowl, iffy", e: "🏺", a: 200, f: 150, v: 120, t: 2, q: "Signature's… enthusiastic." },
+    { d: "r9", n: "a replica claret jug", e: "⚽", a: 150, f: 110, v: 90, t: 2, q: "Replica. Says so underneath. Quietly." },
+    { d: "r13", n: "a leather-bound Dickens set", e: "📚", a: 240, f: 180, v: 370, t: 2, q: "Shelf presence for days." },
+    { d: "r10", n: "a Palitoy Death Star, played", e: "🚀", a: 220, f: 160, v: 350, t: 2, q: "Played with properly. As intended." },
+    { d: "r12", n: "a Bush bakelite, hums", e: "📻", a: 140, f: 100, v: 210, t: 2, q: "Hums along. It knows the words." },
+    { d: "r15", n: "a gold bangle, hallmarked", e: "💍", a: 280, f: 210, v: 430, t: 2, q: "Weighs right. Reads right." },
+    { d: "r4", n: "a diver's Citizen, patina", e: "⌚", a: 190, f: 140, v: 290, t: 2, q: "That fade took forty years of sun." },
+    { d: "r7", n: "a barograph in mahogany", e: "🕰️", a: 260, f: 200, v: 400, t: 2, q: "Draws the weather. Beautifully." },
+    { d: "r3", n: "a Bowie Ziggy first press", e: "🎶", a: 240, f: 180, v: 380, t: 2, q: "Play it loud, price it louder." },
+    { d: "r8", n: "a naive farmyard oil", e: "🎨", a: 130, f: 95, v: 210, t: 2, q: "The cow's smiling. That sells." },
+    { d: "r6", n: "a Sega Saturn, import", e: "🎮", a: 180, f: 130, v: 280, t: 2, q: "Region free. Care free." },
+    { d: "r2", n: "a Big Shot portrait camera", e: "📸", a: 210, f: 160, v: 330, t: 2, q: "One trick. A great trick." },
+    { d: "rMug", n: "a Bridgewater Christmas rarity", e: "☕", a: 130, f: 95, v: 210, t: 2, q: "Discontinued robin. Collectors circle." },
+    { d: "r5", n: "a studio pottery lamp base", e: "🏺", a: 140, f: 100, v: 220, t: 2, q: "Wired, tested, gorgeous." },
+    { d: "r14", n: "a PSP with a film UMD", e: "🕹️", a: 120, f: 90, v: 185, t: 2, q: "The film is Cars. Obviously." },
+    { d: "r11", n: "a copper warming pan", e: "🕯️", a: 120, f: 90, v: 180, t: 2, q: "Warms beds and hearts." },
+    { d: "r13", n: "an OS map collection, cloth", e: "📚", a: 120, f: 90, v: 190, t: 2, q: "Britain, before the bypasses." },
+    { d: "r9", n: "a vintage fishing reel, Hardy", e: "🎣", a: 260, f: 200, v: 410, t: 2, q: "The Rolls-Royce of reels." },
+    // tier 3 additions - the glow you cross a field for
+    { d: "r1", n: "a Hasselblad 500C, serviced", e: "📷", a: 850, f: 650, v: 1400, t: 3, q: "Same camera that went to the moon. Ish." },
+    { d: "r3", n: "a Pistols single, A&M label", e: "🎶", a: 900, f: 700, v: 1700, t: 3, q: "Never mind the price. Actually, mind it." },
+    { d: "r7", n: "a fusee pocket watch, London", e: "🕰️", a: 550, f: 420, v: 850, t: 3, q: "Chains inside like a tiny bicycle." },
+    { d: "r5", n: "a Lucie Rie style bowl", e: "🏺", a: 600, f: 460, v: 1000, t: 3, q: "Thin as an eggshell, twice as dear." },
+    { d: "r13", n: "a Tolkien with the map intact", e: "📚", a: 700, f: 540, v: 1200, t: 3, q: "The map. Intact. Sit down." },
+    { d: "r9", n: "a Munich '72 torch", e: "⚽", a: 650, f: 500, v: 1000, t: 3, q: "An actual torch. It's been places." },
+    { d: "r10", n: "a Steiff bear, button-eared", e: "🧸", a: 600, f: 460, v: 950, t: 3, q: "The button in the ear. That's the money." },
+    { d: "r12", n: "a Quad electrostatic pair", e: "📻", a: 750, f: 580, v: 1200, t: 3, q: "Audiophiles weep at these." },
+    { d: "r15", n: "a sapphire cluster, Ceylon", e: "💍", a: 850, f: 650, v: 1400, t: 3, q: "Blue like the brochure promised." },
+    { d: "r4", n: "a Speedmaster, pre-moon", e: "⌚", a: 999, f: 800, v: 2100, t: 3, q: "Before it was famous. The good serial." },
+    { d: "r14", n: "a PC Engine LT, mint", e: "🕹️", a: 800, f: 620, v: 1300, t: 3, q: "Japan's best kept secret." },
+    { d: "r8", n: "a Russell Flint watercolour", e: "🎨", a: 750, f: 580, v: 1250, t: 3, q: "Proper listed artist. Look him up." },
+    { d: "r2", n: "an Aleppo-brown SX-70, custom", e: "📸", a: 500, f: 380, v: 800, t: 3, q: "One of a kind. Literally." },
+    { d: "r11", n: "a Paul Storr style salver", e: "🕯️", a: 900, f: 700, v: 1600, t: 3, q: "Georgian silver with a CV." },
+    { d: "r6", n: "a Nintendo World Class cart", e: "🎮", a: 850, f: 650, v: 1500, t: 3, q: "Tournament stock. Barely legal." },
+    { d: "r3", n: "an acetate of a famous B-side", e: "🎶", a: 600, f: 460, v: 1100, t: 3, q: "Engineer's copy. One spin only." },
+    { d: "r5", n: "a Martin Brothers style bird", e: "🏺", a: 800, f: 620, v: 1400, t: 3, q: "Ugly. Magnificently, valuably ugly." },
+    { d: "r13", n: "a Fleming with the dust jacket", e: "📚", a: 850, f: 650, v: 1500, t: 3, q: "The jacket is nine tenths of it." },
+    { d: "r1", n: "a Leica IIIf, red dial", e: "📷", a: 700, f: 540, v: 1150, t: 3, q: "Red dial. Collectors twitch." },
+    { d: "r7", n: "a repeater that actually repeats", e: "🕰️", a: 950, f: 750, v: 1800, t: 3, q: "Chimes on demand. Show-off." },
+    { d: "r10", n: "a prototype Corgi, unpainted", e: "🚀", a: 650, f: 500, v: 1100, t: 3, q: "Factory escapee. No papers, all charm." },
+    { d: "r15", n: "an emerald deco ring", e: "💍", a: 900, f: 700, v: 1600, t: 3, q: "Green means go. Go on." },
+    { d: "r9", n: "a cap won for England, 1958", e: "⚽", a: 750, f: 580, v: 1300, t: 3, q: "An actual cap. On an actual head, once." },
+    { d: "r12", n: "a Western Electric horn driver", e: "📻", a: 850, f: 650, v: 1500, t: 3, q: "Cinema sound from the golden age." },
+    { d: "r4", n: "a Tudor 'Snowflake' sub", e: "⌚", a: 950, f: 750, v: 1900, t: 3, q: "The navy issued these. To frogmen." },
+    { d: "r14", n: "a sealed Saturn game, JP", e: "🕹️", a: 550, f: 420, v: 950, t: 3, q: "Sealed since Osaka, 1996." },
+    { d: "r8", n: "a Vorticist sketch, unsigned", e: "🎨", a: 700, f: 540, v: 1300, t: 3, q: "If it's who I think it is… blimey." },
+    { d: "r2", n: "a Polaroid 195, pro model", e: "📸", a: 600, f: 460, v: 1000, t: 3, q: "The one the pros hoarded." },
+    { d: "r5", n: "a Moorcroft Claremont bowl", e: "🏺", a: 850, f: 650, v: 1450, t: 3, q: "Toadstools. The expensive kind." },
+    { d: "r6", n: "a Famicom Disk Writer kiosk cart", e: "🎮", a: 700, f: 540, v: 1250, t: 3, q: "Shop furniture from Kyoto." },
+    { d: "r13", n: "a Darwin, third printing", e: "📚", a: 900, f: 700, v: 1700, t: 3, q: "Evolutionarily priced." },
+    { d: "r11", n: "a nef, silver, ship-shaped", e: "🕯️", a: 800, f: 620, v: 1400, t: 3, q: "A ship. In silver. For your table." },
+    { d: "r3", n: "a Blue Note 1568, ear in wax", e: "🎶", a: 999, f: 800, v: 2000, t: 3, q: "Deep groove. Deeper pockets." },
+    { d: "r10", n: "a vinyl-cape mail-away, bagged", e: "🚀", a: 950, f: 750, v: 2000, t: 3, q: "The bag was never opened. HOW." },
+    { d: "r15", n: "a natural pearl strand, papers", e: "💍", a: 850, f: 650, v: 1500, t: 3, q: "Natural, not cultured. Big difference." },
+    { d: "r1", n: "a Nikon F, NASA-spec lookalike", e: "📷", a: 650, f: 500, v: 1100, t: 3, q: "Space-adjacent. Price isn't." },
+    { d: "r7", n: "a 'Breguet', très convincing", e: "🕰️", a: 700, f: 540, v: 450, t: 3, q: "Spelled right and everything." },
+    { d: "r4", n: "a 'Rolex' from a sock", e: "⌚", a: 500, f: 380, v: 60, t: 3, q: "Ticks fast. Suspiciously fast." },
+    { d: "r8", n: "an 'undiscovered Lowry'", e: "🎨", a: 800, f: 620, v: 300, t: 3, q: "Undiscovered for a reason, maybe." },
+    { d: "r12", n: "a McIntosh amp, one channel shy", e: "📻", a: 600, f: 460, v: 1050, t: 3, q: "Blue meters. Half the music." },
+    { d: "r5", n: "a Ruskin high-fired vase", e: "🏺", a: 750, f: 580, v: 1350, t: 3, q: "That red only happened by fire." },
+    { d: "r9", n: "a Wembley '66 turnstile sign", e: "⚽", a: 550, f: 420, v: 950, t: 3, q: "Thousands walked under this. Legends among them." },
+    // tier 4 additions - more real finds for the storybook
+    { d: "r13", n: "a box of comics from a wall", e: "📚", a: 300, f: 240, v: 8000, t: 4,
+      q: "House clearance. They were IN the wall. Insulation, apparently.",
+      h: "Real find: a Minnesota couple renovating their house found an Action Comics No. 1 in the wall insulation · it sold for $175,000." },
+    { d: "r5", n: "a small white bowl, very plain", e: "🥣", a: 35, f: 25, v: 4800, t: 4,
+      q: "Yard sale job. Nice glaze. Nothing fancy.",
+      h: "Real find: a $35 yard-sale bowl turned out to be 15th-century Ming porcelain · Sotheby's sold it for $721,800 in 2021." }
   ];
   // the eggs lean on my real stock: the twin only sells it, the false-bottom crate hides it
   var meItems = items.filter(function (x) { return x.me; });
@@ -3217,7 +3429,20 @@
     if (document.visibilityState === "visible") grantLinkReward();
   });
 
-  function restockAll(force) { stalls.forEach(function (st) { if (st.restock) st.restock(force); }); }
+  // commons pay the bills, so the weighted draw stays common-heavy - but every fresh
+  // visit plants at least one proper rarity somewhere on the field, worth hunting for
+  function guaranteeRare() {
+    var order = stalls.filter(function (st) { return !st.locked && st.forceRare; });
+    for (var i = order.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var tmp = order[i]; order[i] = order[j]; order[j] = tmp;
+    }
+    for (var k = 0; k < order.length; k++) if (order[k].forceRare()) return;
+  }
+  function restockAll(force) {
+    stalls.forEach(function (st) { if (st.restock) st.restock(force); });
+    if (force) guaranteeRare();
+  }
 
   // ---- The Collector: a sixth pitch that only exists once every real link is visited ----
   var secretStallEl = document.getElementById("secretStall");
@@ -3232,17 +3457,19 @@
   // The Sunday Field is home and always open: my real pitches live there, so it can
   // never be locked behind a level. Everything above it costs more at the gate and
   // pays it back in what turns up on the crates.
+  // crates: how many finds each pitch holds before it's cleaned out - the better the
+  // venue, the deeper the pile, so every step up genuinely feels richer
   var VENUES = [
-    { id: "field", cls: "", name: "The Sunday Field", ico: "🌤️", fee: 5, lvl: 0, tier: 0, luck: 1,
+    { id: "field", cls: "", name: "The Sunday Field", ico: "🌤️", fee: 5, lvl: 0, tier: 0, luck: 1, crates: 1,
       desc: "Home turf. My pitches are here.", stock: "Honest stock, cheap in" },
-    { id: "fair", cls: "v-fair", name: "Indoor Antiques Fair", ico: "🏛️", fee: 15, lvl: 1, tier: 1, luck: 1.5,
-      desc: "Dealers who know exactly what they've got.", stock: "Better stock, harder haggling" },
-    { id: "night", cls: "v-night", name: "Night Flea Market", ico: "🌙", fee: 25, lvl: 2, tier: 1, luck: 2.2,
-      desc: "Torchlight only. You buy on the glow and hope.", stock: "Rare finds turn up in the dark" },
-    { id: "sea", cls: "v-sea", name: "Seaside Sunday", ico: "🌊", fee: 35, lvl: 3, tier: 2, luck: 2.6,
-      desc: "Holiday tat and proper maritime finds, side by side.", stock: "Rare and Legendary, if you dig" },
-    { id: "estate", cls: "v-estate", name: "Estate Clearance", ico: "🏚️", fee: 60, lvl: 4, tier: 2, luck: 3.4,
-      desc: "A whole house going at once, rain or shine.", stock: "The richest pickings anywhere" }
+    { id: "fair", cls: "v-fair", name: "Indoor Antiques Fair", ico: "🏛️", fee: 15, lvl: 1, tier: 1, luck: 1.5, crates: 2,
+      desc: "Dealers who know exactly what they've got.", stock: "Better stock · 2 crates a pitch" },
+    { id: "night", cls: "v-night", name: "Night Flea Market", ico: "🌙", fee: 25, lvl: 2, tier: 1, luck: 2.2, crates: 2,
+      desc: "Torchlight only. You buy on the glow and hope.", stock: "Rare finds in the dark · 2 crates" },
+    { id: "sea", cls: "v-sea", name: "Seaside Sunday", ico: "🌊", fee: 35, lvl: 3, tier: 2, luck: 2.6, crates: 3,
+      desc: "Holiday tat and proper maritime finds, side by side.", stock: "Rare and Legendary · 3 crates a pitch" },
+    { id: "estate", cls: "v-estate", name: "Estate Clearance", ico: "🏚️", fee: 60, lvl: 4, tier: 2, luck: 3.4, crates: 3,
+      desc: "A whole house going at once, rain or shine.", stock: "The richest pickings · 3 crates a pitch" }
   ];
   // TEMPORARY: every venue open regardless of level, so the scenery can be reviewed.
   // Flip this back to false to restore the level gates. Nothing else needs changing.
@@ -3262,6 +3489,9 @@
   function applyVenue() {
     VENUES.forEach(function (v) { if (v.cls) document.body.classList.remove(v.cls); });
     if (V().cls) document.body.classList.add(V().cls);
+    // the spare crates stack up beside the find where the venue runs that deep
+    document.body.classList.toggle("vcr2", (V().crates || 1) >= 2);
+    document.body.classList.toggle("vcr3", (V().crates || 1) >= 3);
     var indoor = !!(SCENES[V().id] || {}).indoor;
     if (indoor !== indoorNow) {
       indoorNow = indoor;
@@ -4222,6 +4452,16 @@
     var npcHead = document.createElement("img");
     npcHead.className = "npc-head"; npcHead.src = "avatar.jpg"; npcHead.alt = "";
     npcEl.appendChild(npcHead);
+    // the spare crates piled beside the find - shown at venues deep enough to stock them
+    var cratesLeft = 1;
+    if (rareEl) {
+      var extra = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      extra.setAttribute("class", "rare-extra");
+      extra.setAttribute("viewBox", "0 0 96 60");
+      extra.setAttribute("aria-hidden", "true");
+      extra.innerHTML = '<use href="#rareCrate" transform="translate(2,26)"/><use class="x2" href="#rareCrate" transform="translate(50,0)"/>';
+      s.el.appendChild(extra);
+    }
 
     // the step scales with the price, so a fiver moves in pounds and a grand moves in twenties
     function bidStep() {
@@ -4278,23 +4518,30 @@
       bid = Math.max(1, Math.round(ask * 0.6)); // the stepper opens on a sensible lowball
       flawUsed = false; cashUsed = false;
     }
-    function assignItem() {
+    function rollStock() {
       // the van sets your usual ceiling, but one pitch in twelve turns up something
       // above your pay grade - without this you'd never see a gold glow before £500
       var lucky = maxTier() < 4 && Math.random() < 0.085 * V().luck;
       // The Collector deals in my famous flips and stock above your pay grade, always
-      setItem(isSecret
+      return isSecret
         ? (Math.random() < 0.5 ? pickFrom(meItems) : pickItem(Math.min(4, maxTier() + 1), true))
-        : lucky ? pickItem(maxTier() + 1, true) : pickItem(maxTier()));
+        : lucky ? pickItem(maxTier() + 1, true) : pickItem(maxTier());
+    }
+    function applyTwin() {
+      pers = { label: "🧢 knows exactly what it's worth", floorMul: 1, pat: 3 };
+      persHint = 0;
+      floor = price;
+      patience = maxPat = 3;
+    }
+    function assignItem() {
+      setItem(rollStock());
+      cratesLeft = V().crates || 1;
       // very occasionally the seller is… Isaac, flogging his own famous stock,
       // and he knows exactly what it's worth, so he is not haggling
       isaacTwin = !isSecret && Math.random() < 0.03;
       if (isaacTwin) {
         setItem(pickFrom(meItems));
-        pers = { label: "🧢 knows exactly what it's worth", floorMul: 1, pat: 3 };
-        persHint = 0;
-        floor = price;
-        patience = maxPat = 3;
+        applyTwin();
       }
       npcEl.classList.toggle("isaac", isaacTwin);
       // and sometimes the crate is empty. Unless you check it five times.
@@ -4405,6 +4652,7 @@
 
     function buy(paid, opener) {
       phase = 2;
+      cratesLeft--;
       wallet -= paid;
       // condition is a gamble you find out about back at the warehouse
       var roll = Math.random();
@@ -4416,7 +4664,8 @@
       updWallet();
       if (rareEl) rareEl.classList.add("sold");
       render(opener + " 🤝 " + fmt(paid) + " · <b>" + name + "</b> is in the bag! 🎒 " + inv.length + "/" + bagCap()
-        + (inv.length >= bagCap() ? ' <span class="story">Bag\'s full · take the haul to the warehouse 🏭</span>' : ""));
+        + (inv.length >= bagCap() ? ' <span class="story">Bag\'s full · take the haul to the warehouse 🏭</span>'
+          : cratesLeft > 0 ? ' <span class="story">👀 There\'s another crate here · give us a shout.</span>' : ""));
       buzz();
       if (ask - paid >= 50) questEvent("haggle50");
       // knocking a quarter off is proper work; a modest saving still counts for something
@@ -4513,6 +4762,14 @@
       if (force || phase === 0) { hide(); assignItem(); }
     };
 
+    // the per-visit guarantee: this pitch swaps its roll for something above your
+    // ceiling, unless an egg already claimed it
+    s.forceRare = function () {
+      if (isaacTwin || crateEmpty || phase !== 0) return false;
+      setItem(pickItem(Math.min(3, maxTier() + 1), true));
+      return true;
+    };
+
     s.talk = function () {
       buzz();
       firstContact();
@@ -4544,6 +4801,13 @@
           + (persHint ? ' <span class="story">🗣️ “Worth about ' + fmt(persHint) + ' to the right person, that.”</span>' : ""));
       } else if (phase === 1) {
         render("Make us an offer, then.");
+      } else if (phase === 2 && cratesLeft > 0) {
+        // richer venues stock more than one crate: crack open the next one
+        setItem(isaacTwin ? pickFrom(meItems) : rollStock());
+        if (isaacTwin) applyTwin();
+        phase = 1;
+        render("Next crate open! 📦 <b>" + name.charAt(0).toUpperCase() + name.slice(1) + "</b> " + emoji + " · “" + quip + "”"
+          + (persHint ? ' <span class="story">🗣️ “Worth about ' + fmt(persHint) + ' to the right person, that.”</span>' : ""));
       } else if (phase === 2) {
         render("That one's off to a new home! 📦 More stock when you're back from the warehouse.");
       } else {
@@ -4556,6 +4820,8 @@
       if (e.key === "Enter" || e.key === " ") { e.preventDefault(); e.stopPropagation(); s.talk(); }
     });
   });
+
+  guaranteeRare(); // the day you arrive counts as a fresh visit too
 
   // market churn: untouched pitches quietly swap stock, so there's always something in budget
   setInterval(function () {
