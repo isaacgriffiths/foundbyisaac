@@ -734,7 +734,11 @@
   }
 
   /* ---------- player ---------- */
-  #player { position: absolute; bottom: 34px; left: 0; width: 84px; height: 134px; z-index: 5; will-change: transform; }
+  /* the outfit lives in four vars so the wardrobe can repaint you without touching the drawing */
+  #player {
+    position: absolute; bottom: 34px; left: 0; width: 84px; height: 134px; z-index: 5; will-change: transform;
+    --fit: #2F5FD0; --fit-sh: #2955C2; --fit-leg: #26418F; --fit-trim: #FFFFFF;
+  }
   #player .p-shadow {
     position: absolute;
     bottom: -8px; left: 8px; right: 8px;
@@ -787,7 +791,7 @@
   .pad.running { background: #FFD75E; box-shadow: 0 0 0 4px rgb(255 215 94 / 0.45), 3px 4px 0 rgb(20 42 85 / 0.35); }
 
   /* ---------- plain links panel + upgrades shop + game intro ---------- */
-  #linksPanel, #shopPanel, #introPanel, #rewardPanel, #goalsPanel, #laptopPanel, #packPanel, #miniPanel, #venuePanel {
+  #linksPanel, #shopPanel, #introPanel, #rewardPanel, #goalsPanel, #laptopPanel, #packPanel, #miniPanel, #venuePanel, #dexPanel, #wardPanel {
     position: fixed; inset: 0;
     z-index: 30;
     display: none;
@@ -796,7 +800,7 @@
     background: rgb(13 27 54 / 0.55);
     padding: 20px;
   }
-  #linksPanel.open, #shopPanel.open, #introPanel.open, #rewardPanel.open, #goalsPanel.open, #laptopPanel.open, #packPanel.open, #miniPanel.open, #venuePanel.open { display: flex; }
+  #linksPanel.open, #shopPanel.open, #introPanel.open, #rewardPanel.open, #goalsPanel.open, #laptopPanel.open, #packPanel.open, #miniPanel.open, #venuePanel.open, #dexPanel.open, #wardPanel.open { display: flex; }
   #miniPanel { z-index: 32; } /* sits over the bench it was launched from */
   .panel-card {
     width: 100%;
@@ -882,6 +886,25 @@
   .quest-name { font-family: var(--display); font-weight: 600; font-size: 14.5px; color: #142A55; }
   .quest-prog { font-size: 11px; font-weight: 800; color: #3D5688; }
   .quest-pay { font-family: var(--display); font-weight: 600; font-size: 13px; color: #1F8A3B; background: #DFF3E1; border: 2px solid var(--outline); border-radius: 999px; padding: 6px 10px; flex: 0 0 auto; }
+
+  /* the upgrades shop runs to three pages now, so it gets a tab bar */
+  .shop-tabs { display: flex; gap: 6px; margin: 4px 0 6px; }
+  .shop-tabs button {
+    flex: 1 1 0; min-width: 0;
+    font-family: var(--display); font-weight: 600; font-size: 12.5px; color: #3D5688;
+    background: #F1F6FE; border: 2.5px solid var(--outline); border-radius: 999px;
+    padding: 8px 4px; min-height: 38px; cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .shop-tabs button.on { background: #FFD75E; color: #142A55; }
+  .shop-tabs button .tb-dot { color: #E5484D; }
+  .shop-page-note {
+    font-size: 11.5px; font-weight: 800; color: var(--ink-soft);
+    text-align: center; line-height: 1.45; margin: 2px 0 8px;
+  }
+  /* the packer's own little status strip, so you can see him working */
+  .staff-bar { height: 8px; background: #E4E8EF; border-radius: 999px; overflow: hidden; margin-top: 5px; }
+  .staff-bar i { display: block; height: 100%; background: #1F8A3B; border-radius: 999px; transition: width 0.4s linear; }
 
   .shop-wallet { text-align: center; font-family: var(--display); font-weight: 600; font-size: 14px; color: #3D5688; margin: -8px 0 10px; }
   .shop-fx { font-size: 10.5px; font-weight: 800; color: #1F8A3B; }
@@ -984,6 +1007,65 @@
   @media (max-width: 520px) {
     .whstation { transform: scale(0.85); transform-origin: bottom left; }
   }
+
+  /* ---------- the staff: once hired they're stood at their station, working ---------- */
+  .whworker { position: absolute; bottom: 58px; width: 64px; height: 100px; z-index: 3; display: none; pointer-events: none; }
+  body.in-wh .whworker.on { display: block; }
+  .whworker > svg { display: block; position: absolute; left: 0; bottom: 0; }
+  /* head down, shoulders going: the whole figure works away on the spot */
+  .whworker.busy .wk-fig { animation: wkGraft 0.44s ease-in-out infinite alternate; transform-origin: 50% 100%; }
+  .whworker .wk-fig { animation: npcIdle 1.8s ease-in-out infinite; transform-origin: 50% 100%; }
+  @keyframes wkGraft {
+    from { transform: translateY(0) rotate(-3deg); }
+    to { transform: translateY(-4px) rotate(3deg); }
+  }
+  /* the thing in their hands, bobbing along with them */
+  .wk-prop { left: 44px !important; bottom: 34px !important; opacity: 0; transition: opacity 0.3s ease; }
+  .whworker.busy .wk-prop { opacity: 1; animation: wkProp 0.44s ease-in-out infinite alternate; transform-origin: 50% 100%; }
+  @keyframes wkProp {
+    from { transform: translate(0, 0) rotate(-7deg); }
+    to { transform: translate(3px, -5px) rotate(9deg); }
+  }
+  /* what they're on with, on a little card over their head: the shape of the thing in
+     their hands and how long they've got left on it */
+  .wk-pill {
+    position: absolute;
+    left: -58px; bottom: 104px; width: 180px;
+    background: #FFFFFF;
+    border: 2.5px solid var(--outline);
+    border-radius: 10px;
+    padding: 5px 8px 6px;
+    text-align: center;
+    box-shadow: 2px 3px 0 rgb(20 42 85 / 0.3);
+  }
+  .wk-pill::after {
+    content: "";
+    position: absolute; left: 50%; bottom: -9px;
+    margin-left: -6px;
+    border: 6px solid transparent;
+    border-top-color: var(--outline);
+  }
+  .wk-pill b { font-family: var(--display); font-weight: 700; font-size: 13px; color: #142A55; display: block; line-height: 1.1; }
+  .wk-idle { font-size: 9.5px; font-weight: 800; color: var(--ink-soft); line-height: 1.3; display: block; }
+  .whworker:not(.idle) .wk-idle { display: none; }
+  .wk-job { display: flex; align-items: center; gap: 7px; margin-top: 4px; text-align: left; }
+  .whworker.idle .wk-job, .whworker.idle .wk-bar { display: none; }
+  /* the outline only: you can see the shape of what they're on with, at a glance */
+  /* a little plate with the shape of the thing on it. The silhouette goes on the <use>,
+     not the <svg>, so the plate itself keeps its own colours. */
+  .wk-plate {
+    width: 34px; height: 34px; flex: 0 0 auto;
+    background: #F1F6FE;
+    border: 2px solid var(--outline);
+    border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .wk-item { position: static !important; width: 26px; height: 26px; }
+  .wk-item use { filter: brightness(0); opacity: 0.6; }
+  .wk-txt { flex: 1; min-width: 0; font-size: 9.5px; font-weight: 800; color: #3D5688; line-height: 1.25; }
+  .wk-txt i { display: block; font-style: normal; font-family: var(--display); font-weight: 700; font-size: 12px; color: #1F8A3B; }
+  .wk-bar { height: 5px; background: #E4E8EF; border-radius: 999px; overflow: hidden; margin-top: 4px; }
+  .wk-bar i { display: block; height: 100%; width: 0; background: #1F8A3B; border-radius: 999px; transition: width 0.9s linear; }
 
   /* ---------- warehouse dressing: strip lights and a decorated back wall ----------
      two parallax layers, built in JS. --vu is the visible height in world units,
@@ -1469,7 +1551,101 @@
     #introPanel #closeIntro { font-size: 19px; padding: 14px; margin-top: 22px; }
   }
 
-  #closePanel, #closeShop, #closeIntro, #closeReward, #closeGoals, #closeLaptop, #closePack, #closeVenue {
+  /* ---------- the collection: every find you've ever had, and the ones you haven't ---------- */
+  #dexPanel .panel-card, #wardPanel .panel-card { max-width: 540px; }
+  .dex-sum {
+    text-align: center; font-family: var(--display); font-weight: 600; font-size: 14px;
+    color: #3D5688; margin: -8px 0 4px;
+  }
+  .dex-sum b { color: #142A55; }
+  /* the shiny tally gets the full spectrum treatment, same as the chips do */
+  .dex-shiny {
+    display: inline-block; color: #FFFFFF; border-radius: 999px; padding: 1px 9px;
+    background: linear-gradient(100deg, #FF4FA3, #FFC01F, #35E0C4, #7B5CFF, #FF4FA3);
+    background-size: 300% 100%;
+    animation: shinySweep 2.4s linear infinite;
+    font-size: 12px;
+  }
+  .dex-tier {
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    margin: 14px 0 8px; padding-top: 10px; border-top: 2px dashed #E4E8EF;
+  }
+  .dex-tier:first-of-type { border-top: 0; padding-top: 0; }
+  .dex-tier .dex-count { font-size: 11.5px; font-weight: 800; color: var(--ink-soft); }
+  .dex-bar { flex: 1 1 60px; height: 8px; min-width: 50px; background: #E4E8EF; border-radius: 999px; overflow: hidden; }
+  .dex-bar i { display: block; height: 100%; background: #4B7BE5; border-radius: 999px; }
+  .dex-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(56px, 1fr)); gap: 7px; }
+  .dex-cell {
+    position: relative; aspect-ratio: 1;
+    background: #F1F6FE; border: 2.5px solid var(--outline); border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    padding: 0; cursor: pointer; overflow: hidden;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .dex-cell > svg { width: 78%; height: 78%; }
+  /* not found yet: the shape only, so you know what's still out there without knowing what it is */
+  .dex-cell.locked { background: #E7EBF2; cursor: default; }
+  .dex-cell.locked > svg { filter: brightness(0); opacity: 0.26; }
+  .dex-cell.sel { background: #FFE9A8; box-shadow: inset 0 0 0 3px #FFD75E; }
+  .dex-cell.has-sh { border-color: #B45AF2; }
+  .dex-n {
+    position: absolute; right: 2px; bottom: 1px;
+    font-size: 10px; font-weight: 800; color: #142A55;
+    background: rgb(255 255 255 / 0.85); border-radius: 999px; padding: 0 4px;
+  }
+  .dex-sp { position: absolute; left: 3px; top: 1px; font-size: 10px; }
+  /* the record card: the whole ledger for one line of stock, pinned to the bottom */
+  .dex-detail {
+    margin-top: 12px; padding: 11px 13px; min-height: 60px;
+    background: #F1F6FE; border: 2.5px solid var(--outline); border-radius: 14px;
+    font-size: 12.5px; font-weight: 700; color: #3D5688; line-height: 1.5;
+  }
+  .dex-detail.on { background: #FFFFFF; box-shadow: inset 0 0 0 3px #FFE9A8; }
+  .dex-empty { font-weight: 800; font-size: 12px; color: var(--ink-soft); }
+  .dst-head { display: flex; align-items: center; gap: 11px; margin-bottom: 6px; }
+  .dst-art {
+    width: 52px; height: 52px; flex: 0 0 auto; display: block;
+    background: #F1F6FE; border: 2.5px solid var(--outline); border-radius: 12px;
+  }
+  .dst-title { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
+  .dex-detail .dex-dn { font-family: var(--display); font-weight: 600; font-size: 15px; color: #142A55; display: block; line-height: 1.25; }
+  .dst-quip { font-size: 11.5px; font-weight: 800; font-style: italic; color: var(--ink-soft); margin-bottom: 8px; }
+  /* label on the left, the number on the right, one line each */
+  .dst-grid {
+    display: grid; grid-template-columns: auto 1fr; gap: 3px 12px;
+    padding-top: 8px; border-top: 2px dashed #E4E8EF;
+  }
+  .dst-k { font-size: 10.5px; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-soft); align-self: center; }
+  .dst-v { font-size: 12.5px; font-weight: 700; color: #142A55; text-align: right; }
+  .dst-v b { font-family: var(--display); font-weight: 600; }
+  .dst-up { color: #1F8A3B; }
+  .dst-dn { color: #D33036; }
+  .dex-detail .story { display: block; margin-top: 8px; font-size: 11.5px; font-weight: 800; color: #6B3FA0; line-height: 1.45; }
+
+  /* ---------- the wardrobe ---------- */
+  .ward-me { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; }
+  .ward-me img {
+    width: 62px; height: 62px; border-radius: 50%; object-fit: cover;
+    border: 3px solid var(--outline); background: #F1F6FE; flex: 0 0 auto;
+  }
+  .ward-me .ward-mine { flex: 1; min-width: 0; font-size: 12px; font-weight: 800; color: var(--ink-soft); line-height: 1.45; }
+  .ward-me .ward-mine b { display: block; font-family: var(--display); font-weight: 600; font-size: 15px; color: #142A55; }
+  .ward-h {
+    font-family: var(--display); font-weight: 600; font-size: 12px; letter-spacing: 0.07em;
+    text-transform: uppercase; color: var(--ink-soft); margin: 14px 0 4px;
+    padding-top: 10px; border-top: 2px dashed #E4E8EF;
+  }
+  .ward-sw {
+    width: 34px; height: 34px; border-radius: 10px; flex: 0 0 auto;
+    border: 2.5px solid var(--outline);
+  }
+  .shop-buy.worn { background: #C7F0D2; color: #146B31; }
+  .shop-buy.owned { background: #F1F6FE; }
+  .ward-perk { font-size: 10.5px; font-weight: 800; color: #6B3FA0; }
+  .ward-note { font-size: 11.5px; font-weight: 800; color: var(--ink-soft); text-align: center; margin-top: 10px; line-height: 1.45; }
+  #wardFile { display: none; }
+
+  #closePanel, #closeShop, #closeIntro, #closeReward, #closeGoals, #closeLaptop, #closePack, #closeVenue, #closeDex, #closeWard {
     margin-top: 14px;
     width: 100%;
     font-family: var(--display);
@@ -2993,6 +3169,103 @@
       <div class="prompt"><b>⬆️ Upgrades corner</b><span>bigger bag · faster wifi · rarer stock</span></div>
     </div>
 
+    <!-- the staff, stood at the station they were hired for. Hidden until you hire them. -->
+    <div class="whworker" id="whLister" style="left: 930px;" aria-hidden="true">
+      <div class="wk-pill">
+        <b id="listerName">Shazza</b>
+        <span class="wk-idle" id="listerIdle">nothing to list</span>
+        <div class="wk-job">
+          <span class="wk-plate"><svg class="wk-item" viewBox="-3 -3 42 42"><use id="listerArt" href="#r0"/></svg></span>
+          <span class="wk-txt" id="listerTxt">·</span>
+        </div>
+        <div class="wk-bar"><i id="listerBar"></i></div>
+      </div>
+      <svg class="wk-fig" width="64" height="100" viewBox="0 0 64 100" style="color:#B45AF2;--skin:#8D5A3B;--hair:#1E1410">
+        <use href="#npcBody"/><use href="#npcHairB"/>
+      </svg>
+      <svg class="wk-prop" width="42" height="30" viewBox="0 0 42 30">
+        <rect x="4" y="2" width="34" height="22" rx="3" fill="#3E4A5C" stroke="#142A55" stroke-width="2.5"/>
+        <rect x="8" y="6" width="26" height="14" rx="2" fill="#8FC9F5"/>
+        <path d="M0 24 H42 L38 29 H4 Z" fill="#CBD2DC" stroke="#142A55" stroke-width="2.5" stroke-linejoin="round"/>
+      </svg>
+    </div>
+
+    <div class="whworker" id="whBarry" style="left: 1176px;" aria-hidden="true">
+      <div class="wk-pill">
+        <b id="barryName">Barry</b>
+        <span class="wk-idle" id="barryIdle">on his tea break</span>
+        <div class="wk-job">
+          <span class="wk-plate"><svg class="wk-item" viewBox="-3 -3 42 42"><use id="barryArt" href="#r0"/></svg></span>
+          <span class="wk-txt" id="barryTxt">·</span>
+        </div>
+        <div class="wk-bar"><i id="barryBar"></i></div>
+      </div>
+      <svg class="wk-fig" width="64" height="100" viewBox="0 0 64 100" style="color:#C2703F;--skin:#F0C8A0;--hair:#5B3A24">
+        <use href="#npcBody"/><use href="#npcHairA"/>
+      </svg>
+      <svg class="wk-prop" width="40" height="30" viewBox="0 0 40 30">
+        <path d="M2 10 L20 2 L38 10 L38 26 L20 30 L2 26 Z" fill="#C89B66" stroke="#142A55" stroke-width="2.5" stroke-linejoin="round"/>
+        <path d="M2 10 L20 16 L38 10 M20 16 V30" fill="none" stroke="#142A55" stroke-width="2.5"/>
+        <rect x="14" y="0" width="12" height="8" rx="2" fill="#E8D64A" stroke="#142A55" stroke-width="2"/>
+      </svg>
+    </div>
+
+    <!-- the collection: a glass cabinet of one of everything you've ever found -->
+    <div class="whstation" id="whDex" style="left: 2280px; width: 280px; height: 210px;" tabindex="-1" role="button" aria-label="The collection · every find you have ever had">
+      <div class="shadow"></div>
+      <svg width="280" height="210" viewBox="0 0 280 210" aria-hidden="true">
+        <rect x="24" y="14" width="222" height="172" rx="7" fill="#6E4F2E" stroke="#142A55" stroke-width="4"/>
+        <rect x="34" y="24" width="202" height="152" rx="4" fill="#CFE7F8" opacity="0.55"/>
+        <rect x="34" y="66" width="202" height="7" fill="#8A6238" stroke="#142A55" stroke-width="2.5"/>
+        <rect x="34" y="118" width="202" height="7" fill="#8A6238" stroke="#142A55" stroke-width="2.5"/>
+        <use href="#gRecords" transform="translate(44,28) scale(0.68)"/>
+        <use href="#gGameboy" transform="translate(96,26) scale(0.62)"/>
+        <use href="#r15" transform="translate(140,28) scale(0.62)"/>
+        <use href="#gPolaroid" transform="translate(178,30) scale(0.62)"/>
+        <use href="#r5" transform="translate(46,80) scale(0.6)"/>
+        <use href="#r7" transform="translate(92,80) scale(0.6)"/>
+        <use href="#gCamera" transform="translate(134,80) scale(0.3)"/>
+        <use href="#r0" transform="translate(190,80) scale(0.6)"/>
+        <use href="#r11" transform="translate(48,130) scale(0.6)"/>
+        <use href="#gFrame" transform="translate(96,124) scale(0.56)"/>
+        <use href="#r3" transform="translate(158,130) scale(0.6)"/>
+        <!-- the glass: two lazy highlights so it reads as a case, not a shelf -->
+        <path d="M56 24 L96 24 L48 176 L34 176 Z" fill="#FFFFFF" opacity="0.18"/>
+        <path d="M132 24 L152 24 L104 176 L84 176 Z" fill="#FFFFFF" opacity="0.12"/>
+        <rect x="24" y="14" width="222" height="172" rx="7" fill="none" stroke="#142A55" stroke-width="4"/>
+        <rect x="18" y="182" width="234" height="14" rx="4" fill="#8A6238" stroke="#142A55" stroke-width="3.5"/>
+      </svg>
+      <div class="aboard"><b>Collection</b><span id="whDexSub">The index 🗂️</span></div>
+      <div class="prompt"><b>🗂️ Your collection</b><span>every find · and the ones you're missing</span></div>
+    </div>
+
+    <!-- the wardrobe: what you turn up to the boot sale wearing -->
+    <div class="whstation" id="whWard" style="left: 2820px; width: 260px; height: 210px;" tabindex="-1" role="button" aria-label="The wardrobe · change your outfit and your photo">
+      <div class="shadow"></div>
+      <svg width="260" height="210" viewBox="0 0 260 210" aria-hidden="true">
+        <!-- clothes rail -->
+        <path d="M22 40 V196 M170 40 V196" stroke="#39435C" stroke-width="6" stroke-linecap="round"/>
+        <path d="M14 42 H178" stroke="#CBD2DC" stroke-width="7" stroke-linecap="round"/>
+        <path d="M14 42 H178" stroke="#142A55" stroke-width="2.5" stroke-linecap="round" opacity="0.5"/>
+        <g stroke="#142A55" stroke-width="3" stroke-linejoin="round">
+          <path d="M40 48 q-14 8 -16 26 q-1 44 3 66 h34 q4 -22 3 -66 q-2 -18 -16 -26 Z" fill="#2F5FD0"/>
+          <path d="M76 48 q-14 8 -16 26 q-1 48 3 74 h34 q4 -26 3 -74 q-2 -18 -16 -26 Z" fill="#E5484D"/>
+          <path d="M112 48 q-14 8 -16 26 q-1 40 3 60 h34 q4 -20 3 -60 q-2 -18 -16 -26 Z" fill="#3FC1C9"/>
+          <path d="M148 48 q-13 8 -15 26 q-1 46 3 70 h32 q4 -24 3 -70 q-2 -18 -15 -26 Z" fill="#FFD75E"/>
+        </g>
+        <path d="M40 44 v-6 M76 44 v-6 M112 44 v-6 M148 44 v-6" stroke="#142A55" stroke-width="2.5"/>
+        <!-- the mirror you check yourself in -->
+        <g transform="translate(190,52)">
+          <rect x="0" y="0" width="60" height="140" rx="28" fill="#8A6238" stroke="#142A55" stroke-width="4"/>
+          <rect x="9" y="9" width="42" height="122" rx="21" fill="#CFE7F8"/>
+          <path d="M20 22 L42 22 L16 118 L12 96 Z" fill="#FFFFFF" opacity="0.55"/>
+        </g>
+        <use href="#gBox" transform="translate(6,168) scale(0.62)"/>
+      </svg>
+      <div class="aboard"><b>Wardrobe</b><span id="whWardSub">Get changed 👕</span></div>
+      <div class="prompt"><b>👕 The wardrobe</b><span>outfits · your photo · kit that sways sellers</span></div>
+    </div>
+
     <div id="player">
       <div class="p-shadow"></div>
       <div class="p-inner">
@@ -3001,23 +3274,23 @@
           <svg class="p-bod" width="84" height="88" viewBox="0 0 84 88" aria-hidden="true">
             <g class="arm1">
               <path d="M28 16 C20 24 18 34 19 44" fill="none" stroke="#142A55" stroke-width="14" stroke-linecap="round"/>
-              <path d="M28 16 C20 24 18 34 19 44" fill="none" stroke="#2F5FD0" stroke-width="9" stroke-linecap="round"/>
+              <path d="M28 16 C20 24 18 34 19 44" fill="none" stroke="var(--fit)" stroke-width="9" stroke-linecap="round"/>
               <circle cx="19" cy="46" r="5.5" fill="#F0C8A0" stroke="#142A55" stroke-width="2.5"/>
             </g>
             <g class="leg1">
-              <rect x="27" y="51" width="13" height="25" rx="5" fill="#26418F" stroke="#142A55" stroke-width="3"/>
+              <rect x="27" y="51" width="13" height="25" rx="5" fill="var(--fit-leg)" stroke="#142A55" stroke-width="3"/>
               <path d="M26 74 H43 Q46 80 40 82 H28 Q24 82 26 74 Z" fill="#F6EFE3" stroke="#142A55" stroke-width="2.5" stroke-linejoin="round"/>
             </g>
             <g class="leg2">
-              <rect x="44" y="51" width="13" height="25" rx="5" fill="#26418F" stroke="#142A55" stroke-width="3"/>
+              <rect x="44" y="51" width="13" height="25" rx="5" fill="var(--fit-leg)" stroke="#142A55" stroke-width="3"/>
               <path d="M43 74 H60 Q63 80 57 82 H45 Q41 82 43 74 Z" fill="#F6EFE3" stroke="#142A55" stroke-width="2.5" stroke-linejoin="round"/>
             </g>
-            <path d="M24 8 Q42 0 60 8 L63 42 Q63 51 54 51 H30 Q21 51 21 42 Z" fill="#2F5FD0" stroke="#142A55" stroke-width="3.5" stroke-linejoin="round"/>
-            <path d="M33 40 H51 L48 50 H36 Z" fill="#2955C2" stroke="#142A55" stroke-width="2.5" stroke-linejoin="round"/>
-            <path d="M38 12 V20 M46 12 V20" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M24 8 Q42 0 60 8 L63 42 Q63 51 54 51 H30 Q21 51 21 42 Z" fill="var(--fit)" stroke="#142A55" stroke-width="3.5" stroke-linejoin="round"/>
+            <path d="M33 40 H51 L48 50 H36 Z" fill="var(--fit-sh)" stroke="#142A55" stroke-width="2.5" stroke-linejoin="round"/>
+            <path d="M38 12 V20 M46 12 V20" stroke="var(--fit-trim)" stroke-width="2.5" stroke-linecap="round"/>
             <g class="arm2">
               <path d="M56 16 C64 24 66 34 65 44" fill="none" stroke="#142A55" stroke-width="14" stroke-linecap="round"/>
-              <path d="M56 16 C64 24 66 34 65 44" fill="none" stroke="#2F5FD0" stroke-width="9" stroke-linecap="round"/>
+              <path d="M56 16 C64 24 66 34 65 44" fill="none" stroke="var(--fit)" stroke-width="9" stroke-linecap="round"/>
               <circle cx="65" cy="46" r="5.5" fill="#F0C8A0" stroke="#142A55" stroke-width="2.5"/>
             </g>
           </svg>
@@ -3140,6 +3413,30 @@
     <div class="venue-lvl" id="venueLvl"></div>
     <div id="venueRows"></div>
     <button id="closeVenue" type="button">Stay in the warehouse</button>
+  </div>
+</div>
+
+<div id="dexPanel" role="dialog" aria-label="Your collection">
+  <div class="panel-card">
+    <h2>🗂️ The Collection</h2>
+    <div class="dex-sum" id="dexSum"></div>
+    <div id="dexBody"></div>
+    <div class="dex-detail" id="dexDetail"><span class="dex-empty">Tap a find to pull its record. The shapes you can't make out are the ones you've never had through your hands.</span></div>
+    <button id="closeDex" type="button">Back to the warehouse</button>
+  </div>
+</div>
+
+<div id="wardPanel" role="dialog" aria-label="The wardrobe">
+  <div class="panel-card">
+    <h2>👕 The Wardrobe</h2>
+    <div class="ward-me">
+      <img id="wardFace" src="avatar.jpg" alt="">
+      <div class="ward-mine"><b id="wardFit">Boot Sale Blue</b><span id="wardPerks"></span></div>
+    </div>
+    <div id="wardRows"></div>
+    <input type="file" id="wardFile" accept="image/*">
+    <div class="ward-note">Anything you buy in here is on you from the next boot run · the sellers notice.</div>
+    <button id="closeWard" type="button">Back to the warehouse</button>
   </div>
 </div>
 
@@ -3359,7 +3656,7 @@
   }
 
   window.addEventListener("keydown", function (e) {
-    var openPanels = ["linksPanel", "shopPanel", "rewardPanel", "goalsPanel", "laptopPanel", "packPanel"];
+    var openPanels = ["linksPanel", "shopPanel", "rewardPanel", "goalsPanel", "laptopPanel", "packPanel", "dexPanel", "wardPanel"];
     for (var opi = 0; opi < openPanels.length; opi++) {
       var pe = document.getElementById(openPanels[opi]);
       if (pe && pe.classList.contains("open")) {
@@ -3379,6 +3676,8 @@
       if (e.key === "u" || e.key === "U") { toggleShop(true); return; }
       if (e.key === "l" || e.key === "L") { openLaptop(); return; }
       if (e.key === "p" || e.key === "P") { openPack(); return; }
+      if (e.key === "i" || e.key === "I") { openDex(); return; }
+      if (e.key === "c" || e.key === "C") { openWard(); return; }
       if (e.key === "Escape") { exitWh(); return; }
       // arrows and E fall through - you walk the warehouse like the boot
     }
@@ -3468,7 +3767,8 @@
       else { target = s.x; dismissHint(); }
     });
     s.el.addEventListener("keydown", function (e) {
-      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openStall(s); }
+      // once the link pitches have packed up there's nothing to open, so it's a haggle
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); if (s.href) openStall(s); else if (s.talk) s.talk(); }
     });
   });
 
@@ -3898,7 +4198,73 @@
   var wallet = 200, prestige = 0, introSeen = false, packed = 0, rep = 0;
   var packedThisVisit = 0; // clearing the bench before you drive off is worth rep
   var tipsSeen = {}, savedVenue = 0; // declared up here because the save loads before the venue block
+  // where you were stood last time: the boot x, the warehouse x, and which of the two
+  var savedPx = null, savedWhPx = null, savedInWh = false, whPx = 585;
   var inv = [], listings = [], orders = [], visitedLinks = [], uid = 1, inWh = false;
+  // the collection: item index -> [how many you've had, how many of those were shiny]
+  var dex = {};
+  // what you turn up wearing, what you've bought, and whether you've paid to clear the link pitches
+  var fit = "blue", ownedFits = ["blue"], ownedKit = [], avatarSrc = "", photoPaid = false, noLinks = false;
+  var vests = 0; // stab vests: one gets used up every time it saves you from a night-market robber
+  var VEST_COST = 450, VEST_MAX = 5;
+
+  // ---- the wardrobe: outfits repaint the figure, and the pricier ones sway sellers ----
+  // Every perk here lands on the floor price, the seller's patience or the two haggle
+  // moves, so a new outfit is felt at the next pitch rather than just looking nice.
+  var FITS = [
+    { id: "blue", name: "Boot Sale Blue", price: 0, sw: "#2F5FD0",
+      fit: "#2F5FD0", sh: "#2955C2", leg: "#26418F", trim: "#FFFFFF",
+      desc: "Your usual. Comfy, forgettable." },
+    { id: "red", name: "Chip Shop Red", price: 400, sw: "#E5484D",
+      fit: "#E5484D", sh: "#C2373C", leg: "#8A2B2F", trim: "#FFE9A8",
+      desc: "Loud enough that they remember you." },
+    { id: "green", name: "Astro Turf Green", price: 400, sw: "#3E8E48",
+      fit: "#3E8E48", sh: "#347A3D", leg: "#255A2C", trim: "#F6EFE3",
+      desc: "Blends right into the field." },
+    { id: "teal", name: "Vinted Teal", price: 900, sw: "#3FC1C9",
+      fit: "#3FC1C9", sh: "#33A3AA", leg: "#1F7076", trim: "#FFFFFF",
+      desc: "Straight off the app and onto your back." },
+    { id: "hivis", name: "Hi-Vis Yellow", price: 1600, sw: "#E8D64A",
+      fit: "#E8D64A", sh: "#C9B733", leg: "#3D5688", trim: "#FFFFFF",
+      floorMul: 0.94, perk: "They take you for trade · sellers go 6% lower",
+      desc: "Nobody questions a man in a hi-vis." },
+    { id: "tweed", name: "Dealer's Tweed", price: 3200, sw: "#8A6238",
+      fit: "#8A6238", sh: "#6E4F2E", leg: "#4A3520", trim: "#FFD75E",
+      floorMul: 0.9, perk: "You look like you know · sellers go 10% lower",
+      desc: "The jacket of a man who owns a magnifying glass." },
+    { id: "gold", name: "Gold Lamé", price: 7500, sw: "#FFC01F",
+      fit: "#FFC01F", sh: "#D89C0E", leg: "#8A6238", trim: "#FFFFFF",
+      floorMul: 0.88, pat: 1, perk: "Reeks of money · sellers go 12% lower and take one more offer",
+      desc: "Absolutely no taste. Enormous presence." }
+  ];
+  // kit stacks on top of the outfit - buy it once and it's yours for good
+  var KIT = [
+    { id: "cap", ico: "🧢", name: "Trader's flat cap", price: 900,
+      desc: "They reckon you're one of them", perk: "+1 offer before any seller walks off" },
+    { id: "flask", ico: "🫖", name: "Flask of tea", price: 1400,
+      desc: "Nothing loosens a seller like a brew", perk: "Every seller lets slip what it's really worth" },
+    { id: "roll", ico: "💷", name: "Fat roll of notes", price: 1900,
+      desc: "Flash the wad and watch them fold", perk: "Cash in hand knocks 15% off, not 8%" },
+    { id: "loupe", ico: "🔍", name: "Jeweller's loupe", price: 2600,
+      desc: "You spot the chip they were hoping you'd miss", perk: "Pointing out a flaw knocks twice as much off" }
+  ];
+  function fitDef(id) {
+    for (var i = 0; i < FITS.length; i++) if (FITS[i].id === id) return FITS[i];
+    return FITS[0];
+  }
+  function hasKit(id) { return ownedKit.indexOf(id) >= 0; }
+  // everything the get-up is worth, gathered in one place so the haggle can just ask
+  function perks() {
+    var f = fitDef(fit);
+    return {
+      floorMul: f.floorMul || 1,
+      pat: (f.pat || 0) + (hasKit("cap") ? 1 : 0),
+      cashMul: hasKit("roll") ? 0.85 : 0.92,
+      flawMul: hasKit("loupe") ? 0.66 : 0.82,
+      hint: hasKit("flask")
+    };
+  }
+
   var UPG = {
     tongue: { icon: "🗣️", name: "Silver Tongue", desc: "Sellers cave to lower prices", costs: [300, 800, 2000], lvl: 0,
       fx: ["·", "sellers go 8% lower", "sellers go 16% lower", "sellers go 24% lower"] },
@@ -3913,6 +4279,32 @@
     lucky:  { icon: "🍀", name: "Lucky Charm", desc: "Better condition on the things you buy", costs: [400, 1200], lvl: 0,
       fx: ["1 in 4 finds come up tatty", "tatty finds are rare", "minters twice as common"] }
   };
+  // ---- staff: people who do the boring bit for you, worse than you would ----
+  // Barry works the bench on his own while you're out. He is slower than you and he
+  // does not do presentation, so a parcel he packs earns the sale and nothing on top.
+  var STAFF = {
+    packer: { icon: "🧑‍🏭", name: "Barry the Packer", desc: "Works the bench on his own · no games, no bonus",
+      costs: [2500, 4000, 7000, 12000], lvl: 0,
+      fx: ["nobody on the bench but you",
+        "a parcel every 90s · no packing bonus",
+        "a parcel every 60s · no packing bonus",
+        "a parcel every 40s · no packing bonus",
+        "a parcel every 25s · he's a machine"] },
+    // photography and copywriting are the skilled bit, so she costs more than Barry and
+    // her listings still go up 10% under guide. Doing it yourself is worth up to 20% over.
+    lister: { icon: "📸", name: "Shazza on Listings", desc: "Photographs and lists your stock · always 10% under guide",
+      costs: [4000, 7000, 12000, 20000], lvl: 0,
+      fx: ["nobody on the laptop but you",
+        "a listing every 2 mins · 10% under guide",
+        "a listing every 80s · 10% under guide",
+        "a listing every 55s · 10% under guide",
+        "a listing every 35s · she never stops"] }
+  };
+  var PACKER_MS = [0, 90000, 60000, 40000, 25000];
+  var LISTER_MS = [0, 120000, 80000, 55000, 35000];
+  var packerAt = 0, listerAt = 0; // when each of them finishes what they're on
+  function packerMs() { return PACKER_MS[STAFF.packer.lvl] || 0; }
+  function listerMs() { return LISTER_MS[STAFF.lister.lvl] || 0; }
   var PRO_AT = 10000;
   function proMult() { return 1 + prestige * 0.5; }
   function maxTier() { return Math.min(4, 1 + UPG.van.lvl + lvlTierBonus() + (venue ? VENUES[venue].tier : 0)); }
@@ -3927,13 +4319,18 @@
   function pickFrom(a) { return a[Math.floor(Math.random() * a.length)]; }
 
   var SAVE_KEY = "fbi-flip-v1";
+  function rnd(v, fallback) { return isFinite(v) ? Math.round(v) : fallback; }
   function save() {
     try {
       localStorage.setItem(SAVE_KEY, JSON.stringify({
         w: wallet, p: prestige, i: introSeen ? 1 : 0, pk: packed, rp: rep,
         vn: venue, tp: Object.keys(tipsSeen),
         t: UPG.tongue.lvl, e: UPG.eye.lvl, v: UPG.van.lvl, b: UPG.bag.lvl, d: UPG.desk.lvl, l: UPG.lucky.lvl,
-        lk: visitedLinks, q: activeQ, inv: inv, li: listings, or: orders
+        lk: visitedLinks, q: activeQ, inv: inv, li: listings, or: orders,
+        dx: dex, ft: fit, of: ownedFits, ok: ownedKit, av: avatarSrc, pf: photoPaid ? 1 : 0, nl: noLinks ? 1 : 0, vs: vests,
+        pl: STAFF.packer.lvl, pa: packerAt, ll: STAFF.lister.lvl, la: listerAt,
+        // where you were stood, so a refresh puts you back rather than at the start of the row
+        iw: inWh ? 1 : 0, x: rnd(inWh && bootPx != null ? bootPx : px, 2320), wx: rnd(inWh ? px : whPx, 585)
       }));
     } catch (err) {}
   }
@@ -3955,8 +4352,97 @@
       if (sv.or) sv.or.forEach(function (e) {
         if (okItem(e)) orders.push({ i: +e.i, paid: +e.paid, soldFor: +e.soldFor || 0, plat: e.plat === "ebay" ? "ebay" : "vinted", tr: !!e.tr, by: e.by || pickFrom(BUYERS), to: e.to || pickFrom(TOWNS), step: 0, q: 0, mg: e.mg, sh: e.sh ? 1 : 0 });
       });
+      // the wardrobe. An outfit that no longer exists falls back to the blue one
+      if (sv.of && sv.of.length) sv.of.forEach(function (id) { if (ownedFits.indexOf(id) < 0) ownedFits.push(id); });
+      if (sv.ok && sv.ok.length) sv.ok.forEach(function (id) { if (ownedKit.indexOf(id) < 0) ownedKit.push(id); });
+      if (sv.ft && ownedFits.indexOf(sv.ft) >= 0) fit = sv.ft;
+      if (typeof sv.av === "string" && sv.av.indexOf("data:image") === 0) avatarSrc = sv.av;
+      photoPaid = !!sv.pf;
+      noLinks = !!sv.nl;
+      vests = Math.max(0, Math.min(VEST_MAX, +sv.vs || 0));
+      STAFF.packer.lvl = Math.max(0, Math.min(STAFF.packer.costs.length, +sv.pl || 0));
+      packerAt = +sv.pa || 0;
+      STAFF.lister.lvl = Math.max(0, Math.min(STAFF.lister.costs.length, +sv.ll || 0));
+      listerAt = +sv.la || 0;
+      if (isFinite(+sv.x)) savedPx = +sv.x;
+      if (isFinite(+sv.wx)) { savedWhPx = +sv.wx; whPx = +sv.wx; }
+      savedInWh = !!sv.iw;
+      // the collection. The first cut of this stored a bare [bought, shiny] pair, so a
+      // save from that build is widened into the full record rather than thrown away.
+      if (sv.dx) {
+        for (var dk in sv.dx) {
+          var dv = sv.dx[dk];
+          if (!items[+dk] || !dv) continue;
+          var num = function (v) { return Math.max(0, +v || 0); };
+          dex[+dk] = dv.length
+            ? { n: num(dv[0]), s: num(dv[1]), f: 0, l: 0, lo: 0, hi: 0, sn: 0, bs: 0, bp: 0, tp: 0 }
+            : { n: num(dv.n), s: num(dv.s), f: num(dv.f), l: num(dv.l), lo: num(dv.lo), hi: num(dv.hi),
+                sn: num(dv.sn), bs: num(dv.bs), bp: Math.round(+dv.bp || 0), tp: Math.round(+dv.tp || 0) };
+        }
+      } else {
+        // an older save has no index at all, so seed it from whatever stock is on the books
+        [inv, listings, orders].forEach(function (a) {
+          a.forEach(function (e) {
+            var d = dex[e.i] || (dex[e.i] = { n: 0, s: 0, f: 0, l: 0, lo: 0, hi: 0, sn: 0, bs: 0, bp: 0, tp: 0 });
+            d.n++;
+            if (e.sh) d.s++;
+            var pd = +e.paid || 0;
+            if (pd && (!d.lo || pd < d.lo)) d.lo = pd;
+            if (pd > d.hi) d.hi = pd;
+          });
+        });
+      }
     }
   } catch (err) {}
+  // one of everything, and how many of those can come up shiny (all of them)
+  var DEX_TOTAL = items.length;
+  // Each record is the whole trading history of one line of stock:
+  // n bought · s of them shiny · f/l first and last bought · lo/hi cheapest and dearest
+  // you paid · sn sold · bs best price it ever fetched · bp best profit on one · tp total
+  function dexRec(idx) {
+    var d = dex[idx];
+    if (!d) d = dex[idx] = { n: 0, s: 0, f: 0, l: 0, lo: 0, hi: 0, sn: 0, bs: 0, bp: 0, tp: 0 };
+    return d;
+  }
+  function dexAdd(idx, isShiny, paid) {
+    if (!items[idx]) return;
+    var d = dexRec(idx), now = Date.now();
+    var firstEver = d.n === 0;
+    var firstShiny = isShiny && d.s === 0;
+    d.n++;
+    if (isShiny) d.s++;
+    if (!d.f) d.f = now;
+    d.l = now;
+    if (isFinite(paid)) {
+      if (!d.lo || paid < d.lo) d.lo = paid;
+      if (paid > d.hi) d.hi = paid;
+    }
+    if (firstEver || firstShiny) {
+      banner((firstShiny ? "✨ New SHINY for the collection · " : "🗂️ New for the collection · ")
+        + items[idx].n + " 🗂️", 4500);
+    }
+  }
+  // logged when the parcel actually goes out, because that's when the money is real
+  function dexSold(idx, got, paid) {
+    if (!items[idx]) return;
+    var d = dexRec(idx), profit = got - paid;
+    d.sn++;
+    if (got > d.bs) d.bs = got;
+    if (profit > d.bp) d.bp = profit;
+    d.tp += profit;
+  }
+  function dexFound() {
+    var n = 0, s = 0;
+    for (var k in dex) { if (dex[k].n > 0) n++; if (dex[k].s > 0) s++; }
+    return { n: n, s: s };
+  }
+  var DEX_MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  function dexDate(ts) {
+    if (!ts) return "·";
+    var d = new Date(ts), now = new Date();
+    return d.getDate() + " " + DEX_MONTHS[d.getMonth()]
+      + (d.getFullYear() === now.getFullYear() ? "" : " " + d.getFullYear());
+  }
 
   // ---- levels: earned by trading well, not by hoarding cash ----
   // rep comes from selling at a profit, sharp haggling, moving rare stock and leaving
@@ -4064,7 +4550,9 @@
 
   function nextCost(u) { return u.lvl < u.costs.length ? u.costs[u.lvl] : null; }
   function anyAffordable() {
-    for (var k in UPG) { var c = nextCost(UPG[k]); if (c && wallet >= c) return true; }
+    var k;
+    for (k in UPG) { var c = nextCost(UPG[k]); if (c && wallet >= c) return true; }
+    for (k in STAFF) { var s = nextCost(STAFF[k]); if (s && wallet >= s) return true; }
     return wallet >= PRO_AT;
   }
 
@@ -4108,6 +4596,8 @@
     updLevel();
     updBadges();
     if (shopPanel.classList.contains("open")) buildShop();
+    // the wardrobe prices things off the wallet too, so it has to keep up
+    if (wardPanel && wardPanel.classList.contains("open")) buildWard();
     save();
   }
 
@@ -4325,6 +4815,39 @@
     P = open ? 4340 : 3720; // the field loop grows a slot for the extra pitch
   }
 
+  // ---- £5,000 and my pitches pack up for good ----
+  // The six link pitches become plain traders, and with my signage and stock off the
+  // tables there's room for one more crate on every pitch in the field. With no links
+  // left to visit the grand tour counts as done, so The Collector stays put.
+  var NOLINKS_COST = 5000;
+  var PLAIN_PITCH = [
+    ["Trestle Table", "Have a rummage 🔍", "boxes still taped up"],
+    ["The Rummage", "Everything must go 🔍", "priced to shift"],
+    ["Odds & Ends", "Have a look 🔍", "no idea what's in there"],
+    ["Bric-à-brac", "Fill your boots 🔍", "four crates out"],
+    ["House Clearance", "Have a rummage 🔍", "straight out of the loft"],
+    ["Tabletop", "Have a look 🔍", "the good stuff's at the back"]
+  ];
+  function applyNoLinks() {
+    if (!noLinks) return;
+    var n = 0;
+    stalls.forEach(function (s) {
+      if (!s.href) return;
+      var p = PLAIN_PITCH[n % PLAIN_PITCH.length];
+      n++;
+      s.href = null;
+      s.el.removeAttribute("data-href");
+      s.el.setAttribute("role", "button");
+      s.el.setAttribute("aria-label", p[0] + " pitch · haggle for what's on the crates");
+      var ab = s.el.querySelector(".aboard");
+      if (ab) ab.innerHTML = "<b>" + p[0] + "</b><span>" + p[1] + "</span>";
+      var pr = s.el.querySelector(".prompt");
+      if (pr) pr.innerHTML = "<b>🔍 " + p[0] + "</b><span>" + p[2] + "</span>";
+    });
+    linkTotal = 0; // nothing left to visit, so the grand tour reads as complete
+  }
+  applyNoLinks();
+
   // ---- the venues you can drive to ----
   // The Sunday Field is home and always open: my real pitches live there, so it can
   // never be locked behind a level. Everything above it costs more at the gate and
@@ -4427,8 +4950,9 @@
       + '</svg>'
       + '<div class="halo lit"></div><div class="cone lit"></div><div class="pool lit"></div>';
 
-    // lamps run the length of the unit; the third one is on its way out, the fifth is gone
-    for (var i = 0; i < 9; i++) {
+    // lamps run the length of the unit; the third one is on its way out, the fifth is gone.
+    // The count covers the whole floor including the collection and wardrobe end.
+    for (var i = 0; i < 13; i++) {
       var x = -140 + i * 340;
       var cls = "whlamp" + (i === 2 ? " dodgy" : i === 5 ? " dead" : "");
       whAdd(whLight, cls, "left:" + x + "px;--d:" + (-i * 1.7).toFixed(1) + "s", LAMP);
@@ -4473,12 +4997,33 @@
       + '<rect x="3" y="140" width="224" height="17" fill="#C2CBDA" stroke="#142A55" stroke-width="4"/>'
       + '</svg>');
 
+    // a second pinboard down the far end, above the collection cabinet
+    whAdd(whWall, "whdec", "left:2010px;bottom:296px",
+      '<svg width="190" height="140" viewBox="0 0 190 140">'
+      + '<rect x="3" y="3" width="184" height="134" rx="6" fill="#6E4F2E" stroke="#142A55" stroke-width="4"/>'
+      + '<rect x="13" y="13" width="164" height="114" rx="3" fill="#8A6238"/>'
+      + '<g transform="translate(20,20) rotate(4) scale(0.8)"><use href="#gRecords"/></g>'
+      + '<g transform="translate(104,24) rotate(-4) scale(0.72)"><use href="#gGameboy"/></g>'
+      + '<g transform="translate(26,78) rotate(-3) scale(0.75)"><use href="#gFrame"/></g>'
+      + '<g transform="translate(110,80) rotate(3) scale(0.8)"><use href="#gPolaroid"/></g>'
+      + "</svg>");
+
+    // a full-length mirror leaning on the wall by the wardrobe end
+    whAdd(whWall, "whdec", "left:2420px;bottom:96px",
+      '<svg width="96" height="230" viewBox="0 0 96 230">'
+      + '<rect x="4" y="4" width="88" height="222" rx="10" fill="#8A6238" stroke="#142A55" stroke-width="4"/>'
+      + '<rect x="14" y="14" width="68" height="202" rx="6" fill="#CFE7F8"/>'
+      + '<path d="M28 30 L56 30 L22 186 L18 150 Z" fill="#FFFFFF" opacity="0.5"/>'
+      + "</svg>");
+
     // paper on the wall
     [
       ["left:-140px;bottom:380px", "", "FRAGILE", "this way up ↑", 3],
       ["left:400px;bottom:390px", "", "BUY LOW<br>SELL HIGH", "house rules", 2],
       ["left:1060px;bottom:385px", "red", "SHIP IT", "same day · every day", -3],
-      ["left:1720px;bottom:395px", "blue", "£10,000", "the big one", -2]
+      ["left:1720px;bottom:395px", "blue", "£10,000", "the big one", -2],
+      ["left:2280px;bottom:390px", "", "ONE OF<br>EACH", "the collection", 3],
+      ["left:2640px;bottom:382px", "red", "LOOK<br>THE PART", "they can tell", -2]
     ].forEach(function (p) {
       whAdd(whWall, "whposter " + p[1], p[0] + ";transform:rotate(" + p[4] + "deg)",
         '<span class="tack"></span><b>' + p[2] + "</b><span>" + p[3] + "</span>");
@@ -4487,7 +5032,7 @@
     // --- the stock pile: one box on the back wall for every unsold thing you own ---
     // columns fill bottom-up, so a hoard you never list visibly stacks against the wall
     var TIER = [[86, 1], [126, 0.9], [162, 0.8]];
-    [360, 480, 900, 1020, 1140, 1260, 1650, 1780].forEach(function (x, ci) {
+    [360, 480, 900, 1020, 1140, 1260, 1650, 1780, 1900, 2160, 2280, 2560].forEach(function (x, ci) {
       for (var t = 0; t < TIER.length; t++) {
         var s = TIER[t][1], jog = ((ci + t) % 3) * 6 - 6;
         whStockEls.push(whAdd(whWall, "whbox",
@@ -4509,14 +5054,22 @@
       ? listings.length + " live" + (offerN ? " ❗" : "") + " 💻"
       : inv.length ? "List it! 💻" : "Sell 💻", !!(listings.length || inv.length));
     setSign("whPack", orders.length ? orders.length + " to pack 📦" : "Get paid 📦", !!orders.length);
-    var shopReady = false;
-    for (var k in UPG) { var c = nextCost(UPG[k]); if (c && wallet >= c) shopReady = true; }
+    var shopReady = false, k;
+    for (k in UPG) { var c = nextCost(UPG[k]); if (c && wallet >= c) shopReady = true; }
+    for (k in STAFF) { var sc = nextCost(STAFF[k]); if (sc && wallet >= sc) shopReady = true; }
     setSign("whShop", wallet >= PRO_AT ? "Go pro! ⬆️" : shopReady ? "Spend it ⬆️" : "Nothing yet ⬆️",
       wallet >= PRO_AT || shopReady);
+    var f = dexFound();
+    setSign("whDex", f.n + "/" + DEX_TOTAL + " 🗂️", false);
+    // the wardrobe nags only while there's something new you can actually afford
+    var wardReady = false;
+    FITS.forEach(function (o) { if (ownedFits.indexOf(o.id) < 0 && wallet >= o.price) wardReady = true; });
+    KIT.forEach(function (o) { if (!hasKit(o.id) && wallet >= o.price) wardReady = true; });
+    setSign("whWard", wardReady ? "New kit! 👕" : fitDef(fit).name + " 👕", wardReady);
   }
 
   var bootPx = null;
-  var WH_MIN = 140, WH_MAX = 2080, WH_SPAWN = 585;
+  var WH_MIN = 140, WH_MAX = 3120, WH_SPAWN = 585;
   function enterWh() {
     if (inWh) return;
     if (robber) endRobbery(false, "🚪 You slam the warehouse door · they think better of it.");
@@ -4526,18 +5079,19 @@
     px = WH_SPAWN; target = null; flick = 0;
     document.body.classList.add("in-wh");
     updBadges();
-    tip("wh", "🏭 Your warehouse. Walk to a station: 💻 sell · 📦 pack · ⬆️ upgrades · 🚗 the van picks where you go next", 10000);
+    tip("wh", "🏭 Your warehouse. Walk to a station: 💻 sell · 📦 pack · ⬆️ upgrades · 🗂️ your collection · 👕 the wardrobe · 🚗 the van picks where you go next", 11000);
   }
   function exitWh(toIdx) {
     if (!inWh) return;
     var v = VENUES[toIdx] || V();
     if (!venueOpen(v)) return;
+    whPx = px; // remember the spot on the warehouse floor for next time you drive back
     venue = VENUES.indexOf(v);
     applyVenue();
     inWh = false;
     if (robber) endRobbery(false, ""); // nobody follows you between venues
     document.body.classList.remove("in-wh");
-    ["shopPanel", "laptopPanel", "packPanel", "venuePanel"].forEach(function (id) { document.getElementById(id).classList.remove("open"); });
+    ["shopPanel", "laptopPanel", "packPanel", "venuePanel", "dexPanel", "wardPanel"].forEach(function (id) { document.getElementById(id).classList.remove("open"); });
     if (bootPx !== null) px = bootPx;
     target = null; flick = 0;
     restockAll(true);
@@ -4558,6 +5112,15 @@
   var robber = null;
   function startRobbery(fromX, spookId) {
     if (robber || inWh) return;
+    // a vest takes the hit for you: they see it, think better of it, and it's gone
+    if (vests > 0) {
+      vests--;
+      save();
+      updBadges();
+      banner("🦺 They clock the stab vest and back off into the dark. That's one gone · "
+        + (vests ? vests + " left in the bag." : "you're wearing nothing but nerve now."), 7000);
+      return;
+    }
     // they come at you out of the dark from a way off - spawning on your toes gave
     // you no chance to react, which just felt like a tax rather than a chase
     fromX = px + (Math.random() < 0.5 ? -1 : 1) * (430 + Math.random() * 120);
@@ -4640,7 +5203,9 @@
     ["whVan", openVenues],
     ["whLaptop", function () { openLaptop(); }],
     ["whPack", function () { openPack(); }],
-    ["whShop", function () { toggleShop(true); }]
+    ["whShop", function () { toggleShop(true); }],
+    ["whDex", function () { openDex(); }],
+    ["whWard", function () { openWard(); }]
   ].forEach(function (def) {
     var el = document.getElementById(def[0]);
     var ws = { el: el, x: parseFloat(el.style.left) + parseFloat(el.style.width) / 2, open: def[1] };
@@ -4651,6 +5216,336 @@
     });
     whStations.push(ws);
   });
+
+  // ---- the collection: one cell per find in the game, grouped by rarity ----
+  // Anything you've never had shows as a black silhouette, so you can see the shape of
+  // what's still out there without being told what it is.
+  var dexPanel = document.getElementById("dexPanel");
+  var dexBody = document.getElementById("dexBody");
+  var dexSum = document.getElementById("dexSum");
+  var dexDetail = document.getElementById("dexDetail");
+  var DEX_TIERS = [
+    [1, "Finds", "#8A97B2"],
+    [2, "Quality", "#1F8A3B"],
+    [3, "Rare", "#4B7BE5"],
+    [4, "Legendary", "#E5484D"]
+  ];
+  var dexSel = -1;
+  function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
+
+  function buildDex() {
+    var f = dexFound();
+    dexSum.innerHTML = "<b>" + f.n + "</b> of " + DEX_TOTAL + " finds catalogued · "
+      + '<span class="dex-shiny">✨ ' + f.s + "/" + DEX_TOTAL + " shiny</span>";
+    var html = "";
+    DEX_TIERS.forEach(function (t) {
+      var idxs = [], got = 0, sh = 0;
+      for (var i = 0; i < items.length; i++) {
+        if (items[i].t !== t[0]) continue;
+        idxs.push(i);
+        var d = dex[i];
+        if (d && d.n > 0) got++;
+        if (d && d.s > 0) sh++;
+      }
+      if (!idxs.length) return;
+      var pct = Math.round(got / idxs.length * 100);
+      html += '<div class="dex-tier"><span class="tier-chip t' + t[0] + '">' + t[1] + "</span>"
+        + '<span class="dex-bar"><i style="width:' + pct + "%;background:" + t[2] + '"></i></span>'
+        + '<span class="dex-count">' + got + "/" + idxs.length + " · ✨" + sh + "/" + idxs.length + "</span></div>";
+      html += '<div class="dex-grid">';
+      idxs.forEach(function (i) {
+        var it = items[i], d = dex[i], have = !!(d && d.n > 0);
+        html += '<button type="button" class="dex-cell' + (have ? "" : " locked")
+          + (have && d.s > 0 ? " has-sh" : "") + (i === dexSel ? " sel" : "") + '" data-i="' + i + '"'
+          + (have ? "" : " disabled") + ' aria-label="' + (have ? esc(it.n) : "not found yet") + '">'
+          + '<svg viewBox="-3 -3 42 42" style="color:' + (it.c || "#8FB7E8") + '"><use href="#' + it.d + '"/></svg>'
+          + (have && d.s > 0 ? '<span class="dex-sp">✨</span>' : "")
+          + (have && d.n > 1 ? '<span class="dex-n">' + d.n + "</span>" : "")
+          + "</button>";
+      });
+      html += "</div>";
+    });
+    dexBody.innerHTML = html;
+    paintDexDetail();
+  }
+
+  // the record card at the bottom of the panel: what it is, and everything your own
+  // ledger knows about it - what you paid, what you got, and when
+  function statRow(label, value) {
+    return '<span class="dst-k">' + label + '</span><span class="dst-v">' + value + "</span>";
+  }
+  function paintDexDetail() {
+    if (dexSel < 0 || !items[dexSel] || !dex[dexSel] || !dex[dexSel].n) {
+      dexDetail.classList.remove("on");
+      dexDetail.innerHTML = '<span class="dex-empty">Tap a find to pull its record. The shapes you can\'t make out are the ones you\'ve never had through your hands.</span>';
+      return;
+    }
+    var it = items[dexSel], d = dex[dexSel];
+    var TL = { 1: "Find", 2: "Quality", 3: "Rare", 4: "Legendary" };
+    var held = d.n - d.sn; // bought but not posted yet: in the bag, listed or on the bench
+
+    var stats = "";
+    stats += statRow("Bought", "<b>" + d.n + "</b> time" + (d.n > 1 ? "s" : "")
+      + (d.s ? ' · <span class="tag-shiny">✨ ' + d.s + " shiny</span>" : ""));
+    stats += statRow("First one", dexDate(d.f) + (d.n > 1 ? " · latest " + dexDate(d.l) : ""));
+    stats += statRow("Paid", d.lo
+      ? (d.lo === d.hi ? fmtC(d.lo) : "cheapest <b>" + fmtC(d.lo) + "</b> · dearest " + fmtC(d.hi))
+      : "·");
+    stats += statRow("Sold", d.sn
+      ? "<b>" + d.sn + "</b> posted · best price <b>" + fmtC(d.bs) + "</b>"
+      : "none posted yet");
+    if (d.sn) {
+      stats += statRow("Profit", '<span class="' + (d.tp >= 0 ? "dst-up" : "dst-dn") + '">'
+        + (d.tp >= 0 ? "+" : "−") + fmtC(Math.abs(d.tp)) + "</span> all in · best single "
+        + (d.bp >= 0 ? "+" : "−") + fmtC(Math.abs(d.bp)));
+    }
+    if (held > 0) stats += statRow("Still yours", held + " on the books");
+    stats += statRow("Books at", fmtC(it.v) + " · seller usually wants " + fmtC(it.a));
+
+    dexDetail.classList.add("on");
+    dexDetail.innerHTML = '<div class="dst-head">'
+      + '<svg class="dst-art" viewBox="-3 -3 42 42" style="color:' + (it.c || "#8FB7E8") + '"><use href="#' + it.d + '"/></svg>'
+      + '<span class="dst-title"><b class="dex-dn">' + it.e + " " + esc(it.n.charAt(0).toUpperCase() + it.n.slice(1)) + "</b>"
+      + '<span class="tier-chip t' + it.t + '">' + TL[it.t] + "</span></span></div>"
+      + '<div class="dst-quip">“' + esc(it.q) + "”</div>"
+      + '<div class="dst-grid">' + stats + "</div>"
+      + (it.me ? '<span class="story">🧢 One of my real flips · off the channel.</span>' : "")
+      + (it.h ? '<span class="story">📜 ' + esc(it.h) + "</span>" : "");
+  }
+
+  dexBody.addEventListener("click", function (e) {
+    var b = e.target.closest ? e.target.closest("button[data-i]") : null;
+    if (!b || b.disabled) return;
+    var i = +b.getAttribute("data-i");
+    dexSel = dexSel === i ? -1 : i;
+    var cells = dexBody.querySelectorAll(".dex-cell");
+    for (var c = 0; c < cells.length; c++) cells[c].classList.toggle("sel", +cells[c].getAttribute("data-i") === dexSel);
+    paintDexDetail();
+  });
+
+  function openDex() { buildDex(); dexPanel.classList.add("open"); }
+  function closeDex() { dexPanel.classList.remove("open"); buildWh(); }
+  document.getElementById("closeDex").addEventListener("click", closeDex);
+  dexPanel.addEventListener("click", function (e) { if (e.target === dexPanel) closeDex(); });
+
+  // ---- the wardrobe: outfits, kit and your own face on the figure ----
+  var wardPanel = document.getElementById("wardPanel");
+  var wardRows = document.getElementById("wardRows");
+  var wardFace = document.getElementById("wardFace");
+  var wardFile = document.getElementById("wardFile");
+  var PHOTO_COST = 750;
+
+  function applyLook() {
+    var f = fitDef(fit);
+    player.style.setProperty("--fit", f.fit);
+    player.style.setProperty("--fit-sh", f.sh);
+    player.style.setProperty("--fit-leg", f.leg);
+    player.style.setProperty("--fit-trim", f.trim);
+    var head = player.querySelector(".p-head");
+    var src = avatarSrc || "avatar.jpg";
+    if (head && head.getAttribute("src") !== src) head.setAttribute("src", src);
+    if (wardFace && wardFace.getAttribute("src") !== src) wardFace.setAttribute("src", src);
+  }
+
+  function buildWard() {
+    var f = fitDef(fit), K = perks();
+    document.getElementById("wardFit").textContent = f.name;
+    var bits = [];
+    if (K.floorMul < 1) bits.push("sellers go " + Math.round((1 - K.floorMul) * 100) + "% lower");
+    if (K.pat) bits.push("+" + K.pat + " offer before they walk");
+    if (K.cashMul < 0.92) bits.push("cash in hand −15%");
+    if (K.flawMul < 0.82) bits.push("flaws knock double");
+    if (K.hint) bits.push("sellers let slip the value");
+    if (vests) bits.push("🦺 " + vests + " stab vest" + (vests > 1 ? "s" : "") + " in the bag");
+    document.getElementById("wardPerks").textContent = bits.length ? bits.join(" · ") : "No edge on the sellers · yet.";
+
+    var html = '<div class="shop-wallet">💰 ' + fmtC(wallet) + " in the bum-bag</div>";
+    html += '<div class="ward-h">The outfit</div>';
+    FITS.forEach(function (o) {
+      var owns = ownedFits.indexOf(o.id) >= 0, worn = o.id === fit;
+      html += '<div class="shop-row"><span class="ward-sw" style="background:' + o.sw + '"></span>'
+        + '<span class="shop-info"><span class="shop-name">' + o.name + "</span>"
+        + '<span class="shop-desc">' + o.desc + "</span>"
+        + (o.perk ? '<span class="ward-perk">🗣️ ' + o.perk + "</span>" : "")
+        + "</span>"
+        + '<button type="button" class="shop-buy ' + (worn ? "worn" : owns ? "owned" : "")
+        + '" data-f="' + o.id + '"' + ((worn || (!owns && wallet < o.price)) ? " disabled" : "") + ">"
+        + (worn ? "Worn" : owns ? "Wear it" : o.price ? fmtC(o.price) : "Free") + "</button></div>";
+    });
+
+    html += '<div class="ward-h">The kit · sways the sellers</div>';
+    KIT.forEach(function (o) {
+      var owns = hasKit(o.id);
+      html += '<div class="shop-row"><span class="shop-ico">' + o.ico + "</span>"
+        + '<span class="shop-info"><span class="shop-name">' + o.name + "</span>"
+        + '<span class="shop-desc">' + o.desc + "</span>"
+        + '<span class="ward-perk">🗣️ ' + o.perk + "</span></span>"
+        + '<button type="button" class="shop-buy' + (owns ? " maxed" : "") + '" data-kit="' + o.id + '"'
+        + ((owns || wallet < o.price) ? " disabled" : "") + ">"
+        + (owns ? "IN THE BAG" : fmtC(o.price)) + "</button></div>";
+    });
+
+    // the one thing in here you use up: it saves you from exactly one robber, then it's gone
+    html += '<div class="ward-h">The safety kit · gets used up</div>';
+    html += '<div class="shop-row"><span class="shop-ico">🦺</span>'
+      + '<span class="shop-info"><span class="shop-name">Stab vest '
+      + '<i class="shop-pips">' + (function () {
+        var p = "";
+        for (var vi = 0; vi < VEST_MAX; vi++) p += vi < vests ? "●" : "○";
+        return p;
+      })() + "</i></span>"
+      + '<span class="shop-desc">' + (vests
+        ? "You've got " + vests + " in the bag · " + VEST_MAX + " is as many as you can carry"
+        : "For the night market, where the wrong seller comes after you") + "</span>"
+      + '<span class="ward-perk">🌙 One robbery stopped dead · then it\'s gone</span></span>'
+      + '<button type="button" class="shop-buy" data-vest="1"'
+      + ((vests >= VEST_MAX || wallet < VEST_COST) ? " disabled" : "") + ">"
+      + (vests >= VEST_MAX ? "FULL" : fmtC(VEST_COST)) + "</button></div>";
+
+    html += '<div class="ward-h">Your face</div>';
+    html += '<div class="shop-row"><span class="shop-ico">📸</span>'
+      + '<span class="shop-info"><span class="shop-name">Your own mugshot</span>'
+      + '<span class="shop-desc">' + (photoPaid
+        ? "Pick a picture and that's you walking the field"
+        : "Put your own photo on the figure instead of mine") + "</span>"
+      + (photoPaid && avatarSrc ? '<span class="ward-perk">📷 That\'s you out there now</span>' : "") + "</span>"
+      + '<button type="button" class="shop-buy' + (photoPaid ? " owned" : "") + '" data-photo="1"'
+      + ((!photoPaid && wallet < PHOTO_COST) ? " disabled" : "") + ">"
+      + (photoPaid ? "Change it" : fmtC(PHOTO_COST)) + "</button></div>";
+    if (photoPaid && avatarSrc) {
+      html += '<div class="shop-row"><span class="shop-ico">↩️</span>'
+        + '<span class="shop-info"><span class="shop-name">Back to my face</span>'
+        + '<span class="shop-desc">Put the original photo back · free</span></span>'
+        + '<button type="button" class="shop-buy owned" data-photo="0">Reset</button></div>';
+    }
+    wardRows.innerHTML = html;
+  }
+
+  wardRows.addEventListener("click", function (e) {
+    var b = e.target.closest ? e.target.closest("button") : null;
+    if (!b || b.disabled) return;
+    var fid = b.getAttribute("data-f");
+    if (fid) {
+      var o = fitDef(fid);
+      if (ownedFits.indexOf(fid) < 0) {
+        if (wallet < o.price) return;
+        wallet -= o.price;
+        ownedFits.push(fid);
+        updWallet();
+        if (o.perk) banner("👕 " + o.name + " on · " + o.perk, 6000);
+        else banner("👕 " + o.name + " on. Looking sharp.", 4000);
+      }
+      fit = fid;
+      applyLook();
+      save();
+      buildWard();
+      return;
+    }
+    var kid = b.getAttribute("data-kit");
+    if (kid) {
+      for (var i = 0; i < KIT.length; i++) {
+        if (KIT[i].id !== kid) continue;
+        if (hasKit(kid) || wallet < KIT[i].price) return;
+        wallet -= KIT[i].price;
+        ownedKit.push(kid);
+        updWallet();
+        save();
+        buildWard();
+        banner(KIT[i].ico + " " + KIT[i].name + " · " + KIT[i].perk, 6000);
+        return;
+      }
+      return;
+    }
+    if (b.getAttribute("data-vest")) {
+      if (vests >= VEST_MAX || wallet < VEST_COST) return;
+      wallet -= VEST_COST;
+      vests++;
+      updWallet();
+      save();
+      buildWard();
+      banner("🦺 Stab vest in the bag · " + vests + " of " + VEST_MAX + ". Good luck at the night market.", 5000);
+      return;
+    }
+    var ph = b.getAttribute("data-photo");
+    if (ph === "1") {
+      if (!photoPaid) {
+        if (wallet < PHOTO_COST) return;
+        wallet -= PHOTO_COST;
+        photoPaid = true;
+        updWallet();
+        save();
+        buildWard();
+      }
+      wardFile.click();
+      return;
+    }
+    if (ph === "0") {
+      avatarSrc = "";
+      applyLook();
+      save();
+      buildWard();
+    }
+  });
+
+  // the picture is squared off and shrunk to a thumbnail before it goes anywhere near
+  // the save - a full-size phone photo would blow the localStorage quota on its own
+  wardFile.addEventListener("change", function () {
+    var file = this.files && this.files[0];
+    this.value = "";
+    if (!file) return;
+    var url = URL.createObjectURL(file);
+    var img = new Image();
+    img.onload = function () {
+      try {
+        var c = document.createElement("canvas");
+        c.width = c.height = 96;
+        var g = c.getContext("2d");
+        var side = Math.min(img.width, img.height);
+        g.drawImage(img, (img.width - side) / 2, (img.height - side) / 2, side, side, 0, 0, 96, 96);
+        avatarSrc = c.toDataURL("image/jpeg", 0.82);
+      } catch (err) {
+        banner("😬 Couldn't use that picture · try another one.", 5000);
+      }
+      URL.revokeObjectURL(url);
+      applyLook();
+      save();
+      buildWard();
+      banner("📸 That's you walking the boot sale now.", 5000);
+    };
+    img.onerror = function () {
+      URL.revokeObjectURL(url);
+      banner("😬 Couldn't read that picture · try another one.", 5000);
+    };
+    img.src = url;
+  });
+
+  function openWard() { buildWard(); wardPanel.classList.add("open"); }
+  function closeWard() { wardPanel.classList.remove("open"); buildWh(); }
+  document.getElementById("closeWard").addEventListener("click", closeWard);
+  wardPanel.addEventListener("click", function (e) { if (e.target === wardPanel) closeWard(); });
+  applyLook();
+
+  // ---- a refresh puts you back exactly where you were stood ----
+  // The camera is derived from px every frame, so setting the position is the whole job.
+  (function restorePlace() {
+    if (savedPx !== null) px = savedPx;
+    if (savedInWh) {
+      enterWh(); // this stashes the boot position we just restored, then drops us at the door
+      if (savedWhPx !== null) px = Math.max(WH_MIN, Math.min(WH_MAX, savedWhPx));
+    }
+    target = null;
+    flick = 0;
+  })();
+  // walking doesn't touch the wallet, so nothing else would ever write the position down
+  var lastSavedPx = px;
+  setInterval(function () {
+    if (Math.abs(px - lastSavedPx) < 8) return;
+    lastSavedPx = px;
+    save();
+  }, 4000);
+  // and a tab closed or reloaded between ticks still lands you back on the spot
+  window.addEventListener("pagehide", save);
+  document.addEventListener("visibilitychange", function () { if (document.hidden) save(); });
 
   // ---- the laptop: auctions on eBay, listings and cheeky offers on Vinted ----
   var laptopPanel = document.getElementById("laptopPanel");
@@ -4753,7 +5648,9 @@
   }
 
   var vipNext = false; // a delighted buyer talks you up, and the next listing benefits
-  function listItem(invIdx, plat, photo) {
+  // hired=true is Shazza's route: a flat photo score of 0, no perk roll, no banner per
+  // listing. She never wastes the word-of-mouth boost you earned either.
+  function listItem(invIdx, plat, photo, hired) {
     if (listings.length >= maxListings()) return;
     var e = inv.splice(invIdx, 1)[0];
     if (!e) return;
@@ -4776,7 +5673,8 @@
     }
     // a proper listing usually catches a random tailwind - THIS is why you don't skip
     var perk = "";
-    if ((photo >= 0.7 && Math.random() < 0.75) || vipNext) {
+    if (hired) { /* she doesn't get tailwinds, and she doesn't burn your word of mouth */ }
+    else if ((photo >= 0.7 && Math.random() < 0.75) || vipNext) {
       vipNext = false;
       if (plat === "ebay") {
         if (Math.random() < 0.5) {
@@ -4798,10 +5696,13 @@
       }
     }
     listings.push(L);
-    if (perk) banner("✨ " + perk, 6000);
+    if (hired) { /* one summary banner covers the batch */ }
+    else if (perk) banner("✨ " + perk, 6000);
     else if (photo >= 0.85) banner("✨ Cracking listing · that'll fetch more. Live at " + fmtC(L.price), 5000);
     else if (photo < 0.3) banner("😬 Scrappy listing, that one. Live at " + fmtC(L.price), 5000);
-    save(); buildLaptop(); updBadges();
+    save();
+    if (laptopPanel.classList.contains("open")) buildLaptop();
+    updBadges();
   }
 
   function soldListing(L, price) {
@@ -5546,17 +6447,38 @@
       else { save(); buildPack(); }
     }, "🎁 Tidy packing pays: up to +15% on the sale, plus tips, reviews and word of mouth");
   });
-  function completeOrder(o) {
+  // quiet=true is Barry's route: same money on the sale, none of the fanfare, and
+  // because he never touches a mini-game his q is always 0, so no presentation bonus
+  function completeOrder(o, quiet) {
     var ix = orders.indexOf(o);
     if (ix >= 0) orders.splice(ix, 1);
     var it = items[o.i];
     wallet += o.soldFor;
     packed++;
-    packedThisVisit++;
+    if (!quiet) packedThisVisit++; // Barry clearing the bench isn't you leaving it tidy
     // a tidy parcel is worth real money - buyers pay for presentation
     var q = (o.q || 0) / PACK_TASKS;
     var bonus = Math.round(o.soldFor * 0.15 * q);
     if (bonus > 0) wallet += bonus;
+    dexSold(o.i, o.soldFor + bonus, o.paid); // the collection keeps the trading record
+    if (quiet) {
+      var qprofit = o.soldFor - o.paid;
+      var qr = 0, qwhy = "";
+      if (qprofit > 0) { qr += 1; qwhy = "sold at a profit"; }
+      if (it.t === 4) { qr += 6; qwhy = "Legendary sold"; }
+      else if (it.t === 3) { qr += 3; qwhy = "Rare sold"; }
+      if (o.sh) { qr += 4; qwhy = "SHINY sold ✨"; }
+      updWallet();
+      awardRep(qr, qwhy);
+      questEvent("pack");
+      if (qprofit >= 150) questEvent("profit150");
+      if (it.t >= 3) questEvent("tier3");
+      if (o.tr) questEvent("trend");
+      save();
+      if (packPanel.classList.contains("open")) buildPack();
+      updBadges();
+      return;
+    }
     // pack it beautifully and something extra usually happens - which one is pot luck
     if (q >= 0.75) {
       var pr = Math.random();
@@ -5592,41 +6514,187 @@
     save(); buildPack(); updBadges();
   }
 
+  // ---- the staff work whether you're stood there or not ----
+  // Barry takes the oldest parcel first and keeps going while you're out at a boot sale.
+  // What he can't do is make anything of it: q stays 0, so no bonus, no tip, no review,
+  // no word of mouth. Shazza is the same trade the other way round - her listings go up
+  // at a flat 10% under guide with no photo bonus and no chance of a featured tailwind.
+  // Doing either job yourself is still the paying option.
+  function packerTick(now) {
+    var ms = packerMs();
+    if (!ms || !orders.length) { packerAt = 0; return 0; }
+    if (!packerAt || packerAt > now + ms) packerAt = now + ms; // starts the clock on his first one
+    var done = 0;
+    while (orders.length && now >= packerAt) {
+      completeOrder(orders[0], true);
+      done++;
+      packerAt = orders.length ? packerAt + ms : 0;
+      if (done >= 40) break; // a tab left shut for a fortnight shouldn't lock the page up
+    }
+    if (done) {
+      banner("🧑‍🏭 Barry packed and posted " + done + " parcel" + (done > 1 ? "s" : "")
+        + " · straight sale price, no tidy-parcel bonus.", 6000);
+    }
+    return done;
+  }
+
+  function listerTick(now) {
+    var ms = listerMs();
+    // she can only work if there's stock on the shelf and a slot free on the laptop
+    if (!ms || !inv.length || listings.length >= maxListings()) { listerAt = 0; return 0; }
+    if (!listerAt || listerAt > now + ms) listerAt = now + ms;
+    var done = 0;
+    while (inv.length && listings.length < maxListings() && now >= listerAt) {
+      // she alternates between the two sites, and never scores on the photo
+      listItem(0, Math.random() < 0.5 ? "ebay" : "vinted", 0, true);
+      done++;
+      listerAt = (inv.length && listings.length < maxListings()) ? listerAt + ms : 0;
+      if (done >= 20) break;
+    }
+    if (done) {
+      banner("📸 Shazza got " + done + " listing" + (done > 1 ? "s" : "")
+        + " up · under guide, mind. Photograph them yourself and they fetch more.", 6000);
+    }
+    return done;
+  }
+
+  // one clock for both of them, plus the little cards over their heads
+  function staffTick() {
+    var now = Date.now();
+    var did = packerTick(now) + listerTick(now);
+    if (did) save();
+    paintWorkers(now);
+  }
+
+  // the card over a worker's head: the outline of what's in their hands and the countdown
+  function paintWorker(wrap, id, lvl, at, ms, job, idleTxt) {
+    var el = document.getElementById(wrap);
+    el.classList.toggle("on", lvl > 0);
+    if (!lvl) return;
+    var busy = !!job;
+    el.classList.toggle("busy", busy);
+    el.classList.toggle("idle", !busy);
+    if (!busy) { document.getElementById(id + "Idle").textContent = idleTxt; return; }
+    var it = items[job.i];
+    var art = document.getElementById(id + "Art");
+    if (art.getAttribute("href") !== "#" + it.d) art.setAttribute("href", "#" + it.d);
+    var left = Math.max(0, Math.ceil((at - Date.now()) / 1000));
+    document.getElementById(id + "Txt").innerHTML = job.verb + " " + esc(it.n)
+      + '<i>' + left + "s left</i>";
+    var pct = ms ? Math.max(0, Math.min(100, Math.round(100 * (ms - (at - Date.now())) / ms))) : 0;
+    document.getElementById(id + "Bar").style.width = pct + "%";
+  }
+  function paintWorkers() {
+    paintWorker("whBarry", "barry", STAFF.packer.lvl, packerAt, packerMs(),
+      orders.length ? { i: orders[0].i, verb: "📦 packing" } : null,
+      "nothing on the bench · tea break ☕");
+    var busyL = inv.length && listings.length < maxListings();
+    paintWorker("whLister", "lister", STAFF.lister.lvl, listerAt, listerMs(),
+      busyL ? { i: inv[0].i, verb: "📸 listing" } : null,
+      !inv.length ? "nothing on the shelf to list" : "laptop's full · " + listings.length + " already live");
+  }
+  setInterval(staffTick, 1000);
+
   // ---- upgrades corner ----
-  var proArm = false, wipeArm = false;
+  var proArm = false, wipeArm = false, nlArm = false;
+  // three pages, because one scroll of everything had stopped being readable
+  var shopTab = "gear";
+  var SHOP_TABS = [["gear", "🔧 Gear"], ["staff", "🧑‍🏭 Staff"], ["big", "🏆 Big Stuff"]];
+
+  // one row, whether it's a piece of gear or a member of staff - same shape, same rules
+  function upgRow(k, u, attr) {
+    var c = nextCost(u);
+    var pips = "";
+    for (var i = 0; i < u.costs.length; i++) pips += i < u.lvl ? "●" : "○";
+    return '<div class="shop-row"><span class="shop-ico">' + u.icon + "</span>"
+      + '<span class="shop-info"><span class="shop-name">' + u.name + ' <i class="shop-pips">' + pips + "</i></span>"
+      + '<span class="shop-desc">' + u.desc + "</span>"
+      + '<span class="shop-fx">' + (c ? "Next: " + u.fx[u.lvl + 1] : "Now: " + u.fx[u.lvl]) + "</span>"
+      + (attr || "") + "</span>"
+      + (c
+        ? '<button type="button" class="shop-buy" data-' + (u === STAFF.packer ? "s" : "k") + '="' + k + '"'
+          + (wallet < c ? " disabled" : "") + ">" + fmtC(c) + "</button>"
+        : '<button type="button" class="shop-buy maxed" disabled>MAX</button>')
+      + "</div>";
+  }
+
+  // one live line per hired hand: what's in their queue and how far through they are
+  function staffStatus(who, lvl, at, ms, queue, queueWord, idleTxt) {
+    if (!lvl) return "";
+    if (!queue) return '<div class="shop-page-note">' + who + " · " + idleTxt + "</div>";
+    var left = Math.max(0, Math.ceil((at - Date.now()) / 1000));
+    var pct = ms ? Math.max(0, Math.min(100, Math.round(100 * (ms - (at - Date.now())) / ms))) : 0;
+    return '<div class="shop-page-note">' + who + " · 1 of " + queue + " " + queueWord
+      + " · about " + left + "s to go"
+      + '<span class="staff-bar"><i style="width:' + pct + '%"></i></span></div>';
+  }
+
+  // which pages have something you can afford right now, so the tab can say so
+  function tabHot(id) {
+    var k;
+    if (id === "gear") { for (k in UPG) { var c = nextCost(UPG[k]); if (c && wallet >= c) return true; } return false; }
+    if (id === "staff") { for (k in STAFF) { var s = nextCost(STAFF[k]); if (s && wallet >= s) return true; } return false; }
+    return wallet >= PRO_AT || (!noLinks && wallet >= NOLINKS_COST);
+  }
+
   function buildShop() {
     var html = '<div class="shop-wallet">💰 ' + fmtC(wallet) + " in the bum-bag</div>";
     if (prestige > 0) html += '<div class="shop-pro-note">🌟 Pro trader · everything sells for x' + proMult() + "</div>";
-    for (var k in UPG) {
-      var u = UPG[k];
-      var c = nextCost(u);
-      var pips = "";
-      for (var pi2 = 0; pi2 < u.costs.length; pi2++) pips += pi2 < u.lvl ? "●" : "○";
-      var fxTxt = c ? "Next: " + u.fx[u.lvl + 1] : "Now: " + u.fx[u.lvl];
-      html += '<div class="shop-row"><span class="shop-ico">' + u.icon + '</span>'
-        + '<span class="shop-info"><span class="shop-name">' + u.name + ' <i class="shop-pips">' + pips + '</i></span>'
-        + '<span class="shop-desc">' + u.desc + '</span>'
-        + '<span class="shop-fx">' + fxTxt + '</span></span>'
-        + (c
-          ? '<button type="button" class="shop-buy" data-k="' + k + '"' + (wallet < c ? " disabled" : "") + '>' + fmtC(c) + '</button>'
-          : '<button type="button" class="shop-buy maxed" disabled>MAX</button>')
-        + '</div>';
+    html += '<div class="shop-tabs">' + SHOP_TABS.map(function (t) {
+      return '<button type="button" data-tab="' + t[0] + '" class="' + (shopTab === t[0] ? "on" : "") + '">'
+        + t[1] + (tabHot(t[0]) ? ' <span class="tb-dot">●</span>' : "") + "</button>";
+    }).join("") + "</div>";
+
+    if (shopTab === "gear") {
+      html += '<div class="shop-page-note">Kit for you · every one of these makes your own runs better.</div>';
+      for (var k in UPG) html += upgRow(k, UPG[k]);
+    } else if (shopTab === "staff") {
+      html += '<div class="shop-page-note">People who do the boring bit while you\'re out, at both ends of the job. They\'re slower than you and they skip the skilled part · Barry\'s parcels earn the sale price and nothing on top, and Shazza\'s listings go up under guide. You\'ll find them stood at their stations.</div>';
+      // a live line each for whoever is actually on the clock
+      html += staffStatus("Barry", STAFF.packer.lvl, packerAt, packerMs(), orders.length,
+        "on the bench", "nothing to pack · tea break ☕");
+      html += staffStatus("Shazza", STAFF.lister.lvl, listerAt, listerMs(),
+        listings.length < maxListings() ? inv.length : 0,
+        "on the shelf", inv.length ? "laptop's full · nothing she can do" : "nothing on the shelf to list");
+      for (var sk in STAFF) html += upgRow(sk, STAFF[sk]);
+    } else {
+      // clearing my pitches out of the field: a one-off, and there's no putting them back
+      html += '<div class="shop-row"><span class="shop-ico">🚚</span>'
+        + '<span class="shop-info"><span class="shop-name">Clear the link pitches</span>'
+        + '<span class="shop-desc">' + (noLinks
+          ? "My eBay, Vinted, YouTube, TikTok, Insta and Facebook pitches have packed up"
+          : nlArm
+            ? "My six pitches pack up for good. No more visit payouts, and no undo."
+            : "My eBay, Vinted, YouTube, TikTok, Insta and Facebook pitches pack up for good") + "</span>"
+        + '<span class="shop-fx">' + (noLinks
+          ? "Every pitch lays out one more crate"
+          : "Frees the tables · one more crate on every pitch") + "</span></span>"
+        + (noLinks
+          ? '<button type="button" class="shop-buy maxed" disabled>GONE</button>'
+          : '<button type="button" class="shop-buy" data-k="nolinks"' + (wallet < NOLINKS_COST ? " disabled" : "") + ">"
+            + (nlArm ? "Sure?" : fmtC(NOLINKS_COST)) + "</button>")
+        + "</div>";
+      html += '<div class="shop-row"><span class="shop-ico">🌟</span>'
+        + '<span class="shop-info"><span class="shop-name">Go Pro</span>'
+        + '<span class="shop-desc">Reset everything · keep +50% profit forever</span></span>'
+        + '<button type="button" class="shop-buy pro" data-k="pro"' + (wallet < PRO_AT ? " disabled" : "") + ">"
+        + (wallet < PRO_AT ? "£10k" : proArm ? "Sure?" : "GO PRO") + "</button></div>";
+      // a way out for anyone who wants a clean slate - two taps, and it says so plainly
+      html += '<div class="shop-row wipe-row"><span class="shop-ico">🧹</span>'
+        + '<span class="shop-info"><span class="shop-name">Start over</span>'
+        + '<span class="shop-desc">' + (wipeArm
+          ? "This wipes your cash, stock, upgrades and level. There's no undo."
+          : "Wipe this save and begin again from £200") + "</span></span>"
+        + '<button type="button" class="shop-buy wipe" data-k="wipe">'
+        + (wipeArm ? "Wipe it" : "Reset") + "</button></div>";
     }
-    html += '<div class="shop-row"><span class="shop-ico">🌟</span>'
-      + '<span class="shop-info"><span class="shop-name">Go Pro</span>'
-      + '<span class="shop-desc">Reset everything · keep +50% profit forever</span></span>'
-      + '<button type="button" class="shop-buy pro" data-k="pro"' + (wallet < PRO_AT ? " disabled" : "") + '>'
-      + (wallet < PRO_AT ? "£10k" : proArm ? "Sure?" : "GO PRO") + '</button></div>';
-    // a way out for anyone who wants a clean slate - two taps, and it says so plainly
-    html += '<div class="shop-row wipe-row"><span class="shop-ico">🧹</span>'
-      + '<span class="shop-info"><span class="shop-name">Start over</span>'
-      + '<span class="shop-desc">' + (wipeArm
-        ? "This wipes your cash, stock, upgrades and level. There's no undo."
-        : "Wipe this save and begin again from £200") + '</span></span>'
-      + '<button type="button" class="shop-buy wipe" data-k="wipe">'
-      + (wipeArm ? "Wipe it" : "Reset") + '</button></div>';
     shopRows.innerHTML = html;
   }
+  // while you're stood on the staff page the progress bars have to actually move
+  setInterval(function () {
+    if (shopTab !== "staff" || !shopPanel.classList.contains("open")) return;
+    if (STAFF.packer.lvl || STAFF.lister.lvl) buildShop();
+  }, 1000);
 
   function hardReset() {
     // drop the save and reload - rebuilding from defaults beats resetting 20 variables by hand
@@ -5649,18 +6717,52 @@
   }
 
   shopRows.addEventListener("click", function (e) {
-    var b = e.target.closest ? e.target.closest("button[data-k]") : null;
+    var b = e.target.closest ? e.target.closest("button") : null;
     if (!b || b.disabled) return;
+    var tab = b.getAttribute("data-tab");
+    if (tab) { shopTab = tab; proArm = false; wipeArm = false; nlArm = false; buildShop(); return; }
+    // staff hire and speed upgrades run on the same ladder as the gear
+    var sk = b.getAttribute("data-s");
+    if (sk && STAFF[sk]) {
+      var su = STAFF[sk], sc = nextCost(su);
+      if (!sc || wallet < sc) return;
+      wallet -= sc;
+      su.lvl++;
+      // a fresh hire, or a faster one, starts the clock again on whatever's next
+      if (sk === "packer") packerAt = 0;
+      if (sk === "lister") listerAt = 0;
+      paintWorkers();
+      updWallet();
+      buildShop();
+      banner(su.icon + " " + (su.lvl === 1 ? su.name + " starts today · " : su.name + " Lv" + su.lvl + " · ")
+        + su.fx[su.lvl], 6000);
+      return;
+    }
     var k = b.getAttribute("data-k");
+    if (!k) return;
     if (k === "pro") {
-      if (!proArm) { proArm = true; wipeArm = false; buildShop(); return; }
+      if (!proArm) { proArm = true; wipeArm = false; nlArm = false; buildShop(); return; }
       proArm = false;
       goPro();
       return;
     }
     if (k === "wipe") {
-      if (!wipeArm) { wipeArm = true; proArm = false; buildShop(); return; }
+      if (!wipeArm) { wipeArm = true; proArm = false; nlArm = false; buildShop(); return; }
       hardReset();
+      return;
+    }
+    if (k === "nolinks") {
+      if (wallet < NOLINKS_COST) return;
+      if (!nlArm) { nlArm = true; proArm = false; wipeArm = false; buildShop(); return; }
+      nlArm = false;
+      wallet -= NOLINKS_COST;
+      noLinks = true;
+      applyNoLinks();
+      updSecret();  // with nothing left to visit, The Collector counts you a regular
+      updWallet();
+      buildShop();
+      save();
+      banner("🚚 My pitches have packed up · every pitch in the field lays out one more crate now.", 8000);
       return;
     }
     var u = UPG[k], c = nextCost(u);
@@ -5675,7 +6777,7 @@
 
   function toggleShop(open) {
     shopPanel.classList.toggle("open", open);
-    if (open) { proArm = false; wipeArm = false; buildShop(); }
+    if (open) { proArm = false; wipeArm = false; nlArm = false; buildShop(); }
   }
   document.getElementById("closeShop").addEventListener("click", function () { toggleShop(false); buildWh(); });
   shopPanel.addEventListener("click", function (e) { if (e.target === shopPanel) { toggleShop(false); buildWh(); } });
@@ -5815,7 +6917,7 @@
     npcSvg.appendChild(spookUse);
     // a pitch can lay out up to three crates, each with its own find on it. The extra
     // crates are clones of the first, so they glow and spark by exactly the same rules.
-    var MAXC = 3, crateEls = [rareEl], crateUses = [rareUse];
+    var MAXC = 4, crateEls = [rareEl], crateUses = [rareUse];
     if (rareEl) {
       for (var ci = 1; ci < MAXC; ci++) {
         var cl = rareEl.cloneNode(true);
@@ -5826,7 +6928,8 @@
       }
     }
     // where the crates sit on the table, by how many the venue stocks
-    var CRATE_X = { 1: [318], 2: [300, 352], 3: [284, 330, 376] };
+    // the fourth slot only ever comes up once the link pitches have packed up and freed the table
+    var CRATE_X = { 1: [318], 2: [300, 352], 3: [284, 330, 376], 4: [258, 300, 342, 384] };
     var slots = [], sel = 0;
 
     // the step scales with the price, so a fiver moves in pounds and a grand moves in twenties
@@ -5868,13 +6971,16 @@
       currentItems[idx] = it;
       name = it.n; emoji = it.e; ask = it.a; value = it.v; quip = it.q; tier = it.t; story = it.h || "";
       pers = pickPers(); // a different sort of seller every restock
-      persHint = pers.hint ? r5(value * (0.9 + Math.random() * 0.2)) : 0;
-      floor = r5(it.f * (0.9 + Math.random() * 0.2) * (1 - 0.08 * UPG.tongue.lvl) * pers.floorMul);
+      // what you turned up wearing counts: a hi-vis or a tweed jacket moves the floor,
+      // and a flask of tea gets a value out of anyone
+      var K = perks();
+      persHint = (pers.hint || K.hint) ? r5(value * (0.9 + Math.random() * 0.2)) : 0;
+      floor = r5(it.f * (0.9 + Math.random() * 0.2) * (1 - 0.08 * UPG.tongue.lvl) * pers.floorMul * K.floorMul);
       estF = 0.85 + Math.random() * 0.3; // eagle eye lvl 1 sees a rough estimate
       // a shiny can land on any tier. The seller has no idea, so the price is unchanged,
       // which is the whole thrill: you can see it from across the field and they can't.
       shiny = Math.random() < (0.035 + UPG.lucky.lvl * 0.015);
-      price = ask; patience = pers.pat; maxPat = pers.pat; phase = 0; counters = 0;
+      price = ask; patience = maxPat = pers.pat + K.pat; phase = 0; counters = 0;
       // the night crowd are a shiftier bunch: firmer floors and shorter fuses
       if (VENUES[venue] && VENUES[venue].id === "night" && !isSecret) {
         floor = r5(floor * 1.12);
@@ -5967,7 +7073,7 @@
 
     function assignItem() {
       crateTok++;
-      var n = Math.min(MAXC, V().crates || 1);
+      var n = Math.min(MAXC, (V().crates || 1) + (noLinks ? 1 : 0));
       // very occasionally the seller is… Isaac, flogging his own famous stock,
       // and he knows exactly what it's worth, so he is not haggling
       isaacTwin = !isSecret && Math.random() < 0.03;
@@ -6124,6 +7230,7 @@
       var cond = tier === 4 ? 1 : roll < tat ? 0.85 : roll > 1 - mint ? 1.2 : 1;
       if (UPG.eye.lvl >= 2 && cond < 1) cond = 1; // eagle eye 2 never buys tat blind
       inv.push({ i: items.indexOf(it), paid: paid, cond: cond, sh: shiny ? 1 : 0 });
+      dexAdd(items.indexOf(it), !!shiny, paid); // straight into the collection, sold on or not
       updWallet();
       stash();
       paintCrates();
@@ -6150,7 +7257,7 @@
         setTimeout(function () { startRobbery(rx, spookId); }, 650);
       }
       setTimeout(function () {
-        if (phase === 3) { price = ask; patience = pers.pat; phase = 0; counters = 0; stash(); }
+        if (phase === 3) { price = ask; patience = Math.min(maxPat, pers.pat + perks().pat); phase = 0; counters = 0; stash(); }
       }, 10000);
     }
 
@@ -6166,7 +7273,7 @@
       var f = pickFrom(FAULTS);
       // sellers who love a natter don't take it personally; hard bargainers do
       var sting = pers.pat >= 5 ? 0 : 1;
-      floor = Math.max(5, r5(floor * 0.82));
+      floor = Math.max(5, r5(floor * perks().flawMul));
       price = Math.max(floor, r5(price - ask * 0.12));
       patience -= sting;
       if (patience <= 0) return walkOff();
@@ -6176,7 +7283,7 @@
     }
 
     // cash in hand: closes there and then a bit under the asking price, but only once
-    function cashPrice() { return Math.max(floor, r5(price * 0.92)); }
+    function cashPrice() { return Math.max(floor, r5(price * perks().cashMul)); }
     function cashInHand() {
       if (phase !== 1 || cashUsed) return;
       if (isaacTwin) return render("“Cash is lovely. The price is still the price.” 🧢 " + fmt(price) + ".");
