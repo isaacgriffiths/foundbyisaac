@@ -163,6 +163,14 @@
   }
   #hint.gone { opacity: 0; }
 
+  /* iOS double-tap-to-zoom fires on any quick second tap, which wrecks a game built
+     on tapping. `manipulation` drops the double-tap gesture but keeps pinch-zoom,
+     so the page is still zoomable for anyone who needs it. */
+  html, body { touch-action: manipulation; }
+  button, .flap, .pbox, .htag, .bb, .pk, .msg, .npc, .rare, .stall, .whstation {
+    touch-action: manipulation;
+  }
+
   /* ---------- scene ---------- */
   #view { position: fixed; inset: 0; overflow: hidden; touch-action: none; }
   img { -webkit-user-drag: none; user-select: none; }
@@ -501,6 +509,16 @@
     box-shadow: 0 0 8px rgb(111 168 255 / 0.8);
     transition: width 0.5s ease;
   }
+  /* your level sits under the bar at all times, so the bar reads as progress */
+  #xp > b {
+    position: absolute;
+    top: 10px; left: 50%; transform: translateX(-50%);
+    background: rgb(20 42 85 / 0.82); color: #FFFFFF;
+    font-family: var(--display); font-weight: 600; font-size: 11px;
+    padding: 3px 10px; border-radius: 999px;
+    pointer-events: none; white-space: nowrap;
+  }
+  #xp.show > b { display: none; } /* the fuller hover label takes its spot */
   /* the level name only surfaces on hover, or for a moment when you rank up */
   #xp > span {
     position: absolute;
@@ -616,12 +634,27 @@
     #barter { top: calc(116px + env(safe-area-inset-top, 0px)); }
   }
 
-  /* richer venues pile spare crates beside the glowing one: buy, and the next is opened */
-  .rare-extra { position: absolute; left: 268px; bottom: 0; width: 96px; height: 60px; display: none; pointer-events: none; }
-  body.vcr2 .rare-extra { display: block; }
-  .rare-extra .x2 { display: none; }
-  body.vcr3 .rare-extra .x2 { display: inline; }
-  body.in-wh .rare-extra { display: none; }
+  /* richer venues lay every crate out at once, each with its own find on top.
+     The one you're haggling for wears a ring so you can see which is which. */
+  .rare.picked::before {
+    content: ""; position: absolute; left: -7px; right: -7px; top: 26px; bottom: -5px;
+    border: 3px solid #FFD75E; border-radius: 12px;
+    box-shadow: 0 0 10px rgb(255 215 94 / 0.65);
+  }
+  .rare.gone { opacity: 0.4; }
+
+  /* flick between the crates on this pitch */
+  .say-swap { display: none; align-items: center; justify-content: center; gap: 10px; margin-bottom: 7px; }
+  .say-swap.on { display: flex; }
+  .say-swap button {
+    width: 34px; height: 34px; flex: 0 0 auto;
+    font-family: var(--display); font-weight: 700; font-size: 19px; color: #142A55;
+    background: #FFD75E; border: 2.5px solid var(--outline); border-radius: 50%;
+    cursor: pointer; -webkit-tap-highlight-color: transparent; padding: 0; line-height: 1;
+  }
+  .say-swap button:disabled { background: #E4E8EF; color: #A9B6CC; cursor: default; }
+  .say-swap b { font-family: var(--display); font-weight: 600; font-size: 12.5px; color: #3D5688; }
+  #barter .say-swap button { width: 42px; height: 42px; font-size: 22px; }
 
   .rare.sold .rare-item { animation: none; filter: none; }
   .rare.sold .spark { display: none; }
@@ -889,6 +922,32 @@
   /* the night market is lit by torches, so the finds carry further than the field does */
   body.v-night .cloud { opacity: 0.25; }
   body.v-night .bgpitch { opacity: 0.55; }
+  /* night is DARK: a flat sheet of dark with the lantern glow masked out of it.
+     The popups sit inside #world, which is its own stacking context and can't rise
+     above this, so the mask punches a second hole wherever a popup is open - that
+     keeps every card at full brightness. On a full moon the sheet barely bites. */
+  #torch {
+    display: none; position: fixed; inset: 0; z-index: 8; pointer-events: none;
+    background: rgb(7 9 28 / 0.76);
+    transition: opacity 0.4s ease;
+  }
+  body.v-night:not(.in-wh) #torch { display: block; }
+  body.v-night.moon-full #torch { opacity: 0.3; }
+  /* everyone at the night market dresses for the occasion, and none of them look friendly.
+     The head is swapped outright and the clothes go dark - the svg's own declarations
+     beat the inline colour inherited from .npc, so no !important needed. */
+  .npc-spook { display: none; }
+  body.v-night .npc .npc-spook, #robber .npc-spook { display: inline; }
+  body.v-night .npc .npc-hair { display: none; }
+  body.v-night .npc > svg { --skin: #C3B4CE; --hair: #150F22; color: #2E2740; }
+  .npc.isaac .npc-spook { display: none !important; }
+  .npc.isaac .npc-hair { display: inline !important; }
+  body.v-night .npc.isaac > svg { --skin: #F0C8A0; --hair: #22254A; color: #22254A; }
+  /* the one chasing you through the dark */
+  #robber { position: absolute; left: 0; bottom: 58px; width: 64px; height: 100px; z-index: 2; pointer-events: none; }
+  #robber > svg { --skin: #B9A9C9; --hair: #141414; color: #16121F; }
+  #robber .npc-hair { display: none; }
+  #robber svg { animation: npcIdle 0.32s ease-in-out infinite; }
   body.v-estate .cloud { opacity: 0.7; }
 
   /* dark up at the roof, warmer down where the lamps reach */
@@ -1437,7 +1496,7 @@
 </div>
 
 <!-- the level bar runs the width of the screen, so progress is always in the corner of your eye -->
-<div id="xp" hidden><i id="xpFill"></i><span id="xpLabel"></span></div>
+<div id="xp" hidden><i id="xpFill"></i><b id="xpLv"></b><span id="xpLabel"></span></div>
 
 <div id="hint">Loading the car boot…</div>
 
@@ -1746,6 +1805,35 @@
         </g>
         <g id="npcHairB">
           <path d="M19 13 Q18 2 28 3 Q32 -2 38 3 Q46 3 45 13 Q40 7 32 8 Q24 7 19 13 Z" fill="var(--hair, #2B1B12)" stroke="#142A55" stroke-width="2"/>
+        </g>
+        <!-- night market heads: these REPLACE the seller's head, drawn last so they
+             cover the face and hair underneath. Head sits at cx 32, cy 18, r 13. -->
+        <g id="spookPump">
+          <path d="M32 6 Q33 2 37 1" fill="none" stroke="#3E8A4C" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="32" cy="19" r="14.5" fill="#E8930C" stroke="#142A55" stroke-width="2.5"/>
+          <path d="M23 20 Q32 16 41 20" fill="none" stroke="#C2703F" stroke-width="1.5" opacity="0.7"/>
+          <path d="M25 14 L31 21 L25 21 Z" fill="#22254A"/>
+          <path d="M39 14 L33 21 L39 21 Z" fill="#22254A"/>
+          <path d="M24 26 L28 25 L30 28 L34 25 L36 28 L40 26 L38 30 Q32 33 26 30 Z" fill="#22254A"/>
+        </g>
+        <g id="spookSkull">
+          <path d="M32 4 Q46 4 46 18 Q46 25 42 28 V31 Q42 34 32 34 Q22 34 22 31 V28 Q18 25 18 18 Q18 4 32 4 Z" fill="#F6EFE3" stroke="#142A55" stroke-width="2.5" stroke-linejoin="round"/>
+          <ellipse cx="26.5" cy="18" rx="4" ry="4.6" fill="#22254A"/>
+          <ellipse cx="37.5" cy="18" rx="4" ry="4.6" fill="#22254A"/>
+          <path d="M32 23 L29.5 28 H34.5 Z" fill="#22254A"/>
+          <path d="M27 31 V34 M32 31 V34 M37 31 V34" stroke="#142A55" stroke-width="1.6"/>
+        </g>
+        <g id="spookGhost">
+          <path d="M18 34 V19 Q18 4 32 4 Q46 4 46 19 V34 Q42 30 39 34 Q36 38 32 34 Q28 30 25 34 Q21 38 18 34 Z" fill="#F8F6F0" stroke="#142A55" stroke-width="2.5" stroke-linejoin="round"/>
+          <ellipse cx="27" cy="17" rx="2.8" ry="3.8" fill="#22254A"/>
+          <ellipse cx="37" cy="17" rx="2.8" ry="3.8" fill="#22254A"/>
+          <ellipse cx="32" cy="26" rx="3.2" ry="4.2" fill="#22254A"/>
+        </g>
+        <g id="spookHood">
+          <path d="M32 3 Q47 3 47 21 Q47 30 43 35 H21 Q17 30 17 21 Q17 3 32 3 Z" fill="#2A2340" stroke="#142A55" stroke-width="2.5" stroke-linejoin="round"/>
+          <path d="M24 16 Q32 10 40 16 Q40 28 32 31 Q24 28 24 16 Z" fill="#0B0D1C"/>
+          <circle cx="28" cy="20" r="2" fill="#E5484D"/>
+          <circle cx="36" cy="20" r="2" fill="#E5484D"/>
         </g>
         <g id="npcCap">
           <path d="M19 13 Q20 3 32 3 Q44 3 45 13 L45 15 H19 Z" fill="var(--hair, #22254A)" stroke="#142A55" stroke-width="2"/>
@@ -2919,6 +3007,8 @@
   </div>
 </div>
 
+<div id="torch" aria-hidden="true"></div>
+
 <div id="pads" aria-hidden="true">
   <button class="pad" id="padL" type="button">◀</button>
   <button class="pad" id="padR" type="button">▶</button>
@@ -2929,6 +3019,11 @@
   <div class="sheet-head">
     <svg class="sheet-art" width="76" height="76" viewBox="-3 -3 42 42" aria-hidden="true"><use class="sheet-item-use" href="#r0"/></svg>
     <span class="tier-chip"></span>
+  </div>
+  <div class="say-swap">
+    <button type="button" class="sw-prev" aria-label="Previous crate">‹</button>
+    <b class="sw-lbl"></b>
+    <button type="button" class="sw-next" aria-label="Next crate">›</button>
   </div>
   <div class="say-text"></div>
   <div class="say-price"></div>
@@ -3053,6 +3148,7 @@
   var ground = document.getElementById("ground");
   var whWall = document.getElementById("whWall");
   var whLight = document.getElementById("whLight");
+  var torchEl = document.getElementById("torch");
   var player = document.getElementById("player");
   var hint = document.getElementById("hint");
   var panel = document.getElementById("linksPanel");
@@ -3068,6 +3164,24 @@
   }
   // indoors there is no sky: high hall windows instead, each throwing a shaft of light
   var indoorNow = false; // set by applyVenue - an indoor venue refurnishes the whole scene
+  var skyMode = "day", nightNow = false, fullMoon = false;
+  // the night sky: a spray of stars and the moon - full and blazing on the lucky
+  // nights, a thin crescent otherwise. Rebuilt fresh on every arrival.
+  function starSkyHtml() {
+    var html = "";
+    for (var sk = 0; sk < 3; sk++) {
+      for (var i = 0; i < 46; i++) {
+        var r = Math.random() < 0.2 ? 2.4 : 1.4;
+        html += '<svg class="hallwin" style="left:' + Math.round(Math.random() * CB + sk * CB) + 'px;top:' + Math.round(4 + Math.random() * 300) + 'px" width="6" height="6" viewBox="0 0 6 6"><circle cx="3" cy="3" r="' + r + '" fill="#FFF6D8" opacity="' + (0.45 + Math.random() * 0.55).toFixed(2) + '"/></svg>';
+      }
+      html += '<svg class="hallwin" style="left:' + (2050 + sk * CB) + 'px;top:40px' + (fullMoon ? ";filter:drop-shadow(0 0 22px rgb(255 240 180 / 0.9))" : "") + '" width="120" height="120" viewBox="0 0 120 120">'
+        + (fullMoon
+          ? '<circle cx="60" cy="60" r="34" fill="#FFF3C4" stroke="#D9C48C" stroke-width="3"/><circle cx="48" cy="52" r="5" fill="#EFE3B8"/><circle cx="70" cy="70" r="7" fill="#EFE3B8"/><circle cx="66" cy="44" r="4" fill="#EFE3B8"/>'
+          : '<path d="M74 28 A34 34 0 1 0 74 92 A27 27 0 1 1 74 28 Z" fill="#FFF3C4" stroke="#D9C48C" stroke-width="3"/>')
+        + "</svg>";
+    }
+    return html;
+  }
   function hallSkyHtml() {
     // one unbroken bar of small windows along the top of the hall, sill and all,
     // with the odd shaft of sun dropping out of it
@@ -3083,7 +3197,9 @@
     }
     return html;
   }
-  function buildSky() { sky.innerHTML = indoorNow ? hallSkyHtml() : cloudHtml; }
+  function buildSky() {
+    sky.innerHTML = skyMode === "hall" ? hallSkyHtml() : skyMode === "stars" ? starSkyHtml() : cloudHtml;
+  }
   buildSky();
 
   // we're at the bottom of the slope - terraced bands rise behind, one per row of pitches
@@ -3883,6 +3999,7 @@
     xpLabel.textContent = "Lv" + (lvlIdx + 1) + " " + LEVELS[lvlIdx][1]
       + (nxt ? " · " + (nxt - rep) + " rep to Lv" + (lvlIdx + 2) + " " + LEVELS[lvlIdx + 1][1] : " · top level ⭐");
     xp.title = xpLabel.textContent;
+    document.getElementById("xpLv").textContent = "Lv" + (lvlIdx + 1) + " · " + LEVELS[lvlIdx][1];
   }
   // hold the level name open for a few seconds when you rank up, then let it fade
   function flashLevel() {
@@ -4196,7 +4313,7 @@
     { id: "fair", cls: "v-fair", name: "Indoor Antiques Fair", ico: "🏛️", fee: 15, lvl: 1, tier: 1, luck: 1.5, crates: 2,
       desc: "Dealers who know exactly what they've got.", stock: "Better stock · 2 crates a pitch" },
     { id: "night", cls: "v-night", name: "Night Flea Market", ico: "🌙", fee: 25, lvl: 2, tier: 1, luck: 2.2, crates: 2,
-      desc: "Torchlight only. You buy on the glow and hope.", stock: "Rare finds in the dark · 2 crates" },
+      desc: "Torchlight only, and a rum crowd. Don't push your luck.", stock: "Rare finds in the dark · 2 crates · risky" },
     { id: "sea", cls: "v-sea", name: "Seaside Sunday", ico: "🌊", fee: 35, lvl: 3, tier: 2, luck: 2.6, crates: 3,
       desc: "Holiday tat and proper maritime finds, side by side.", stock: "Rare and Legendary · 3 crates a pitch" },
     { id: "estate", cls: "v-estate", name: "Estate Clearance", ico: "🏚️", fee: 60, lvl: 4, tier: 2, luck: 3.4, crates: 3,
@@ -4223,12 +4340,22 @@
     // the spare crates stack up beside the find where the venue runs that deep
     document.body.classList.toggle("vcr2", (V().crates || 1) >= 2);
     document.body.classList.toggle("vcr3", (V().crates || 1) >= 3);
+    nightNow = V().id === "night";
+    if (nightNow) {
+      // each visit rolls the moon: about one night in five it hangs full and bright
+      fullMoon = Math.random() < 0.22;
+      document.body.classList.toggle("moon-full", fullMoon);
+    }
     var indoor = !!(SCENES[V().id] || {}).indoor;
+    var mode = indoor ? "hall" : nightNow ? "stars" : "day";
     if (indoor !== indoorNow) {
       indoorNow = indoor;
-      buildSky();
       buildRows();
       paintGround();
+    }
+    if (mode !== skyMode || nightNow) {
+      skyMode = mode;
+      buildSky();
     }
   }
 
@@ -4368,6 +4495,7 @@
   var WH_MIN = 140, WH_MAX = 2080, WH_SPAWN = 585;
   function enterWh() {
     if (inWh) return;
+    if (robber) endRobbery(false, "🚪 You slam the warehouse door · they think better of it.");
     inWh = true;
     packedThisVisit = 0;
     bootPx = px;
@@ -4383,6 +4511,7 @@
     venue = VENUES.indexOf(v);
     applyVenue();
     inWh = false;
+    if (robber) endRobbery(false, ""); // nobody follows you between venues
     document.body.classList.remove("in-wh");
     ["shopPanel", "laptopPanel", "packPanel", "venuePanel"].forEach(function (id) { document.getElementById(id).classList.remove("open"); });
     if (bootPx !== null) px = bootPx;
@@ -4397,6 +4526,44 @@
     updBadges();
     // you get told what a place is the first time you go, and never again
     tip("v-" + v.id, v.ico + " " + v.name + ". " + v.stock + ". Bag holds " + bagCap() + " 🎒", 6000);
+  }
+
+  // ---- the night market's dark side: anger the wrong seller and they turn robber ----
+  // They're faster than a walk and slower than a sprint, they give up if you open a
+  // real gap or make the warehouse, and they only get what they catch.
+  var robber = null;
+  function startRobbery(fromX, spookId) {
+    if (robber || inWh) return;
+    // they come at you out of the dark from a way off - spawning on your toes gave
+    // you no chance to react, which just felt like a tax rather than a chase
+    fromX = px + (Math.random() < 0.5 ? -1 : 1) * (430 + Math.random() * 120);
+    var el = document.createElement("div");
+    el.id = "robber";
+    el.innerHTML = '<svg width="64" height="100" viewBox="0 0 64 100" aria-hidden="true">'
+      + '<use href="#npcBody"/><use class="npc-spook" href="#' + (spookId || "spookHood") + '"/></svg>';
+    world.appendChild(el);
+    robber = { el: el, x: fromX, until: performance.now() + 9000 };
+    banner("💀 Oi! They're coming for your bag · LEG IT (double-tap to sprint) or dive into the warehouse!", 5500);
+  }
+  function endRobbery(caught, why) {
+    if (!robber) return;
+    robber.el.remove();
+    robber = null;
+    if (caught) {
+      var lossTxt = "";
+      if (inv.length) {
+        var stolen = inv.splice(Math.floor(Math.random() * inv.length), 1)[0];
+        lossTxt = items[stolen.i].n + " and ";
+      }
+      var cash = Math.min(wallet, Math.max(10, Math.round(wallet * 0.12 / 5) * 5));
+      wallet -= cash;
+      updWallet();
+      updBadges();
+      save();
+      banner("💀 Caught! They snatched " + lossTxt + fmtC(cash) + " and melted into the dark.", 7000);
+    } else if (why !== "") {
+      banner(why || "😮‍💨 You lost them in the dark. Heart still going, wallet intact.", 5500);
+    }
   }
 
   // ---- the venue picker ----
@@ -5500,7 +5667,11 @@
       chip: sheetRoot.querySelector(".tier-chip"),
       moveRow: sheetRoot.querySelector(".say-moves"),
       flaw: sheetRoot.querySelector(".mv-flaw"),
-      cash: sheetRoot.querySelector(".mv-cash")
+      cash: sheetRoot.querySelector(".mv-cash"),
+      swap: sheetRoot.querySelector(".say-swap"),
+      swPrev: sheetRoot.querySelector(".sw-prev"),
+      swNext: sheetRoot.querySelector(".sw-next"),
+      swLbl: sheetRoot.querySelector(".sw-lbl")
     };
     // the sheet is shared, so every control routes through whichever stall owns it
     function own(fn) {
@@ -5523,6 +5694,8 @@
     sheet.bye.addEventListener("click", own(function (o) { o.hideSay(); }));
     sheet.flaw.addEventListener("click", own(function (o) { o.pickFault(); }));
     sheet.cash.addEventListener("click", own(function (o) { o.cashInHand(); }));
+    sheet.swPrev.addEventListener("click", own(function (o) { o.stepSlot(-1); }));
+    sheet.swNext.addEventListener("click", own(function (o) { o.stepSlot(1); }));
     ["pointerdown", "pointerup", "click"].forEach(function (ev) {
       sheetRoot.addEventListener(ev, function (e) { e.stopPropagation(); });
     });
@@ -5547,16 +5720,31 @@
     var npcHead = document.createElement("img");
     npcHead.className = "npc-head"; npcHead.src = "avatar.jpg"; npcHead.alt = "";
     npcEl.appendChild(npcHead);
-    // the spare crates piled beside the find - shown at venues deep enough to stock them
-    var cratesLeft = 1;
+    // the halloween get-up: a whole new head, drawn over the top so it replaces the
+    // face, with the hair tagged so night can hide it
+    var npcSvg = npcEl.querySelector("svg");
+    var hairUse = npcSvg.querySelectorAll("use")[1];
+    if (hairUse) hairUse.setAttribute("class", "npc-hair");
+    var spookId = pickFrom(["spookPump", "spookSkull", "spookGhost", "spookHood"]);
+    var spookUse = document.createElementNS("http://www.w3.org/2000/svg", "use");
+    spookUse.setAttribute("class", "npc-spook");
+    spookUse.setAttribute("href", "#" + spookId);
+    npcSvg.appendChild(spookUse);
+    // a pitch can lay out up to three crates, each with its own find on it. The extra
+    // crates are clones of the first, so they glow and spark by exactly the same rules.
+    var MAXC = 3, crateEls = [rareEl], crateUses = [rareUse];
     if (rareEl) {
-      var extra = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-      extra.setAttribute("class", "rare-extra");
-      extra.setAttribute("viewBox", "0 0 96 60");
-      extra.setAttribute("aria-hidden", "true");
-      extra.innerHTML = '<use href="#rareCrate" transform="translate(2,26)"/><use class="x2" href="#rareCrate" transform="translate(50,0)"/>';
-      s.el.appendChild(extra);
+      for (var ci = 1; ci < MAXC; ci++) {
+        var cl = rareEl.cloneNode(true);
+        cl.className = "rare";
+        rareEl.parentNode.insertBefore(cl, rareEl.nextSibling);
+        crateEls.push(cl);
+        crateUses.push(cl.querySelector(".rare-use"));
+      }
     }
+    // where the crates sit on the table, by how many the venue stocks
+    var CRATE_X = { 1: [318], 2: [300, 352], 3: [284, 330, 376] };
+    var slots = [], sel = 0;
 
     // the step scales with the price, so a fiver moves in pounds and a grand moves in twenties
     function bidStep() {
@@ -5600,17 +5788,15 @@
       persHint = pers.hint ? r5(value * (0.9 + Math.random() * 0.2)) : 0;
       floor = r5(it.f * (0.9 + Math.random() * 0.2) * (1 - 0.08 * UPG.tongue.lvl) * pers.floorMul);
       estF = 0.85 + Math.random() * 0.3; // eagle eye lvl 1 sees a rough estimate
-      // c tints any currentColor parts of the model, so one shape serves many colourways
-      if (rareUse) { rareUse.setAttribute("href", "#" + it.d); rareUse.style.color = it.c || "#8FB7E8"; }
       // a shiny can land on any tier. The seller has no idea, so the price is unchanged,
       // which is the whole thrill: you can see it from across the field and they can't.
       shiny = Math.random() < (0.035 + UPG.lucky.lvl * 0.015);
-      if (rareEl) {
-        rareEl.classList.remove("sold", "t1", "t2", "t3", "t4", "shiny");
-        rareEl.classList.add("t" + tier);
-        if (shiny) rareEl.classList.add("shiny");
-      }
       price = ask; patience = pers.pat; maxPat = pers.pat; phase = 0; counters = 0;
+      // the night crowd are a shiftier bunch: firmer floors and shorter fuses
+      if (VENUES[venue] && VENUES[venue].id === "night" && !isSecret) {
+        floor = r5(floor * 1.12);
+        patience = maxPat = Math.max(2, maxPat - 1);
+      }
       bid = Math.max(1, Math.round(ask * 0.6)); // the stepper opens on a sensible lowball
       flawUsed = false; cashUsed = false;
     }
@@ -5633,26 +5819,96 @@
       floor = price;
       patience = maxPat = 3;
     }
+
+    // --- the crates on this pitch, one item each, switchable from the haggle card ---
+    var sold = false;
+    function grab() {
+      var o = {};
+      o.it = it; o.name = name; o.emoji = emoji; o.ask = ask; o.value = value; o.quip = quip;
+      o.tier = tier; o.story = story; o.pers = pers; o.persHint = persHint; o.floor = floor;
+      o.estF = estF; o.shiny = shiny; o.price = price; o.patience = patience; o.maxPat = maxPat;
+      o.phase = phase; o.counters = counters; o.bid = bid; o.flawUsed = flawUsed;
+      o.cashUsed = cashUsed; o.sold = sold;
+      return o;
+    }
+    function put(o) {
+      it = o.it; name = o.name; emoji = o.emoji; ask = o.ask; value = o.value; quip = o.quip;
+      tier = o.tier; story = o.story; pers = o.pers; persHint = o.persHint; floor = o.floor;
+      estF = o.estF; shiny = o.shiny; price = o.price; patience = o.patience; maxPat = o.maxPat;
+      phase = o.phase; counters = o.counters; bid = o.bid; flawUsed = o.flawUsed;
+      cashUsed = o.cashUsed; sold = o.sold;
+      currentItems[idx] = it;
+    }
+    function stash() { if (slots[sel]) slots[sel] = grab(); }
+    // paint one crate from its slot: the art, the tier glow, the sold state
+    function paintCrate(i) {
+      var el = crateEls[i], u = crateUses[i], o = slots[i];
+      if (!el) return;
+      if (!o) { el.style.display = "none"; return; }
+      el.style.display = "";
+      el.style.left = (CRATE_X[slots.length] || CRATE_X[1])[i] + "px";
+      if (u) { u.setAttribute("href", "#" + o.it.d); u.style.color = o.it.c || "#8FB7E8"; }
+      el.classList.remove("t1", "t2", "t3", "t4", "shiny", "sold", "empty", "picked", "gone");
+      el.classList.add("t" + o.tier);
+      if (o.shiny) el.classList.add("shiny");
+      if (o.sold) el.classList.add("sold", "gone");
+      if (crateEmpty && i === 0) el.classList.add("empty");
+      if (i === sel && slots.length > 1 && !o.sold) el.classList.add("picked");
+    }
+    function paintCrates() { for (var i = 0; i < crateEls.length; i++) paintCrate(i); }
+    // switch which crate you're haggling over, skipping any already sold
+    function selectSlot(i) {
+      if (slots.length < 2) return;
+      i = ((i % slots.length) + slots.length) % slots.length;
+      if (i === sel) return;
+      stash();
+      sel = i;
+      put(slots[sel]);
+      if (phase === 0) phase = 1; // stepping onto a crate opens it
+      paintCrates();
+      render(phase === 2
+        ? "That one's gone. " + (allSold() ? "Cleaned him out! 📦" : "Have a look at the others.")
+        : "<b>" + name.charAt(0).toUpperCase() + name.slice(1) + "</b> " + emoji + " · “" + quip + "”"
+          + (persHint ? ' <span class="story">🗣️ “Worth about ' + fmt(persHint) + ' to the right person, that.”</span>' : ""));
+    }
+    s.stepSlot = function (d) {
+      // step to the next crate that hasn't been bought, so the arrows never dead-end
+      for (var n = 1; n <= slots.length; n++) {
+        var i = ((sel + d * n) % slots.length + slots.length) % slots.length;
+        if (!slots[i].sold) return selectSlot(i);
+      }
+    };
+    function allSold() {
+      for (var i = 0; i < slots.length; i++) if (!slots[i].sold) return false;
+      return true;
+    }
+
     function assignItem() {
       crateTok++;
-      setItem(rollStock());
-      cratesLeft = V().crates || 1;
+      var n = Math.min(MAXC, V().crates || 1);
       // very occasionally the seller is… Isaac, flogging his own famous stock,
       // and he knows exactly what it's worth, so he is not haggling
       isaacTwin = !isSecret && Math.random() < 0.03;
-      if (isaacTwin) {
-        setItem(pickFrom(meItems));
-        applyTwin();
-      }
       npcEl.classList.toggle("isaac", isaacTwin);
-      // and sometimes the crate is empty. Unless you check it five times.
+      slots = [];
+      for (var i = 0; i < n; i++) {
+        setItem(isaacTwin ? pickFrom(meItems) : rollStock());
+        if (isaacTwin) applyTwin();
+        sold = false;
+        slots.push(grab());
+      }
+      sel = 0;
+      put(slots[0]);
+      // and sometimes the first crate is empty. Unless you check it five times.
       crateEmpty = !isaacTwin && !isSecret && tier < 4 && Math.random() < 0.045;
       crateChecks = 0;
-      if (rareEl) rareEl.classList.toggle("empty", crateEmpty);
+      paintCrates();
     }
     assignItem();
 
-    sayEl.innerHTML = '<div class="say-text"></div><div class="say-price"></div>'
+    sayEl.innerHTML = '<div class="say-swap"><button type="button" class="sw-prev" aria-label="Previous crate">‹</button>'
+      + '<b class="sw-lbl"></b><button type="button" class="sw-next" aria-label="Next crate">›</button></div>'
+      + '<div class="say-text"></div><div class="say-price"></div>'
       + '<div class="say-offer"><button type="button" class="st-dn" aria-label="Lower your offer">−</button>'
       + '<b class="st-val"></b><button type="button" class="st-up" aria-label="Raise your offer">+</button></div>'
       + '<div class="say-btns"><button type="button" class="mk-offer"></button>'
@@ -5677,7 +5933,11 @@
         bye: root.querySelector(".bye"),
         moveRow: root.querySelector(".say-moves"),
         flaw: root.querySelector(".mv-flaw"),
-        cash: root.querySelector(".mv-cash")
+        cash: root.querySelector(".mv-cash"),
+        swap: root.querySelector(".say-swap"),
+        swPrev: root.querySelector(".sw-prev"),
+        swNext: root.querySelector(".sw-next"),
+        swLbl: root.querySelector(".sw-lbl")
       };
     }
     function bindHaggle(u) {
@@ -5694,6 +5954,8 @@
         window.addEventListener("pointerup", stop); // a pointer released off the button must still stop it
         el.addEventListener("click", function (e) { e.stopPropagation(); });
       });
+      u.swPrev.addEventListener("click", function (e) { e.stopPropagation(); selectSlot(sel - 1); });
+      u.swNext.addEventListener("click", function (e) { e.stopPropagation(); selectSlot(sel + 1); });
       u.offer.addEventListener("click", function (e) { e.stopPropagation(); makeOffer(bid); });
       u.payFull.addEventListener("click", function (e) { e.stopPropagation(); makeOffer(price); });
       u.bye.addEventListener("click", function (e) { e.stopPropagation(); hide(); });
@@ -5726,6 +5988,15 @@
         sheet.chip.className = "tier-chip t" + tier + (shiny ? " shiny" : "");
       }
       u.text.innerHTML = html;
+      // the crate switcher only appears where there's more than one crate to switch to
+      if (u.swap) {
+        u.swap.classList.toggle("on", slots.length > 1);
+        if (slots.length > 1) {
+          u.swLbl.textContent = "Crate " + (sel + 1) + " of " + slots.length + (sold ? " · sold" : "");
+          var any = !allSold();
+          u.swPrev.disabled = u.swNext.disabled = !any;
+        }
+      }
       var open = phase === 1;
       u.btnRow.style.display = open ? "flex" : "none";
       u.offRow.style.display = open ? "flex" : "none";
@@ -5754,18 +6025,7 @@
 
     function buy(paid, opener) {
       phase = 2;
-      cratesLeft--;
-      // the next crate cracks itself open a beat later, so the pitch visibly restocks
-      // instead of sitting there SOLD until you think to ask
-      if (cratesLeft > 0) {
-        var tok = ++crateTok;
-        setTimeout(function () {
-          if (tok !== crateTok || phase !== 2) return;
-          hide();
-          setItem(isaacTwin ? pickFrom(meItems) : rollStock());
-          if (isaacTwin) applyTwin();
-        }, 1600);
-      }
+      sold = true;
       wallet -= paid;
       // condition is a gamble you find out about back at the warehouse
       var roll = Math.random();
@@ -5775,10 +6035,12 @@
       if (UPG.eye.lvl >= 2 && cond < 1) cond = 1; // eagle eye 2 never buys tat blind
       inv.push({ i: items.indexOf(it), paid: paid, cond: cond, sh: shiny ? 1 : 0 });
       updWallet();
-      if (rareEl) rareEl.classList.add("sold");
+      stash();
+      paintCrates();
+      var more = !allSold();
       render(opener + " 🤝 " + fmt(paid) + " · <b>" + name + "</b> is in the bag! 🎒 " + inv.length + "/" + bagCap()
         + (inv.length >= bagCap() ? ' <span class="story">Bag\'s full · take the haul to the warehouse 🏭</span>'
-          : cratesLeft > 0 ? ' <span class="story">👀 Hang about · there\'s another crate under here…</span>' : ""));
+          : more ? ' <span class="story">👀 He\'s got more crates out · use ‹ › to have a look.</span>' : ""));
       buzz();
       if (ask - paid >= 50) questEvent("haggle50");
       // knocking a quarter off is proper work; a modest saving still counts for something
@@ -5791,7 +6053,15 @@
       phase = 3;
       render("Off you pop! 😡");
       buzz();
-      setTimeout(function () { if (phase === 3) { price = ask; patience = pers.pat; phase = 0; counters = 0; } }, 10000);
+      // push a night trader too far and sometimes they take matters into their own hands
+      if (VENUES[venue].id === "night" && !isSecret && !isaacTwin && !robber
+        && Math.random() < 0.35 && (inv.length || wallet > 30)) {
+        var rx = s.x;
+        setTimeout(function () { startRobbery(rx, spookId); }, 650);
+      }
+      setTimeout(function () {
+        if (phase === 3) { price = ask; patience = pers.pat; phase = 0; counters = 0; stash(); }
+      }, 10000);
     }
 
     // --- the two haggle moves: one shot each, and they pull in opposite directions ---
@@ -5880,6 +6150,9 @@
     s.forceRare = function () {
       if (isaacTwin || crateEmpty || phase !== 0) return false;
       setItem(pickItem(Math.min(3, maxTier() + 1), true));
+      sold = false;
+      slots[sel] = grab();
+      paintCrates();
       return true;
     };
 
@@ -5892,8 +6165,10 @@
         if (crateChecks >= 5) {
           // the fifth look finds the false bottom: one of my real flips was under there
           crateEmpty = false;
-          if (rareEl) rareEl.classList.remove("empty");
           setItem(pickFrom(meRare));
+          sold = false;
+          slots[sel] = grab();
+          paintCrates();
           phase = 1;
           render("Hold on… false bottom! 🤯 <b>" + name.charAt(0).toUpperCase() + name.slice(1) + "</b> " + emoji + " was under there all along · “" + quip + "”");
         } else {
@@ -5914,13 +6189,9 @@
           + (persHint ? ' <span class="story">🗣️ “Worth about ' + fmt(persHint) + ' to the right person, that.”</span>' : ""));
       } else if (phase === 1) {
         render("Make us an offer, then.");
-      } else if (phase === 2 && cratesLeft > 0) {
-        // richer venues stock more than one crate: crack open the next one
-        setItem(isaacTwin ? pickFrom(meItems) : rollStock());
-        if (isaacTwin) applyTwin();
-        phase = 1;
-        render("Next crate open! 📦 <b>" + name.charAt(0).toUpperCase() + name.slice(1) + "</b> " + emoji + " · “" + quip + "”"
-          + (persHint ? ' <span class="story">🗣️ “Worth about ' + fmt(persHint) + ' to the right person, that.”</span>' : ""));
+      } else if (phase === 2 && !allSold()) {
+        // richer venues stock more than one crate: step onto the next unsold one
+        s.stepSlot(1);
       } else if (phase === 2) {
         render("That one's off to a new home! 📦 More stock when you're back from the warehouse.");
       } else {
@@ -5928,7 +6199,15 @@
       }
     };
     npcEl.addEventListener("click", function (e) { e.stopPropagation(); s.talk(); });
-    if (rareEl) rareEl.addEventListener("click", function (e) { e.stopPropagation(); s.talk(); });
+    // tapping a crate picks that one up for haggling, then starts the chat
+    crateEls.forEach(function (ce, ci2) {
+      if (!ce) return;
+      ce.addEventListener("click", function (e) {
+        e.stopPropagation();
+        if (slots[ci2] && ci2 !== sel && !slots[ci2].sold) selectSlot(ci2);
+        else s.talk();
+      });
+    });
     npcEl.addEventListener("keydown", function (e) {
       if (e.key === "Enter" || e.key === " ") { e.preventDefault(); e.stopPropagation(); s.talk(); }
     });
@@ -6026,6 +6305,42 @@
     ground.style.backgroundPosition = (-wrap(cam * zoom, 340 * zoom)) + "px 0px";
     player.style.transform = "translate3d(" + (px - 34) + "px,0,0)";
     player.querySelector(".p-inner").style.transform = "scaleX(" + face + ")";
+
+    // the robber closes at 1.3x walking pace: sprinting or the warehouse beats them
+    if (robber && !inWh) {
+      robber.x += (px > robber.x ? 1 : -1) * SPEED * 1.3 * dt;
+      robber.el.style.transform = "translate3d(" + (robber.x - 32) + "px,0,0)" + (px < robber.x ? " scaleX(-1)" : "");
+      if (Math.abs(robber.x - px) < 30) endRobbery(true);
+      else if (Math.abs(robber.x - px) > 720 || performance.now() > robber.until) endRobbery(false);
+    }
+
+    // your lantern: a wide soft pool that leans the way you're facing. No hard rim -
+    // the old spotlight circle read as a cut-out and looked wrong.
+    if (nightNow && !inWh) {
+      var tsx = Math.round((px - cam) * zoom), tsy = Math.round(view.clientHeight - 118 * zoom);
+      var gx = tsx + face * Math.round(64 * zoom);
+      var lay = ["radial-gradient(ellipse " + Math.round(340 * zoom) + "px " + Math.round(240 * zoom) + "px at "
+        + gx + "px " + tsy + "px, rgba(0,0,0,0) 0%, rgba(0,0,0,0.08) 30%, rgba(0,0,0,0.45) 58%, #000 88%)"];
+      // any open card is cut clean out of the dark, so it always reads at full brightness
+      var pop = document.querySelector(".say.show, #barter.open");
+      if (pop) {
+        var pr = pop.getBoundingClientRect();
+        if (pr.width > 4) {
+          lay.push("radial-gradient(ellipse " + Math.round(pr.width * 0.92) + "px " + Math.round(pr.height * 0.92)
+            + "px at " + Math.round(pr.left + pr.width / 2) + "px " + Math.round(pr.top + pr.height / 2)
+            + "px, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 62%, #000 100%)");
+        }
+      }
+      var mstr = lay.join(",");
+      if (mstr !== torchEl.dataset.m) {
+        torchEl.dataset.m = mstr;
+        torchEl.style.webkitMaskImage = mstr;
+        torchEl.style.maskImage = mstr;
+        // intersect multiplies the layers, so anywhere ANY layer is clear stays lit
+        torchEl.style.webkitMaskComposite = "source-in";
+        torchEl.style.maskComposite = "intersect";
+      }
+    }
 
     var interact = inWh ? whStations : stalls;
     var newNear = null;
