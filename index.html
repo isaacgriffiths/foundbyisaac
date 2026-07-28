@@ -277,6 +277,11 @@
   @keyframes badgeBob { 0%, 100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, -6px); } }
   .npc:hover svg { animation-duration: 1.1s; }
   .npc:focus-visible { outline: 3px solid #4B7BE5; outline-offset: 4px; border-radius: 10px; }
+  /* egg: now and then the seller behind a table is… Isaac. The photo head gives it away */
+  .npc .npc-head { display: none; position: absolute; left: 16px; top: 2px; width: 32px; height: 32px; border-radius: 50%; border: 2.5px solid #FFFFFF; box-shadow: 0 0 0 2.5px var(--outline); object-fit: cover; z-index: 1; pointer-events: none; }
+  .npc.isaac .npc-head { display: block; }
+  /* egg: a crate with nothing on it. Nothing at all. Keep checking */
+  .rare.empty .rare-item, .rare.empty .spark { display: none; }
   @keyframes npcIdle { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
 
   /* the rare find, glowing on its crate */
@@ -1736,6 +1741,56 @@
           <circle cx="18" cy="25" r="11.5" fill="none" stroke="#142A55" stroke-width="2"/>
           <circle cx="18" cy="25" r="6.5" fill="none" stroke="#142A55" stroke-width="2"/>
         </g>
+        <!-- Isaac's actual flips: the stock the channel is known for -->
+        <g id="rHenry"><!-- Henry the Hoover -->
+          <path d="M4 24 a14 14 0 0 1 28 0 v6 a4 4 0 0 1 -4 4 H8 a4 4 0 0 1 -4 -4 Z" fill="#E5484D" stroke="#142A55" stroke-width="2.5"/>
+          <rect x="10" y="4" width="16" height="8" rx="3" fill="#22254A" stroke="#142A55" stroke-width="2"/>
+          <circle cx="13" cy="22" r="2" fill="#142A55"/><circle cx="23" cy="22" r="2" fill="#142A55"/>
+          <path d="M13 28 Q18 31 23 28" stroke="#142A55" stroke-width="2" fill="none" stroke-linecap="round"/>
+          <path d="M30 12 Q36 8 34 2" stroke="#3E4A5C" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+        </g>
+        <g id="rUni"><!-- Swarovski crystal unicorn -->
+          <path d="M20 3 L26 0 L23 8 Z" fill="#FFD75E" stroke="#142A55" stroke-width="1.5"/>
+          <path d="M10 30 Q8 18 14 12 Q18 7 22 7 Q28 8 27 14 Q26 16 23 16 Q26 20 26 30 Z" fill="#CFF1FF" stroke="#142A55" stroke-width="2.5" stroke-linejoin="round"/>
+          <path d="M14 14 Q19 16 21 21 M15 24 L21 27" stroke="#8FC9F5" stroke-width="1.5" fill="none"/>
+          <circle cx="19" cy="12" r="1.3" fill="#142A55"/>
+          <path d="M7 36 H29 L27 30 H9 Z" fill="#CBD2DC" stroke="#142A55" stroke-width="2"/>
+        </g>
+        <g id="rShak"><!-- Le Creuset shakers, teal pair -->
+          <path d="M6 14 Q6 8 12 8 Q18 8 18 14 V32 Q18 36 14 36 H10 Q6 36 6 32 Z" fill="#3FC1C9" stroke="#142A55" stroke-width="2.5"/>
+          <path d="M20 18 Q20 12 26 12 Q32 12 32 18 V32 Q32 36 28 36 H24 Q20 36 20 32 Z" fill="#3FC1C9" stroke="#142A55" stroke-width="2.5"/>
+          <circle cx="10.5" cy="12" r="1" fill="#142A55"/><circle cx="14" cy="11.5" r="1" fill="#142A55"/>
+          <path d="M8 27 H16 M22 29 H30" stroke="#FBF6EC" stroke-width="2.5" stroke-linecap="round"/>
+        </g>
+        <g id="rWii"><!-- Nintendo Wii and remote -->
+          <rect x="4" y="6" width="13" height="28" rx="2" fill="#F6EFE3" stroke="#142A55" stroke-width="2.5"/>
+          <rect x="6.5" y="10" width="8" height="3" rx="1.5" fill="#8FC9F5"/>
+          <path d="M2 36 H19" stroke="#142A55" stroke-width="2.5" stroke-linecap="round"/>
+          <rect x="23" y="8" width="9" height="26" rx="3" fill="#FFFFFF" stroke="#142A55" stroke-width="2.5"/>
+          <circle cx="27.5" cy="14" r="2" fill="#8FC9F5" stroke="#142A55" stroke-width="1"/>
+          <rect x="25.5" y="20" width="4" height="6" rx="1.5" fill="#CBD2DC"/>
+        </g>
+        <g id="rCart"><!-- Pokémon Game Boy cartridge -->
+          <path d="M6 6 Q6 3 9 3 H27 Q30 3 30 6 V33 Q30 36 27 36 H9 Q6 36 6 33 Z" fill="#E5484D" stroke="#142A55" stroke-width="2.5"/>
+          <path d="M10 3.5 V8 M14 3.5 V8 M18 3.5 V8 M22 3.5 V8 M26 3.5 V8" stroke="#142A55" stroke-width="1.2" opacity="0.5"/>
+          <rect x="10" y="13" width="16" height="17" rx="2" fill="#FFD75E" stroke="#142A55" stroke-width="2"/>
+          <circle cx="18" cy="21.5" r="5" fill="#FFFFFF" stroke="#142A55" stroke-width="1.5"/>
+          <path d="M13 21.5 a5 5 0 0 1 10 0 Z" fill="#E5484D"/>
+          <circle cx="18" cy="21.5" r="1.5" fill="#142A55"/>
+        </g>
+        <g id="rCAH"><!-- Cards Against Humanity -->
+          <rect x="12" y="1" width="14" height="16" rx="2" transform="rotate(8 19 9)" fill="#FFFFFF" stroke="#142A55" stroke-width="2"/>
+          <path d="M16 6 L24 5 M16.5 10 L22 9" stroke="#142A55" stroke-width="1.5" stroke-linecap="round"/>
+          <rect x="5" y="12" width="26" height="22" rx="2" fill="#22254A" stroke="#142A55" stroke-width="2.5"/>
+          <path d="M9 18 H23 M9 23 H20 M9 28 H24" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round"/>
+        </g>
+        <g id="rMug"><!-- Emma Bridgewater polka-dot mugs -->
+          <path d="M4 12 H24 V30 Q24 34 20 34 H8 Q4 34 4 30 Z" fill="#FBF6EC" stroke="#142A55" stroke-width="2.5"/>
+          <path d="M24 16 H28 Q32 16 32 21 Q32 26 28 26 H24" fill="none" stroke="#142A55" stroke-width="2.5"/>
+          <circle cx="9" cy="17" r="2.2" fill="#E58AB6"/><circle cx="15" cy="21" r="2.2" fill="#E58AB6"/>
+          <circle cx="20" cy="16" r="2.2" fill="#E58AB6"/><circle cx="10" cy="26" r="2.2" fill="#E58AB6"/>
+          <circle cx="18" cy="27" r="2.2" fill="#E58AB6"/>
+        </g>
         <g id="rareCrate">
           <rect x="2" y="0" width="40" height="26" rx="3" fill="#C89B66" stroke="#142A55" stroke-width="3"/>
           <path d="M2 8 H42" stroke="#142A55" stroke-width="2" opacity="0.4"/>
@@ -2013,6 +2068,45 @@
       <div class="prompt"><b>Follow on Facebook ↗</b><span>Found by Isaac</span></div>
     </div>
 
+    <!-- The Collector's pitch: hidden until every real link has been visited.
+         No car in any venue - he walks his stock in. The field loop widens to fit him. -->
+    <div class="stall" id="secretStall" style="left: 4280px; --c: #B79FD8; display: none;" tabindex="0" role="button" aria-label="The Collector's pitch · rare stock for regulars">
+      <div class="shadow"></div>
+      <div class="npc" style="color:#22254A;--skin:#E8B48C;--hair:#CBD2DC" tabindex="0" role="button" aria-label="Talk to The Collector">
+        <svg width="64" height="100" viewBox="0 0 64 100" aria-hidden="true"><use href="#npcBody"/><use href="#npcCap"/></svg>
+      </div>
+      <svg class="pitch-svg" width="430" height="178" viewBox="0 0 430 178" aria-hidden="true">
+        <use href="#r11" transform="translate(12,90)"/>
+        <use href="#gFrame" transform="translate(56,83) scale(0.9)"/>
+        <use href="#gRecords" transform="translate(104,92) scale(0.85)"/>
+        <use href="#gRadio" transform="translate(164,92) scale(0.9)"/>
+        <use href="#r0" transform="translate(222,90)"/>
+        <use href="#tableBig" transform="translate(4,126)"/>
+        <use href="#tableBig" transform="translate(148,126)"/>
+        <use href="#gBox" transform="translate(16,140) scale(0.7)"/>
+        <use href="#gBooks" transform="translate(166,146) scale(0.65)"/>
+        <use href="#gFrame" transform="translate(234,120) scale(0.95)"/>
+        <g transform="translate(288,0)">
+          <use href="#r5" transform="translate(10,90)"/>
+          <use href="#gBooks" transform="translate(54,95) scale(0.9)"/>
+          <use href="#r7" transform="translate(106,90)"/>
+          <use href="#tableBig" transform="translate(0,126)"/>
+          <use href="#gBox" transform="translate(34,142) scale(0.6)"/>
+        </g>
+      </svg>
+      <div class="rare" aria-hidden="true">
+        <svg width="46" height="78" viewBox="0 0 46 78">
+          <g class="rare-item"><use class="rare-use" href="#r0" transform="translate(5,8)"/></g>
+          <use href="#rareCrate" transform="translate(1,44)"/>
+          <path class="spark" d="M38 4 l1.6 3.4 3.4 1.6 -3.4 1.6 -1.6 3.4 -1.6 -3.4 -3.4 -1.6 3.4 -1.6 Z" fill="#FFD75E"/>
+          <path class="spark s2" d="M6 28 l1.3 2.7 2.7 1.3 -2.7 1.3 -1.3 2.7 -1.3 -2.7 -2.7 -1.3 2.7 -1.3 Z" fill="#FFF3C4"/>
+        </svg>
+      </div>
+      <div class="say"></div>
+      <div class="aboard"><b>The Collector</b><span>Rare stock 🗝️</span></div>
+      <div class="prompt"><b>🗝️ The Collector's pitch</b><span>saves the good stuff for regulars</span></div>
+    </div>
+
     <!-- warehouse stations: the same field becomes an interior when you drive over -->
     <div class="whstation" id="whVan" style="left: 200px; width: 310px; height: 178px;" tabindex="-1" role="button" aria-label="The van · drive back to the car boot">
       <div class="shadow"></div>
@@ -2170,6 +2264,7 @@
     <div class="intro-row"><span class="intro-ico">💰</span>You've got £200 · haggle the sellers down for the glowing finds and fill your bag.</div>
     <div class="intro-row"><span class="intro-ico">🏭</span>Take your haul to the Warehouse · auction it on eBay or list it on Vinted from the laptop.</div>
     <div class="intro-row"><span class="intro-ico">📦</span>Sold! Pack the order at the bench to get paid. Driving back resets the stalls with fresh stock.</div>
+    <div class="intro-row"><span class="intro-ico">📊</span>That bar at the top is your rep · good flips fill it, and filling it levels you up and opens new venues.</div>
     <div class="intro-row"><span class="intro-ico">💷</span>Visiting my real pages pays your game wallet · £25, then £50, then £75… every new pitch pays more.</div>
     <div class="intro-row"><span class="intro-ico">🏆</span>Turn it all into £10,000 and go pro.</div>
     <button id="closeIntro" type="button">Let's haggle!</button>
@@ -2349,8 +2444,10 @@
   buildRows();
   var stalls = Array.prototype.slice.call(document.querySelectorAll(".stall")).map(function (el) {
     var baseLeft = parseFloat(el.style.left);
-    return { el: el, baseLeft: baseLeft, x0: baseLeft + el.offsetWidth / 2, x: baseLeft + el.offsetWidth / 2, k: 0, href: el.getAttribute("data-href"), name: (el.getAttribute("aria-label") || "").split(" pitch")[0] };
+    return { el: el, baseLeft: baseLeft, x0: baseLeft + el.offsetWidth / 2, x: baseLeft + el.offsetWidth / 2, k: 0, href: el.getAttribute("data-href"), name: (el.getAttribute("aria-label") || "").split(" pitch")[0], locked: el.id === "secretStall" };
   });
+  // the link pitches are the real ones; The Collector doesn't count toward the grand tour
+  var linkTotal = stalls.filter(function (s) { return s.href; }).length;
 
   var px = 2320, face = 1, target = null, near = null, moved = false, cam = 0;
   var keys = { left: false, right: false, run: false };
@@ -2396,6 +2493,7 @@
 
   var linkReward = null;
   function openStall(s) {
+    if (!s.href) return; // The Collector's pitch is a game pitch, not a link
     var w = window.open(s.href, "_blank");
     if (w) w.opener = null;
     else window.location.href = s.href;
@@ -2442,7 +2540,7 @@
       return;
     }
     if (haggling && e.key === "Enter") { e.preventDefault(); near.offerBid(); return; }
-    if ((e.key === "e" || e.key === "E" || e.key === "Enter") && near) { if (near.open) near.open(); else openStall(near); }
+    if ((e.key === "e" || e.key === "E" || e.key === "Enter") && near) { if (near.open) near.open(); else if (near.href) openStall(near); else if (near.talk) near.talk(); }
     if ((e.key === "t" || e.key === "T") && near && near.talk) near.talk();
     if (e.key === "Escape" && near && near.hideSay) near.hideSay();
   });
@@ -2512,7 +2610,7 @@
   stalls.forEach(function (s) {
     s.el.addEventListener("click", function () {
       if (dragMoved > 10) return;
-      if (Math.abs(s.x - px) <= NEAR) openStall(s);
+      if (Math.abs(s.x - px) <= NEAR) { if (s.href) openStall(s); else if (s.talk) s.talk(); }
       else { target = s.x; dismissHint(); }
     });
     s.el.addEventListener("keydown", function (e) {
@@ -2646,8 +2744,34 @@
       h: "Real find: a 75-cent flea-market acetate turned out to be the Velvet Underground's first studio recording · it sold for $25,000." },
     { d: "r8", n: "a print of an old document", e: "📜", a: 10, f: 5, v: 7000, t: 4,
       q: "Nice frame, that. Print's basically free.",
-      h: "Real find: a $4 flea-market picture had an original 1823 printing of the Declaration of Independence hidden behind it · it sold for $2.42 MILLION." }
+      h: "Real find: a $4 flea-market picture had an original 1823 printing of the Declaration of Independence hidden behind it · it sold for $2.42 MILLION." },
+    // my actual flips - the stock the channel is known for. New entries go at the
+    // END of this array: saved inventories store item indexes, so order is load-bearing.
+    { d: "rMug", n: "a pair of Emma Bridgewater mugs", e: "☕", a: 12, f: 6, v: 40, t: 1, me: 1,
+      q: "Polka dots. They basically sell themselves.",
+      h: "My actual stock: Emma Bridgewater mugs are a Found by Isaac staple · they always find a home." },
+    { d: "rCAH", n: "Cards Against Humanity, complete", e: "🃏", a: 8, f: 5, v: 28, t: 1, me: 1,
+      q: "Every card accounted for. I counted twice.",
+      h: "My actual stock: party games like Cards Against Humanity turn up for pennies and always shift." },
+    { d: "rWii", n: "a Nintendo Wii, leads and all", e: "🎮", a: 25, f: 15, v: 70, t: 1, me: 1,
+      q: "Everyone's nan had one. Everyone misses it.",
+      h: "My actual stock: the Wii · a channel favourite. Bowling included." },
+    { d: "rHenry", n: "a Henry the Hoover", e: "🔴", a: 30, f: 18, v: 85, t: 2, me: 1,
+      q: "Still smiling. Still going. Lovely hoover.",
+      h: "My actual stock: Henry the Hoover · they never die, they just change owners. Seen on the channel." },
+    { d: "rShak", n: "Le Creuset shakers in teal", e: "🧂", a: 20, f: 12, v: 75, t: 2, me: 1,
+      q: "Teal! Discontinued, that colourway.",
+      h: "My actual stock: the Le Creuset teal shakers · one of my best performing videos." },
+    { d: "rCart", n: "a Pokémon Game Boy cartridge", e: "🎮", a: 30, f: 18, v: 120, t: 2, me: 1,
+      q: "Save battery's dead. Charizard isn't.",
+      h: "My actual stock: Pokémon Game Boy cartridges · the games videos always do numbers." },
+    { d: "rUni", n: "a Swarovski crystal unicorn", e: "🦄", a: 45, f: 30, v: 200, t: 3, me: 1,
+      q: "Catch the light on that. Go on. Magic.",
+      h: "My actual stock: the Swarovski crystal unicorn · my best performing video ever." }
   ];
+  // the eggs lean on my real stock: the twin only sells it, the false-bottom crate hides it
+  var meItems = items.filter(function (x) { return x.me; });
+  var meRare = meItems.filter(function (x) { return x.t >= 2; });
   var currentItems = {};
   var TIER_W = { 1: 10, 2: 5, 3: 2, 4: 1 };
   // exact=true draws only from that tier - used for the lucky pitch, where a weighted
@@ -3049,14 +3173,14 @@
 
   function showReward(s, got, doneAll) {
     var dots = "";
-    for (var i = 0; i < stalls.length; i++) dots += i < visitedLinks.length ? "●" : "○";
+    for (var i = 0; i < linkTotal; i++) dots += i < visitedLinks.length ? "●" : "○";
     document.getElementById("rewardAmt").textContent = "+" + fmtC(got);
     document.getElementById("rewardMsg").innerHTML = doneAll
-      ? "That's every pitch visited · legend! 🏆<br>+£250 grand tour bonus on top."
+      ? "That's every pitch visited · legend! 🏆<br>+£250 grand tour bonus on top.<br>🗝️ Word travels fast · <b>The Collector</b> has set up at the end of the row, and he saves his good stuff for regulars."
       : "Cheers for checking out my " + (s.name || "page") + "!";
     document.getElementById("rewardDots").textContent = dots;
     document.getElementById("rewardNext").textContent = doneAll
-      ? "All " + stalls.length + " pitches visited 🎉"
+      ? "All " + linkTotal + " pitches visited 🎉"
       : "Next new pitch you visit: +" + fmtC(Math.round(25 * (visitedLinks.length + 1) * proMult()));
     rewardPanel.classList.add("open");
   }
@@ -3073,14 +3197,15 @@
     if (visitedLinks.indexOf(s.name) >= 0) {
       var nxt = Math.round(25 * (visitedLinks.length + 1) * proMult());
       updWallet();
-      if (visitedLinks.length < stalls.length) banner("👋 Welcome back! Already counted " + (s.name || "that one") + " · a pitch you've not visited pays " + fmtC(nxt) + ".", 7000);
+      if (visitedLinks.length < linkTotal) banner("👋 Welcome back! Already counted " + (s.name || "that one") + " · a pitch you've not visited pays " + fmtC(nxt) + ".", 7000);
       return;
     }
     visitedLinks.push(s.name);
     var got = Math.round(25 * visitedLinks.length * proMult());
     wallet += got;
-    var doneAll = visitedLinks.length >= stalls.length;
+    var doneAll = visitedLinks.length >= linkTotal;
     if (doneAll) wallet += 250;
+    updSecret();
     updWallet();
     questEvent("visitlink");
     popProfit(got);
@@ -3093,6 +3218,15 @@
   });
 
   function restockAll(force) { stalls.forEach(function (st) { if (st.restock) st.restock(force); }); }
+
+  // ---- The Collector: a sixth pitch that only exists once every real link is visited ----
+  var secretStallEl = document.getElementById("secretStall");
+  function updSecret() {
+    var open = visitedLinks.length >= linkTotal;
+    secretStallEl.style.display = open ? "" : "none";
+    stalls.forEach(function (s) { if (s.el === secretStallEl) s.locked = !open; });
+    P = open ? 4340 : 3720; // the field loop grows a slot for the extra pitch
+  }
 
   // ---- the venues you can drive to ----
   // The Sunday Field is home and always open: my real pitches live there, so it can
@@ -3346,6 +3480,7 @@
 
   whBtn.addEventListener("click", function () { if (inWh) openVenues(); else enterWh(); });
   applyVenue(); // a reload drops you back at the venue you were last stood in
+  updSecret(); // and The Collector is there (or not) depending on your grand-tour progress
 
   // walk up to a station and use it, same as the boot stalls
   var whStations = [];
@@ -3929,6 +4064,7 @@
     prestige++;
     wallet = 200; packed = 0;
     inv = []; listings = []; orders = []; visitedLinks = [];
+    updSecret(); // going pro starts the grand tour over, so The Collector packs up too
     for (var k in UPG) UPG[k].lvl = 0;
     updWallet.toldPro = false; // rep and level survive prestige · that's your career, not your float
     updWallet();
@@ -4079,6 +4215,13 @@
     var price, patience, maxPat, phase, counters, hideT = null; // phase: 0 fresh, 1 haggling, 2 sold, 3 kicked off
     var flawUsed, cashUsed; // one-shot haggle moves, reset with the stock
     var bid = 0; // whatever number you've dialled up on the stepper
+    // the eggs: sometimes the seller is Isaac himself (and won't budge a penny),
+    // sometimes the crate looks empty (and isn't, if you keep checking)
+    var isSecret = s.el.id === "secretStall";
+    var isaacTwin = false, crateEmpty = false, crateChecks = 0;
+    var npcHead = document.createElement("img");
+    npcHead.className = "npc-head"; npcHead.src = "avatar.jpg"; npcHead.alt = "";
+    npcEl.appendChild(npcHead);
 
     // the step scales with the price, so a fiver moves in pounds and a grand moves in twenties
     function bidStep() {
@@ -4114,11 +4257,8 @@
     }
     function buzz() { if (coarse && navigator.vibrate) { try { navigator.vibrate(10); } catch (err) {} } }
 
-    function assignItem() {
-      // the van sets your usual ceiling, but one pitch in twelve turns up something
-      // above your pay grade - without this you'd never see a gold glow before £500
-      var lucky = maxTier() < 4 && Math.random() < 0.085 * V().luck;
-      it = lucky ? pickItem(maxTier() + 1, true) : pickItem(maxTier());
+    function setItem(chosen) {
+      it = chosen;
       currentItems[idx] = it;
       name = it.n; emoji = it.e; ask = it.a; value = it.v; quip = it.q; tier = it.t; story = it.h || "";
       pers = pickPers(); // a different sort of seller every restock
@@ -4137,6 +4277,30 @@
       price = ask; patience = pers.pat; maxPat = pers.pat; phase = 0; counters = 0;
       bid = Math.max(1, Math.round(ask * 0.6)); // the stepper opens on a sensible lowball
       flawUsed = false; cashUsed = false;
+    }
+    function assignItem() {
+      // the van sets your usual ceiling, but one pitch in twelve turns up something
+      // above your pay grade - without this you'd never see a gold glow before £500
+      var lucky = maxTier() < 4 && Math.random() < 0.085 * V().luck;
+      // The Collector deals in my famous flips and stock above your pay grade, always
+      setItem(isSecret
+        ? (Math.random() < 0.5 ? pickFrom(meItems) : pickItem(Math.min(4, maxTier() + 1), true))
+        : lucky ? pickItem(maxTier() + 1, true) : pickItem(maxTier()));
+      // very occasionally the seller is… Isaac, flogging his own famous stock,
+      // and he knows exactly what it's worth, so he is not haggling
+      isaacTwin = !isSecret && Math.random() < 0.03;
+      if (isaacTwin) {
+        setItem(pickFrom(meItems));
+        pers = { label: "🧢 knows exactly what it's worth", floorMul: 1, pat: 3 };
+        persHint = 0;
+        floor = price;
+        patience = maxPat = 3;
+      }
+      npcEl.classList.toggle("isaac", isaacTwin);
+      // and sometimes the crate is empty. Unless you check it five times.
+      crateEmpty = !isaacTwin && !isSecret && tier < 4 && Math.random() < 0.045;
+      crateChecks = 0;
+      if (rareEl) rareEl.classList.toggle("empty", crateEmpty);
     }
     assignItem();
 
@@ -4225,7 +4389,7 @@
         u.payFull.disabled = price > wallet;
         u.flaw.textContent = flawUsed ? "🔍 Already picked at it" : "🔍 Point out a flaw";
         u.flaw.disabled = flawUsed;
-        var cashAt = cashPrice();
+        var cashAt = isaacTwin ? price : cashPrice(); // Isaac's cash price IS the price
         u.cash.textContent = cashUsed ? "💷 They've seen your cash"
           : "💷 Cash in hand · " + fmt(cashAt);
         u.cash.disabled = cashUsed || cashAt > wallet;
@@ -4274,6 +4438,7 @@
       "a bit of rust on it", "it's missing a bit", "someone's written in it", "a proper scuff"];
     function pickFault() {
       if (phase !== 1 || flawUsed) return;
+      if (isaacTwin) return render("“Any flaws are in the description, mate. Priced in.” 🧢 " + fmt(price) + ".");
       flawUsed = true;
       buzz();
       var f = pickFrom(FAULTS);
@@ -4292,6 +4457,7 @@
     function cashPrice() { return Math.max(floor, r5(price * 0.92)); }
     function cashInHand() {
       if (phase !== 1 || cashUsed) return;
+      if (isaacTwin) return render("“Cash is lovely. The price is still the price.” 🧢 " + fmt(price) + ".");
       if (inv.length >= bagCap()) return render("🎒 Bag's full (" + inv.length + "/" + bagCap() + ")! Sell some of it at the warehouse 🏭 first.");
       var v = cashPrice();
       if (v > wallet) return render("Not enough in the bum-bag! 💸 You've got " + fmt(wallet) + ".");
@@ -4306,6 +4472,12 @@
       if (inv.length >= bagCap()) return render("🎒 Bag's full (" + inv.length + "/" + bagCap() + ")! Sell some of it at the warehouse 🏭 first.");
       if (v > wallet) return render("Not enough in the bum-bag! 💸 You've got " + fmt(wallet) + ".");
       buzz();
+      // Isaac priced his own stock and he is immovable on it - pay up or don't
+      if (isaacTwin && v < price) return render(pickFrom([
+        "Nice try. I literally do this for a living.",
+        "I checked the comps. Twice.",
+        "Mate. I KNOW what these go for."
+      ]) + " " + fmt(price) + " it is. 🧢");
       if (v >= price) return buy(price, "Done!");
       if (v >= floor) {
         // close enough and they'll take it. Scales with the price, so a fiver isn't
@@ -4336,6 +4508,8 @@
     s.isHaggling = function () { return phase === 1; };
 
     s.restock = function (force) {
+      // don't quietly swap a crate someone is four checks into - that'd be cruel
+      if (!force && crateEmpty && crateChecks > 0) return;
       if (force || phase === 0) { hide(); assignItem(); }
     };
 
@@ -4343,9 +4517,30 @@
       buzz();
       firstContact();
       updWallet();
+      if (crateEmpty) {
+        crateChecks++;
+        if (crateChecks >= 5) {
+          // the fifth look finds the false bottom: one of my real flips was under there
+          crateEmpty = false;
+          if (rareEl) rareEl.classList.remove("empty");
+          setItem(pickFrom(meRare));
+          phase = 1;
+          render("Hold on… false bottom! 🤯 <b>" + name.charAt(0).toUpperCase() + name.slice(1) + "</b> " + emoji + " was under there all along · “" + quip + "”");
+        } else {
+          render([
+            "Empty crate, that. Sold the lot this morning.",
+            "Still empty, mate.",
+            "You've had two looks already. It's a crate.",
+            "Persistent! I respect it. Still empty though…"
+          ][crateChecks - 1]);
+        }
+        return;
+      }
       if (phase === 0) {
         phase = 1;
-        render("<b>" + name.charAt(0).toUpperCase() + name.slice(1) + "</b> " + emoji + " · “" + quip + "”"
+        render(isaacTwin
+          ? "Hang on… is that <b>Isaac</b>? 🧢 Selling <b>" + name + "</b> " + emoji + " · “Flipped these on the channel, so it's " + fmt(price) + ". No, we're not haggling.”"
+          : "<b>" + name.charAt(0).toUpperCase() + name.slice(1) + "</b> " + emoji + " · “" + quip + "”"
           + (persHint ? ' <span class="story">🗣️ “Worth about ' + fmt(persHint) + ' to the right person, that.”</span>' : ""));
       } else if (phase === 1) {
         render("Make us an offer, then.");
@@ -4456,6 +4651,7 @@
     var interact = inWh ? whStations : stalls;
     var newNear = null;
     for (var i = 0; i < interact.length; i++) {
+      if (interact[i].locked) continue; // The Collector isn't there until you've earned him
       if (Math.abs(interact[i].x - px) <= NEAR) { newNear = interact[i]; break; }
     }
     if (newNear !== near) {
