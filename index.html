@@ -3149,6 +3149,10 @@
   var whWall = document.getElementById("whWall");
   var whLight = document.getElementById("whLight");
   var torchEl = document.getElementById("torch");
+  // punching a second hole needs multiplicative masking; without it a lone glow layer
+  // is the safe fallback, because additive compositing would darken the whole screen
+  var canMaskCut = !!(window.CSS && CSS.supports
+    && (CSS.supports("mask-composite", "intersect") || CSS.supports("-webkit-mask-composite", "source-in")));
   var player = document.getElementById("player");
   var hint = document.getElementById("hint");
   var panel = document.getElementById("linksPanel");
@@ -6321,8 +6325,9 @@
       var gx = tsx + face * Math.round(64 * zoom);
       var lay = ["radial-gradient(ellipse " + Math.round(340 * zoom) + "px " + Math.round(240 * zoom) + "px at "
         + gx + "px " + tsy + "px, rgba(0,0,0,0) 0%, rgba(0,0,0,0.08) 30%, rgba(0,0,0,0.45) 58%, #000 88%)"];
-      // any open card is cut clean out of the dark, so it always reads at full brightness
-      var pop = document.querySelector(".say.show, #barter.open");
+      // any open card is cut clean out of the dark, so it always reads at full brightness.
+      // Only with intersect: the default `add` would sum the layers and black the lot out.
+      var pop = canMaskCut ? document.querySelector(".say.show, #barter.open") : null;
       if (pop) {
         var pr = pop.getBoundingClientRect();
         if (pr.width > 4) {
