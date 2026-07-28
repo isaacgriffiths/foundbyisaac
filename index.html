@@ -1032,6 +1032,12 @@
   .venue-row:disabled .v-name { color: #8A97B2; }
   .venue-row .v-desc { display: block; font-size: 11.5px; font-weight: 800; color: var(--ink-soft); line-height: 1.4; margin-top: 2px; }
   .venue-row .v-stat { display: block; font-size: 11px; font-weight: 800; color: #1F8A3B; margin-top: 3px; }
+  /* marks a venue you're only seeing early because the gates are off for review */
+  .venue-row .v-peek {
+    font-style: normal; font-size: 10px; color: #8A3B14;
+    background: #FFE9A8; border-radius: 999px; padding: 1px 7px; margin-left: 4px;
+    white-space: nowrap;
+  }
   .venue-row .v-fee {
     flex: 0 0 auto;
     font-family: var(--display); font-weight: 700; font-size: 15px; color: #142A55;
@@ -2895,13 +2901,17 @@
     { id: "estate", cls: "v-estate", name: "Estate Clearance", ico: "🏚️", fee: 60, lvl: 4, tier: 2, luck: 3.4,
       desc: "A whole house going at once, rain or shine.", stock: "The richest pickings anywhere" }
   ];
+  // TEMPORARY: every venue open regardless of level, so the scenery can be reviewed.
+  // Flip this back to false to restore the level gates. Nothing else needs changing.
+  var UNLOCK_ALL = true;
   var venue = 0;
   function V() { return VENUES[venue]; }
   // a saved venue only stands up if you're still high enough level for it
   if (VENUES[savedVenue] && lvlIdx >= VENUES[savedVenue].lvl) venue = savedVenue;
-  function venueOpen(v) { return lvlIdx >= v.lvl; }
+  function venueOpen(v) { return UNLOCK_ALL || lvlIdx >= v.lvl; }
+  // deliberately ignores the unlock override, so the progress line still reads correctly
   function nextVenue() {
-    for (var i = 0; i < VENUES.length; i++) if (!venueOpen(VENUES[i])) return VENUES[i];
+    for (var i = 0; i < VENUES.length; i++) if (lvlIdx < VENUES[i].lvl) return VENUES[i];
     return null;
   }
   function applyVenue() {
@@ -3098,7 +3108,9 @@
         + '<span class="v-ico">' + (open ? v.ico : "🔒") + "</span>"
         + '<span class="v-info"><span class="v-name">' + v.name + "</span>"
         + '<span class="v-desc">' + v.desc + "</span>"
-        + (open ? '<span class="v-stat">' + v.stock + "</span>" : "") + "</span>"
+        + (open ? '<span class="v-stat">' + v.stock
+            + (lvlIdx < v.lvl ? ' <i class="v-peek">preview · normally Lv' + (v.lvl + 1) + "</i>" : "")
+            + "</span>" : "") + "</span>"
         + '<span class="v-fee">' + (open ? fmtC(v.fee) : "Lv" + (v.lvl + 1)) + "</span></button>";
     }).join("");
   }
