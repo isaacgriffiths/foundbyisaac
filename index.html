@@ -4409,7 +4409,12 @@
     for (var k in BOOK) o[k] = BOOK[k].lvl;
     return o;
   }
+  // Start over drops the key and reloads, but a reload fires pagehide, which used to
+  // call save() and write the whole old game straight back over it. Nothing may save
+  // once the wipe is under way.
+  var wiping = false;
   function save() {
+    if (wiping) return;
     try {
       localStorage.setItem(SAVE_KEY, JSON.stringify({
         w: wallet, p: prestige, i: introSeen ? 1 : 0, pk: packed, rp: rep,
@@ -5638,15 +5643,20 @@
     target = null;
     flick = 0;
   })();
-  // walking doesn't touch the wallet, so nothing else would ever write the position down
-  var lastSavedPx = px;
-  setInterval(function () {
-    if (Math.abs(px - lastSavedPx) < 8) return;
+  // Walking doesn't touch the wallet, so nothing else would ever write the position
+  // down. notePlace runs the moment you stop, and the tick covers a long unbroken walk.
+  var lastSavedPx = px, walking = false;
+  function notePlace() {
+    if (Math.abs(px - lastSavedPx) < 4) return;
     lastSavedPx = px;
     save();
-  }, 4000);
-  // and a tab closed or reloaded between ticks still lands you back on the spot
-  window.addEventListener("pagehide", save);
+  }
+  setInterval(notePlace, 1200);
+  // and a tab closed or reloaded between ticks still lands you back on the spot. Which
+  // of these actually fires depends on the browser, so hang the save on all of them.
+  ["pagehide", "beforeunload", "blur"].forEach(function (ev) {
+    window.addEventListener(ev, function () { save(); });
+  });
   document.addEventListener("visibilitychange", function () { if (document.hidden) save(); });
 
   // ---- the laptop: auctions on eBay, listings and cheeky offers on Vinted ----
@@ -6857,7 +6867,9 @@
   }, 1000);
 
   function hardReset() {
-    // drop the save and reload - rebuilding from defaults beats resetting 20 variables by hand
+    // drop the save and reload - rebuilding from defaults beats resetting 20 variables
+    // by hand. The flag goes up first so the reload's own pagehide can't put it back.
+    wiping = true;
     try { localStorage.removeItem(SAVE_KEY); } catch (err) {}
     location.reload();
   }
@@ -7661,9 +7673,13 @@
     if (Math.abs(delta) > 0.3) {
       face = delta > 0 ? 1 : -1;
       player.classList.add("walking");
+      walking = true;
       if (speed > 380) spawnPuff(now);
     } else {
       player.classList.remove("walking");
+      // the instant you come to a stop, write down where you are. Standing still is
+      // when anyone reloads, and waiting on the next tick could cost you half a field.
+      if (walking) { walking = false; notePlace(); }
     }
 
     var visW = viewW / zoom;
