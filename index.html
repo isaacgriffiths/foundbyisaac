@@ -1237,6 +1237,110 @@
     padding: 12px; cursor: pointer; -webkit-tap-highlight-color: transparent;
   }
 
+  /* what a good score buys you - spelled out so Skip feels like leaving money behind */
+  .mini-stake {
+    font-size: 12px; font-weight: 800; color: #C2703F;
+    background: #FFF3DA; border: 2px dashed #E8C57F; border-radius: 9px;
+    padding: 6px 10px; margin-top: 9px;
+  }
+  .mini-stake[hidden] { display: none; }
+
+  /* clean the lens: scrub the smudges off */
+  .wipe .photo {
+    position: relative; height: 190px; max-width: 300px; margin: 0 auto;
+    display: grid; place-items: center; font-size: 44px;
+    background: linear-gradient(#8FC9F5 58%, #9CCF9E 58%);
+    border: 3px solid var(--outline); border-radius: 10px; overflow: hidden;
+  }
+  .smudge { position: absolute; width: 60px; height: 48px; border-radius: 50%; background: rgb(110 74 40 / 0.55); filter: blur(2px); }
+
+  /* spot the scammer: three messages, one wrong-un */
+  .scam .msg {
+    text-align: left; font-size: 13px; font-weight: 700; color: #142A55;
+    background: #F1F6FE; border: 2.5px solid var(--outline); border-radius: 10px;
+    padding: 9px 12px; margin: 8px 0; cursor: pointer; -webkit-tap-highlight-color: transparent;
+  }
+  .scam .msg b { display: block; font-size: 11px; color: var(--ink-soft); }
+  .scam .msg.ok { background: #9BE3B0; }
+  .scam .msg.no { background: #F3A9AC; opacity: 0.7; }
+
+  /* pick the hashtags */
+  .hash .hword { font-size: 14px; font-weight: 800; color: #142A55; margin-bottom: 4px; }
+  .hash .tags { display: flex; flex-wrap: wrap; gap: 9px; justify-content: center; margin-top: 10px; }
+  .htag {
+    font-family: var(--display); font-weight: 600; font-size: 14px; color: #142A55;
+    background: #F1F6FE; border: 2.5px solid var(--outline); border-radius: 999px;
+    padding: 10px 13px; cursor: pointer; -webkit-tap-highlight-color: transparent;
+  }
+  .htag.ok { background: #9BE3B0; }
+  .htag.no { background: #F3A9AC; }
+
+  /* straighten the photo */
+  .crop .cphoto {
+    width: 160px; height: 116px; margin: 18px auto 14px;
+    display: grid; place-items: center; font-size: 42px;
+    background: #8FC9F5; border: 3px solid var(--outline); border-radius: 8px;
+    box-shadow: 3px 5px 0 rgb(20 42 85 / 0.2);
+  }
+
+  /* pop the bubble wrap */
+  .bub .bgrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; max-width: 280px; margin: 0 auto; }
+  .bb {
+    aspect-ratio: 1; border-radius: 50%; cursor: pointer; padding: 0;
+    background: #CFF1FF; border: 3px solid var(--outline);
+    box-shadow: inset -4px -5px 0 rgb(20 42 85 / 0.08);
+    -webkit-tap-highlight-color: transparent;
+  }
+  .bb.pop { background: #E4E8EF; border-style: dashed; transform: scale(0.82); box-shadow: none; }
+
+  /* stamp it fragile */
+  .stampg { position: relative; height: 220px; }
+  .sparcel {
+    position: absolute; left: 50%; bottom: 10px; transform: translateX(-50%);
+    width: min(300px, 92%); height: 116px;
+    background: #C89B66; border: 3px solid var(--outline); border-radius: 10px;
+  }
+  .szone { position: absolute; top: 32px; width: 74px; height: 46px; margin-left: -37px; border: 3px dashed #8A6238; border-radius: 6px; }
+  .sstamp {
+    position: absolute; top: 8px; width: 80px; height: 44px; margin-left: -40px;
+    display: grid; place-items: center;
+    font-family: var(--display); font-weight: 700; font-size: 13px; color: #FFFFFF;
+    background: #E5484D; border: 3px solid var(--outline); border-radius: 8px;
+    transition: top 0.18s ease-in; pointer-events: none;
+  }
+  .sstamp.slam { top: 118px; }
+
+  /* bin the peanuts */
+  .pea { position: relative; height: 220px; }
+  .pnut {
+    position: absolute; width: 46px; height: 46px;
+    display: grid; place-items: center; font-size: 24px;
+    background: #FBF6EC; border: 3px solid var(--outline); border-radius: 50%;
+    cursor: grab; touch-action: none;
+  }
+  .pbin {
+    position: absolute; right: 6px; bottom: 6px; width: 90px; height: 116px;
+    display: grid; place-items: center; font-size: 34px;
+    background: #3E4A5C; border: 3px solid var(--outline); border-radius: 10px;
+  }
+  .pbin.chomp { background: #55A45D; }
+
+  /* punch in the postcode */
+  .pcode .ptarget {
+    font-family: ui-monospace, "Cascadia Mono", Menlo, Consolas, monospace;
+    font-size: 22px; font-weight: 800; letter-spacing: 5px; color: #8A97B2;
+    background: #F1F6FE; border: 2.5px solid var(--outline); border-radius: 10px;
+    padding: 10px;
+  }
+  .pcode .ptarget .pgot { color: #1F8A3B; }
+  .pkeys { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; margin-top: 12px; }
+  .pk {
+    font-family: var(--display); font-weight: 700; font-size: 19px; color: #142A55;
+    background: #FFD75E; border: 2.5px solid var(--outline); border-radius: 10px;
+    padding: 13px; cursor: pointer; -webkit-tap-highlight-color: transparent;
+  }
+  .pk.used { background: #E4E8EF; color: #8A97B2; }
+
   /* the laptop's little internet */
   .laptop-card { max-width: 470px; padding: 0 0 14px; overflow: hidden; }
   .lp-bar { display: flex; align-items: center; gap: 10px; background: #22254A; padding: 10px 14px; }
@@ -2927,6 +3031,7 @@
 <div id="miniPanel" role="dialog" aria-label="Bench task">
   <div class="panel-card mini-card">
     <div class="mini-head"><b id="miniTitle"></b><span id="miniHint"></span></div>
+    <div class="mini-stake" id="miniStake" hidden></div>
     <div class="mini-timer"><i id="miniBar"></i></div>
     <div id="miniStage"></div>
     <button id="miniSkip" type="button">Skip it (no bonus)</button>
@@ -4415,7 +4520,8 @@
     var act = b.getAttribute("data-act"), i = +b.getAttribute("data-i");
     // writing a listing takes a photo or some copy - either way, doing it well pays
     if (act === "ebay" || act === "vinted") {
-      playMini(pickFrom(LIST_POOL)(), function (score) { listItem(i, act, score); });
+      playMini(pickFrom(LIST_POOL)(), function (score) { listItem(i, act, score); },
+        "🎁 Score 70%+ and the listing gets a random boost · higher price, hotter bids or a keen buyer");
     }
     else if (act === "acc") {
       var L = listings[i];
@@ -4431,6 +4537,7 @@
     }
   });
 
+  var vipNext = false; // a delighted buyer talks you up, and the next listing benefits
   function listItem(invIdx, plat, photo) {
     if (listings.length >= maxListings()) return;
     var e = inv.splice(invIdx, 1)[0];
@@ -4452,8 +4559,32 @@
       L.offerAt = Math.random() < 0.55 ? Date.now() + 6000 + Math.random() * 14000 : 0;
       L.offer = 0; L.offerBy = "";
     }
+    // a proper listing usually catches a random tailwind - THIS is why you don't skip
+    var perk = "";
+    if ((photo >= 0.7 && Math.random() < 0.75) || vipNext) {
+      vipNext = false;
+      if (plat === "ebay") {
+        if (Math.random() < 0.5) {
+          L.target = r5g(L.target * (1.1 + Math.random() * 0.18));
+          perk = "🔥 Featured listing! Watchers piling in · this one can go higher";
+        } else {
+          L.hype = 1;
+          perk = "⚡ Bidding war brewing · bids will come thick and fast";
+        }
+      } else {
+        if (Math.random() < 0.5) {
+          L.price = r5g(L.price * (1.08 + Math.random() * 0.14));
+          perk = "🔥 Featured in searches · listed higher, at " + fmtC(L.price);
+        } else {
+          L.keen = 1;
+          L.offerAt = Date.now() + 4000 + Math.random() * 6000;
+          perk = "💬 A keen buyer is circling · expect a strong offer";
+        }
+      }
+    }
     listings.push(L);
-    if (photo >= 0.85) banner("✨ Cracking listing · that'll fetch more. Live at " + fmtC(L.price), 5000);
+    if (perk) banner("✨ " + perk, 6000);
+    else if (photo >= 0.85) banner("✨ Cracking listing · that'll fetch more. Live at " + fmtC(L.price), 5000);
     else if (photo < 0.3) banner("😬 Scrappy listing, that one. Live at " + fmtC(L.price), 5000);
     save(); buildLaptop(); updBadges();
   }
@@ -4482,13 +4613,15 @@
         } else if (now >= L.nextBid) {
           L.bids++;
           L.bidder = pickFrom(BUYERS);
-          L.price = Math.min(L.target, r5g(L.price + Math.max(5, (L.target - L.price) * (0.2 + Math.random() * 0.35))));
-          L.nextBid = now + 3000 + Math.random() * 6000;
+          // a hyped listing (good mini-game score) bids faster and climbs harder
+          L.price = Math.min(L.target, r5g(L.price + Math.max(5, (L.target - L.price) * (L.hype ? 0.3 + Math.random() * 0.4 : 0.2 + Math.random() * 0.35))));
+          L.nextBid = now + (L.hype ? 1400 + Math.random() * 2600 : 3000 + Math.random() * 6000);
           touched = true;
         }
       } else {
         if (L.offerAt && now >= L.offerAt && !L.offer) {
-          L.offer = r5g(L.price * (0.7 + Math.random() * 0.2));
+          // a keen buyer (good mini-game score) opens far closer to the asking price
+          L.offer = r5g(L.price * (L.keen ? 0.85 + Math.random() * 0.13 : 0.7 + Math.random() * 0.2));
           L.offerBy = pickFrom(BUYERS);
           L.offerAt = 0;
           banner("💬 Offer in on Vinted: " + L.offerBy + " wants " + items[L.i].n + " for " + fmtC(L.offer) + " 💻", 7000);
@@ -4509,6 +4642,7 @@
   var miniStage = document.getElementById("miniStage");
   var miniTitle = document.getElementById("miniTitle");
   var miniHint = document.getElementById("miniHint");
+  var miniStake = document.getElementById("miniStake");
   var miniBar = document.getElementById("miniBar");
   var MINI_MS = 10000;
   var miniCb = null, miniRaf = 0, miniEndAt = 0;
@@ -4524,26 +4658,32 @@
   }
   document.getElementById("miniSkip").addEventListener("click", function () { miniFinish(0); });
 
-  function playMini(game, done) {
+  function playMini(game, done, stakes) {
     miniCb = done;
     miniTitle.textContent = game.title;
     miniHint.textContent = game.hint;
+    miniStake.textContent = stakes || "";
+    miniStake.hidden = !stakes;
     miniStage.innerHTML = "";
     var host = document.createElement("div");
     host.className = "mini-stage " + game.cls;
     miniStage.appendChild(host);
     miniPanel.classList.add("open");
+    // a game can defer the countdown until the player makes their first move -
+    // vital for typing on a phone, where raising the keyboard eats half the clock
+    var armed = !game.defer;
     miniEndAt = performance.now() + MINI_MS;
-    function timeLeft() { return Math.max(0, (miniEndAt - performance.now()) / MINI_MS); }
+    function timeLeft() { return armed ? Math.max(0, (miniEndAt - performance.now()) / MINI_MS) : 1; }
+    function arm() { if (!armed) { armed = true; miniEndAt = performance.now() + MINI_MS; } }
     (function tick() {
       if (!miniCb) return;
       var left = timeLeft();
       if (left <= 0) return miniFinish(0);
       miniBar.style.width = (left * 100) + "%";
-      miniBar.classList.toggle("low", left < 0.3);
+      miniBar.classList.toggle("low", armed && left < 0.3);
       miniRaf = requestAnimationFrame(tick);
     })();
-    game.start(host, function (s) { miniFinish(s); }, timeLeft);
+    game.start(host, function (s) { miniFinish(s); }, timeLeft, arm);
   }
 
   // 1. sequence - read the numbers off the flaps and fold them in order
@@ -4580,7 +4720,14 @@
       title: "📦 Pick the right box", hint: "Smallest one it'll actually fit in", cls: "pick",
       start: function (host, done, timeLeft) {
         var need = 18 + Math.floor(Math.random() * 30); // cm
-        var sizes = [need - 6 - Math.floor(Math.random() * 8), need + 2 + Math.floor(Math.random() * 6), need + 18 + Math.floor(Math.random() * 14)];
+        // three different set-ups, so the answer isn't always the middle-sized box:
+        // sometimes only the biggest fits, sometimes they all fit and you want the smallest
+        var roll = Math.random(), rnd = function (n) { return Math.floor(Math.random() * n); };
+        var sizes = roll < 0.34
+          ? [Math.max(6, need - 6 - rnd(8)), need + 2 + rnd(6), need + 14 + rnd(10)]
+          : roll < 0.67
+            ? [Math.max(6, need - 14 - rnd(6)), Math.max(8, need - 4 - rnd(6)), need + 3 + rnd(8)]
+            : [need + 2 + rnd(6), need + 12 + rnd(8), need + 24 + rnd(10)];
         for (var i = sizes.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = sizes[i]; sizes[i] = sizes[j]; sizes[j] = t; }
         var best = Math.min.apply(null, sizes.filter(function (s) { return s >= need; }));
         host.innerHTML = '<div class="pick-need">It measures <b>' + need + "cm</b></div>"
@@ -4622,7 +4769,10 @@
           mark.style.left = pos * 100 + "%";
           requestAnimationFrame(tick);
         })();
-        host.querySelector(".lstop").addEventListener("click", function () {
+        // pointerdown, not click - click can get eaten on phones mid-animation,
+        // and tapping anywhere on the stage counts too
+        host.addEventListener("pointerdown", function (e) {
+          e.preventDefault();
           var d = Math.abs(pos - zc);
           done(d <= zw / 2 ? 1 - (d / (zw / 2)) * 0.3 : Math.max(0, 0.45 - d));
         });
@@ -4733,8 +4883,8 @@
   ];
   function gType() {
     return {
-      title: "⌨️ Write the listing", hint: "Type it out · accuracy pays more than speed", cls: "type",
-      start: function (host, done, timeLeft) {
+      title: "⌨️ Write the listing", hint: "Type it out · the clock only starts with your first key", cls: "type", defer: true,
+      start: function (host, done, timeLeft, arm) {
         var line = pickFrom(TYPE_LINES);
         host.innerHTML = '<div class="tw"></div>'
           + '<input class="ti" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="Type the listing">';
@@ -4751,6 +4901,7 @@
         paint("");
         setTimeout(function () { try { input.focus(); } catch (err) {} }, 30);
         input.addEventListener("input", function () {
+          arm(); // the countdown starts with the first keystroke, not the panel opening
           var v = input.value.slice(0, line.length);
           paint(v);
           if (v.length < line.length) return;
@@ -4781,7 +4932,9 @@
           mv.style.width = mv.style.height = size + "px";
           requestAnimationFrame(tick);
         })();
-        host.querySelector(".lstop").addEventListener("click", function () {
+        // pointerdown anywhere on the stage - phone taps on the ring itself now count
+        host.addEventListener("pointerdown", function (e) {
+          e.preventDefault();
           // the dashed target is 88px across, which is r = 0.32
           done(Math.max(0, 1 - Math.abs(r - 0.32) * 3.4));
         });
@@ -4789,14 +4942,315 @@
     };
   }
 
+  // 8. scrub - wipe every smudge off the photo before it goes up
+  function gWipe() {
+    return {
+      title: "🧽 Clean the lens", hint: "Scrub the smudges off the photo", cls: "wipe",
+      start: function (host, done, timeLeft) {
+        var html = '<div class="photo">🏺';
+        for (var i = 0; i < 5; i++) {
+          html += '<i class="smudge" style="left:' + Math.round(6 + Math.random() * 68) + '%;top:' + Math.round(6 + Math.random() * 62) + '%"></i>';
+        }
+        host.innerHTML = html + "</div>";
+        var down = false;
+        function rub(e) {
+          Array.prototype.forEach.call(host.querySelectorAll(".smudge"), function (b) {
+            var r = b.getBoundingClientRect();
+            if (e.clientX < r.left - 8 || e.clientX > r.right + 8 || e.clientY < r.top - 8 || e.clientY > r.bottom + 8) return;
+            var hp = (+b.dataset.hp || 8) - 1;
+            b.dataset.hp = hp;
+            b.style.opacity = hp / 8;
+            if (hp <= 0) {
+              b.remove();
+              if (!host.querySelector(".smudge")) done(timeLeft());
+            }
+          });
+        }
+        host.addEventListener("pointerdown", function (e) { down = true; rub(e); });
+        host.addEventListener("pointermove", function (e) { if (down) rub(e); });
+        ["pointerup", "pointercancel"].forEach(function (ev) { host.addEventListener(ev, function () { down = false; }); });
+      }
+    };
+  }
+
+  // 9. drag-a-slider - light the shot, then take it
+  function gLight() {
+    return {
+      title: "💡 Set the lighting", hint: "Drag the marker into the golden band, then tap Snap", cls: "light",
+      start: function (host, done) {
+        host.innerHTML = '<div class="lbar"><i class="lzone"></i><i class="lmark"></i></div>'
+          + '<div class="weigh-tags"><span>Gloomy</span><span>Dim</span><span>Golden</span><span>Blinding</span></div>'
+          + '<button type="button" class="lstop">Snap it</button>';
+        var bar = host.querySelector(".lbar"), mark = host.querySelector(".lmark"), zone = host.querySelector(".lzone");
+        var zc = 0.2 + Math.random() * 0.6, zw = 0.12, pos = 0.04, drag = false;
+        zone.style.left = (zc - zw / 2) * 100 + "%";
+        zone.style.width = zw * 100 + "%";
+        mark.style.left = "4%";
+        function move(e) {
+          var r = bar.getBoundingClientRect();
+          pos = Math.max(0, Math.min(1, (e.clientX - r.left) / r.width));
+          mark.style.left = pos * 100 + "%";
+        }
+        bar.addEventListener("pointerdown", function (e) { drag = true; move(e); try { bar.setPointerCapture(e.pointerId); } catch (err) {} });
+        bar.addEventListener("pointermove", function (e) { if (drag) move(e); });
+        ["pointerup", "pointercancel"].forEach(function (ev) { bar.addEventListener(ev, function () { drag = false; }); });
+        host.querySelector(".lstop").addEventListener("pointerdown", function () {
+          var d = Math.abs(pos - zc);
+          done(d <= zw / 2 ? 1 - (d / (zw / 2)) * 0.25 : Math.max(0, 0.4 - d));
+        });
+      }
+    };
+  }
+
+  // 10. judgement - three buyers message you, one is a wrong-un
+  var SCAM_LINES = [
+    "I'll pay DOUBLE if you post it to my cousin's mate first 🤝",
+    "Send me a £50 gift card and I'll definitely buy it after, promise",
+    "Click this link to claim your payment, it is a very normal website",
+    "My courier collects tonight, he just needs your bank card",
+    "I am a prince and this completes my collection · post it free, riches follow"
+  ];
+  var LEGIT_LINES = [
+    "Hiya, is this still available please?",
+    "Would you take a fiver less if I collect?",
+    "Lovely that! Can you post it tomorrow?",
+    "Does it come with the original box?",
+    "Been after one of these for AGES · buying now",
+    "My nan had one exactly like it. Yes please"
+  ];
+  function gScam() {
+    return {
+      title: "🕵️ Spot the scammer", hint: "Three messages · tap the dodgy one to block them", cls: "scam",
+      start: function (host, done, timeLeft) {
+        var names = ["Gary B.", "Susan P.", "Dave T.", "Mo K.", "Tina W.", "Barry L."].sort(function () { return Math.random() - 0.5; });
+        var legit = LEGIT_LINES.slice().sort(function () { return Math.random() - 0.5; });
+        var cards = [
+          { t: pickFrom(SCAM_LINES), bad: 1 },
+          { t: legit[0], bad: 0 },
+          { t: legit[1], bad: 0 }
+        ].sort(function () { return Math.random() - 0.5; });
+        host.innerHTML = cards.map(function (c, i) {
+          return '<div class="msg" data-bad="' + c.bad + '"><b>' + names[i] + "</b>" + c.t + "</div>";
+        }).join("");
+        var wrong = 0;
+        host.addEventListener("pointerdown", function (e) {
+          var m = e.target.closest ? e.target.closest(".msg") : null;
+          if (!m || m.classList.contains("no") || m.classList.contains("ok")) return;
+          if (m.getAttribute("data-bad") === "1") {
+            m.classList.add("ok");
+            done(timeLeft() * (wrong ? 0.6 : 1));
+          } else {
+            wrong++;
+            m.classList.add("no");
+            host.classList.add("bad");
+            setTimeout(function () { host.classList.remove("bad"); }, 220);
+          }
+        });
+      }
+    };
+  }
+
+  // 11. judgement - three tags belong on the listing, three belong nowhere
+  function gHash() {
+    var GOOD = ["#vintage", "#retro", "#rare", "#carboot", "#bargain", "#minty"];
+    var DAFT = ["#soup", "#Tuesday", "#submarine", "#gravy", "#moist", "#hedge", "#beige", "#forklift"];
+    return {
+      title: "#️⃣ Pick the hashtags", hint: "Tap the three that belong on a listing", cls: "hash",
+      start: function (host, done, timeLeft) {
+        var good = GOOD.slice().sort(function () { return Math.random() - 0.5; }).slice(0, 3);
+        var daft = DAFT.slice().sort(function () { return Math.random() - 0.5; }).slice(0, 3);
+        var tags = good.concat(daft).sort(function () { return Math.random() - 0.5; });
+        host.innerHTML = '<div class="hword">Sell it, don\'t confuse it:</div><div class="tags">'
+          + tags.map(function (t) { return '<button type="button" class="htag" data-g="' + (good.indexOf(t) >= 0 ? 1 : 0) + '">' + t + "</button>"; }).join("") + "</div>";
+        var got = 0, wrong = 0;
+        host.addEventListener("pointerdown", function (e) {
+          var b = e.target.closest ? e.target.closest(".htag") : null;
+          if (!b || b.classList.contains("ok") || b.classList.contains("no")) return;
+          if (b.getAttribute("data-g") === "1") {
+            b.classList.add("ok");
+            if (++got >= 3) done(timeLeft() * (wrong ? 0.6 : 1));
+          } else {
+            wrong++;
+            b.classList.add("no");
+            host.classList.add("bad");
+            setTimeout(function () { host.classList.remove("bad"); }, 220);
+          }
+        });
+      }
+    };
+  }
+
+  // 12. dexterity - the photo went in wonky, drag it level
+  function gCrop() {
+    return {
+      title: "🖼️ Straighten the photo", hint: "Drag left and right until it sits level, then Done", cls: "crop",
+      start: function (host, done) {
+        var ang = (8 + Math.random() * 14) * (Math.random() < 0.5 ? -1 : 1);
+        host.innerHTML = '<div class="cphoto">🏺</div><button type="button" class="lstop">Done</button>';
+        var ph = host.querySelector(".cphoto"), lastX = null;
+        ph.style.transform = "rotate(" + ang + "deg)";
+        host.addEventListener("pointerdown", function (e) { lastX = e.clientX; });
+        host.addEventListener("pointermove", function (e) {
+          if (lastX === null) return;
+          ang += (e.clientX - lastX) * 0.12;
+          lastX = e.clientX;
+          ph.style.transform = "rotate(" + ang + "deg)";
+        });
+        ["pointerup", "pointercancel"].forEach(function (ev) { host.addEventListener(ev, function () { lastX = null; }); });
+        host.querySelector(".lstop").addEventListener("pointerdown", function (e) {
+          e.stopPropagation();
+          done(Math.max(0, 1 - Math.abs(ang) / 10));
+        });
+      }
+    };
+  }
+
+  // 13. pure joy - nobody has ever skipped bubble wrap
+  function gBubble() {
+    return {
+      title: "🫧 Pop the bubble wrap", hint: "Every bubble. It's the law.", cls: "bub",
+      start: function (host, done, timeLeft) {
+        var html = '<div class="bgrid">';
+        for (var i = 0; i < 12; i++) html += '<button type="button" class="bb" aria-label="Pop"></button>';
+        host.innerHTML = html + "</div>";
+        var left = 12;
+        host.addEventListener("pointerdown", function (e) {
+          var b = e.target.closest ? e.target.closest(".bb") : null;
+          if (!b || b.classList.contains("pop")) return;
+          b.classList.add("pop");
+          if (navigator.vibrate) { try { navigator.vibrate(8); } catch (err) {} }
+          if (--left <= 0) done(timeLeft());
+        });
+      }
+    };
+  }
+
+  // 14. timing - slam the FRAGILE stamp inside the patch as it swings past
+  function gFragile() {
+    return {
+      title: "🔖 Stamp it FRAGILE", hint: "Tap to slam the stamp inside the dashed patch", cls: "stampg",
+      start: function (host, done) {
+        var tx = 16 + Math.random() * 60;
+        host.innerHTML = '<div class="sparcel"><i class="szone" style="left:' + tx + '%"></i></div><div class="sstamp">FRAGILE</div>';
+        var stamp = host.querySelector(".sstamp");
+        var t0 = performance.now(), held = false;
+        (function tick() {
+          if (!host.isConnected || held) return;
+          var p = ((performance.now() - t0) / 1100) % 2;
+          var pos = p > 1 ? 2 - p : p;
+          stamp.style.left = (14 + pos * 72) + "%";
+          requestAnimationFrame(tick);
+        })();
+        host.addEventListener("pointerdown", function () {
+          if (held) return;
+          held = true;
+          stamp.classList.add("slam");
+          var sr = stamp.getBoundingClientRect(), zr = host.querySelector(".szone").getBoundingClientRect();
+          var d = Math.abs((sr.left + sr.width / 2) - (zr.left + zr.width / 2));
+          setTimeout(function () { done(Math.max(0, 1 - d / 85)); }, 240);
+        });
+      }
+    };
+  }
+
+  // 15. tidy-the-bench - drag every peanut into the bin, like a tiny crewmate task
+  function gPeanut() {
+    return {
+      title: "🥜 Bin the packing peanuts", hint: "Drag every peanut into the bin", cls: "pea",
+      start: function (host, done, timeLeft) {
+        var html = '<div class="pbin">🗑️</div>';
+        for (var i = 0; i < 5; i++) {
+          html += '<div class="pnut" style="left:' + Math.round(2 + Math.random() * 52) + '%;top:' + Math.round(4 + Math.random() * 62) + '%">🥜</div>';
+        }
+        host.innerHTML = html;
+        var bin = host.querySelector(".pbin"), left = 5;
+        Array.prototype.forEach.call(host.querySelectorAll(".pnut"), function (p) {
+          var drag = false;
+          p.addEventListener("pointerdown", function (e) { drag = true; try { p.setPointerCapture(e.pointerId); } catch (err) {} });
+          p.addEventListener("pointermove", function (e) {
+            if (!drag) return;
+            var hr = host.getBoundingClientRect();
+            p.style.left = (e.clientX - hr.left - 23) + "px";
+            p.style.top = (e.clientY - hr.top - 23) + "px";
+          });
+          ["pointerup", "pointercancel"].forEach(function (ev) {
+            p.addEventListener(ev, function () {
+              if (!drag) return;
+              drag = false;
+              var pr = p.getBoundingClientRect(), br = bin.getBoundingClientRect();
+              var cx = pr.left + pr.width / 2, cy = pr.top + pr.height / 2;
+              if (cx > br.left && cx < br.right && cy > br.top && cy < br.bottom) {
+                p.remove();
+                if (navigator.vibrate) { try { navigator.vibrate(8); } catch (err) {} }
+                bin.classList.add("chomp");
+                setTimeout(function () { bin.classList.remove("chomp"); }, 150);
+                if (--left <= 0) done(timeLeft());
+              }
+            });
+          });
+        });
+      }
+    };
+  }
+
+  // 16. keypad - punch the postcode in, in order, no typing needed
+  function gPostcode() {
+    return {
+      title: "📮 Punch in the postcode", hint: "Tap the keys in the right order", cls: "pcode",
+      start: function (host, done, timeLeft) {
+        var LTR = "ABCDEFGHJKLMNPRSTUW", DIG = "123456789";
+        function ch(s) { return s[Math.floor(Math.random() * s.length)]; }
+        var code = ch(LTR) + ch(LTR) + ch(DIG) + " " + ch(DIG) + ch(LTR) + ch(LTR);
+        var seq = code.replace(" ", "").split("");
+        var keys = seq.slice();
+        while (keys.length < 9) {
+          var c = Math.random() < 0.5 ? ch(LTR) : ch(DIG);
+          if (keys.indexOf(c) < 0) keys.push(c);
+        }
+        keys.sort(function () { return Math.random() - 0.5; });
+        function paintTarget(step) {
+          var out = "", si = 0;
+          for (var i = 0; i < code.length; i++) {
+            if (code[i] === " ") { out += "&nbsp;"; continue; }
+            out += '<span class="' + (si < step ? "pgot" : "") + '">' + code[i] + "</span>";
+            si++;
+          }
+          return out;
+        }
+        host.innerHTML = '<div class="ptarget">' + paintTarget(0) + '</div><div class="pkeys">'
+          + keys.map(function (k) { return '<button type="button" class="pk">' + k + "</button>"; }).join("") + "</div>";
+        var tgt = host.querySelector(".ptarget");
+        var step = 0, wrong = 0;
+        host.addEventListener("pointerdown", function (e) {
+          var b = e.target.closest ? e.target.closest(".pk") : null;
+          if (!b || b.classList.contains("used")) return;
+          if (b.textContent === seq[step]) {
+            b.classList.add("used");
+            tgt.innerHTML = paintTarget(++step);
+            if (step >= seq.length) done(timeLeft() * (wrong > 1 ? 0.7 : 1));
+          } else {
+            wrong++;
+            host.classList.add("bad");
+            setTimeout(function () { host.classList.remove("bad"); }, 220);
+          }
+        });
+      }
+    };
+  }
+
   // three tasks per parcel, drawn at random from the pool with no repeats, so no two
   // parcels play the same. The draw is stored on the order so it survives a reload.
-  var PACK_POOL = [gFold, gPickBox, gWeigh, gTape, gLabel];
-  var LIST_POOL = [gType, gFocus];
+  // New games join at the END of PACK_POOL: saved orders store pool indexes.
+  var PACK_POOL = [gFold, gPickBox, gWeigh, gTape, gLabel, gBubble, gFragile, gPeanut, gPostcode];
+  var LIST_POOL = [gType, gFocus, gWipe, gLight, gScam, gHash, gCrop];
+  // tape (3) and label (4) need a steady pointer - too fiddly on a phone, so touch
+  // screens swap them out (including inside orders saved on a desktop)
+  var PACK_TOUCH_SWAP = { 3: 5, 4: 6 };
+  function packGameIdx(i) { return coarse && PACK_TOUCH_SWAP[i] !== undefined ? PACK_TOUCH_SWAP[i] : i; }
   var PACK_TASKS = 3;
   function pickTasks() {
     var pool = [], out = [];
-    for (var i = 0; i < PACK_POOL.length; i++) pool.push(i);
+    for (var i = 0; i < PACK_POOL.length; i++) { if (!(coarse && PACK_TOUCH_SWAP[i] !== undefined)) pool.push(i); }
     for (var n = 0; n < PACK_TASKS; n++) out.push(pool.splice(Math.floor(Math.random() * pool.length), 1)[0]);
     return out;
   }
@@ -4825,7 +5279,7 @@
         + '<div class="lp-meta">' + (o.plat === "ebay" ? "🔨 eBay" : "👗 Vinted") + " · sold to <b>" + o.by + "</b>, " + o.to
         + " · " + fmtC(o.soldFor) + ' · <span class="shop-pips">' + prog + "</span></div>"
         + '<div class="lp-btns"><button type="button" data-i="' + i + '">'
-        + PACK_POOL[o.mg[o.step]]().title + "</button></div></div>";
+        + PACK_POOL[packGameIdx(o.mg[o.step])]().title + "</button></div></div>";
     });
     packRows.innerHTML = html;
   }
@@ -4835,12 +5289,12 @@
     var o = orders[+b.getAttribute("data-i")];
     if (!o) return;
     if (!okTasks(o.mg)) o.mg = pickTasks();
-    playMini(PACK_POOL[o.mg[o.step]](), function (score) {
+    playMini(PACK_POOL[packGameIdx(o.mg[o.step])](), function (score) {
       o.q = (o.q || 0) + score;
       o.step++;
       if (o.step >= PACK_TASKS) completeOrder(o);
       else { save(); buildPack(); }
-    });
+    }, "🎁 Tidy packing pays: up to +15% on the sale, plus tips, reviews and word of mouth");
   });
   function completeOrder(o) {
     var ix = orders.indexOf(o);
@@ -4853,6 +5307,20 @@
     var q = (o.q || 0) / PACK_TASKS;
     var bonus = Math.round(o.soldFor * 0.15 * q);
     if (bonus > 0) wallet += bonus;
+    // pack it beautifully and something extra usually happens - which one is pot luck
+    if (q >= 0.75) {
+      var pr = Math.random();
+      if (pr < 0.4) {
+        var tipAmt = Math.max(5, Math.round(o.soldFor * (0.05 + Math.random() * 0.08)));
+        wallet += tipAmt;
+        setTimeout(function () { banner("💝 " + o.by + " loved the packaging and tipped " + fmtC(tipAmt) + "!", 6000); }, 2400);
+      } else if (pr < 0.75) {
+        awardRep(2, "glowing five-star review");
+      } else {
+        vipNext = true;
+        setTimeout(function () { banner("🌟 " + o.by + " is telling everyone about you · your next listing will get noticed.", 6500); }, 2400);
+      }
+    }
     var profit = o.soldFor + bonus - o.paid;
     updWallet();
     var r = 0, why = "";
@@ -5075,6 +5543,7 @@
     // sometimes the crate looks empty (and isn't, if you keep checking)
     var isSecret = s.el.id === "secretStall";
     var isaacTwin = false, crateEmpty = false, crateChecks = 0;
+    var crateTok = 0; // invalidates a pending auto-reveal when the pitch restocks
     var npcHead = document.createElement("img");
     npcHead.className = "npc-head"; npcHead.src = "avatar.jpg"; npcHead.alt = "";
     npcEl.appendChild(npcHead);
@@ -5165,6 +5634,7 @@
       patience = maxPat = 3;
     }
     function assignItem() {
+      crateTok++;
       setItem(rollStock());
       cratesLeft = V().crates || 1;
       // very occasionally the seller is… Isaac, flogging his own famous stock,
@@ -5285,6 +5755,17 @@
     function buy(paid, opener) {
       phase = 2;
       cratesLeft--;
+      // the next crate cracks itself open a beat later, so the pitch visibly restocks
+      // instead of sitting there SOLD until you think to ask
+      if (cratesLeft > 0) {
+        var tok = ++crateTok;
+        setTimeout(function () {
+          if (tok !== crateTok || phase !== 2) return;
+          hide();
+          setItem(isaacTwin ? pickFrom(meItems) : rollStock());
+          if (isaacTwin) applyTwin();
+        }, 1600);
+      }
       wallet -= paid;
       // condition is a gamble you find out about back at the warehouse
       var roll = Math.random();
@@ -5297,7 +5778,7 @@
       if (rareEl) rareEl.classList.add("sold");
       render(opener + " 🤝 " + fmt(paid) + " · <b>" + name + "</b> is in the bag! 🎒 " + inv.length + "/" + bagCap()
         + (inv.length >= bagCap() ? ' <span class="story">Bag\'s full · take the haul to the warehouse 🏭</span>'
-          : cratesLeft > 0 ? ' <span class="story">👀 There\'s another crate here · give us a shout.</span>' : ""));
+          : cratesLeft > 0 ? ' <span class="story">👀 Hang about · there\'s another crate under here…</span>' : ""));
       buzz();
       if (ask - paid >= 50) questEvent("haggle50");
       // knocking a quarter off is proper work; a modest saving still counts for something
