@@ -1970,6 +1970,7 @@
   .lp-row.live-vinted { background: #E7F8EE; }
   .lp-row.lp-dim { background: #F4F6FA; color: #8A97B2; font-weight: 800; font-size: 12px; border-style: dashed; }
   .lp-name { font-family: var(--display); font-weight: 600; font-size: 14px; }
+  .lp-secs { font-style: normal; } /* it is an <i> only so the clock can be retargeted on its own */
   .lp-meta { font-size: 11.5px; font-weight: 800; color: var(--ink-soft); margin-top: 3px; line-height: 1.45; }
   .lp-bid { color: #1F8A3B; }
   .lp-btns { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
@@ -6869,6 +6870,7 @@
   }
   function enterManor() {
     if (inManor || !hasManor()) return;
+    shutBarter();
     whPx = px; // the warehouse floor keeps your spot while you are out
     inWh = false;
     document.body.classList.remove("in-wh");
@@ -7237,8 +7239,18 @@
 
   var bootPx = null;
   var WH_MIN = 140, WH_MAX = 3120, WH_SPAWN = 585;
+  // The haggle sheet covers half a phone screen, so it must never outlive the pitch it
+  // belongs to. hideSay only fires when `near` changes hands, which misses every case
+  // where the whole scene changes underneath it - the warehouse, the house, a new venue.
+  function shutBarter() {
+    if (!sheet) return;
+    sheet.root.classList.remove("open");
+    sheet.owner = null;
+    sheet.atPx = null;
+  }
   function enterWh() {
     if (inWh) return;
+    shutBarter();
     if (robber) endRobbery(false, "🚪 You slam the warehouse door · they think better of it.");
     inWh = true;
     packedThisVisit = 0;
@@ -7250,6 +7262,7 @@
   }
   function exitWh(toIdx) {
     if (!inWh) return;
+    shutBarter();
     var v = VENUES[toIdx] || V();
     if (!venueOpen(v)) return;
     whPx = px; // remember the spot on the warehouse floor for next time you drive back
@@ -7782,7 +7795,7 @@
           + '<div class="lp-meta">' + (L.bids
             ? '<b class="lp-bid">' + fmtC(L.price) + "</b> · " + L.bids + " bid" + (L.bids > 1 ? "s" : "") + " · high bidder <b>" + L.bidder + "</b>"
             : "Starting at " + fmtC(L.price) + " · no bids yet")
-          + " · ⏱️ " + secs + "s left</div></div>";
+          + ' · ⏱️ <i class="lp-secs" data-i="' + i + '">' + secs + "s left</i></div></div>";
       } else {
         html += '<div class="lp-row live-vinted"><span class="lp-name">👗 ' + it.e + " " + it.n + "</span>"
           + '<div class="lp-meta">Listed at ' + fmtC(L.price) + " · 👀 buyers are looking…</div>"
@@ -7796,6 +7809,18 @@
     });
     if (orders.length) html += '<div class="lp-h">📦 Sold! ' + orders.length + " order" + (orders.length > 1 ? "s" : "") + " waiting at the packing bench</div>";
     lpRows.innerHTML = html;
+  }
+  // The only thing on this page that moves by itself is the auction clock. Rebuilding
+  // the whole list once a second to advance it threw away wherever you had scrolled to
+  // and killed a flick stone dead, which on a phone reads as a page that will not
+  // scroll at all. So the clocks tick in place and the list is left alone.
+  function tickLaptop() {
+    var els = lpRows.querySelectorAll(".lp-secs");
+    for (var i = 0; i < els.length; i++) {
+      var L = listings[+els[i].getAttribute("data-i")];
+      if (!L || L.plat !== "ebay") continue;
+      els[i].textContent = Math.max(0, Math.ceil((L.endAt - Date.now()) / 1000)) + "s left";
+    }
   }
 
   lpRows.addEventListener("click", function (e) {
@@ -7943,7 +7968,11 @@
         if (now >= L.sellAt) { soldListing(L, L.price); touched = true; }
       }
     }
-    if (laptopPanel.classList.contains("open")) buildLaptop(); // live countdowns
+    if (laptopPanel.classList.contains("open")) {
+      // a full rebuild only when a bid, an offer or a sale actually changed something
+      if (touched) buildLaptop();
+      else tickLaptop();
+    }
     else if (touched) { save(); updBadges(); }
   }, 1000);
 
@@ -9551,7 +9580,7 @@
         var eyeTxt = UPG.eye.lvl ? " · 👁️ sells ~" + fmt(r5(value * (UPG.eye.lvl >= 2 ? 1 : estF) * proMult())) : "";
         u.price.innerHTML = "Asking " + fmt(price) + " " + mood() + " " + pips() + persTxt + eyeTxt;
       }
-      if (sheet) sheet.root.classList.add("open");
+      if (sheet) { sheet.root.classList.add("open"); sheet.atPx = px; }
       else sayEl.classList.add("show");
       clearTimeout(hideT);
       if (phase >= 2) hideT = setTimeout(hide, tier === 4 ? 14000 : 8000);
@@ -9813,6 +9842,10 @@
       face = delta > 0 ? 1 : -1;
       player.classList.add("walking");
       walking = true;
+      // walking off IS walking away. 60px is a deliberate stride, well short of the
+      // 195px it takes for the pitch to stop counting as the one you are stood at.
+      if (sheet && sheet.atPx !== null && sheet.atPx !== undefined
+        && Math.abs(px - sheet.atPx) > 60 && sheet.root.classList.contains("open")) shutBarter();
       if (speed > 380) spawnPuff(now);
     } else {
       player.classList.remove("walking");
