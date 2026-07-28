@@ -4169,48 +4169,69 @@
   // The house sat on top of the garage, cut through so you can see into it: three
   // rooms upstairs and the roof over them. Same doll's-house cutaway as the garage.
   function houseSectionSvg(W) {
-    var RH = 210, RF = 150;              // room height, then the roof above it
-    var H = RH + RF;
+    var RH = 214, RF = 190;              // room height, then the roof above it
+    var H = RH + RF, FL = RF + RH;       // FL is the floor the furniture stands on
     var s = '<svg width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + " " + H + '">';
     // the roof first, so the rooms sit in front of its underside
-    s += '<path d="M-30 ' + RF + " L" + (W / 2) + " 4 L" + (W + 30) + " " + RF + ' Z" fill="#6E4F2E" stroke="#3B598F" stroke-width="4" stroke-linejoin="round"/>';
-    s += '<path d="M' + (W / 2) + " 4 L" + (W + 30) + " " + RF + " L" + (W / 2) + " " + RF + ' Z" fill="#5E4326"/>';
-    // the loft, with the junk that never made it down to the sale
-    s += '<path d="M-30 ' + RF + " L" + (W + 30) + " " + RF + '" stroke="#3B598F" stroke-width="4"/>';
-    s += '<g transform="translate(' + (W * 0.3) + "," + (RF - 34) + ') scale(0.6)"><use href="#gBox"/></g>';
-    s += '<g transform="translate(' + (W * 0.62) + "," + (RF - 30) + ') scale(0.5)"><use href="#gBox"/></g>';
-    // the rooms: outer walls, floor, and two party walls making three of them
+    s += '<path d="M-40 ' + RF + " L" + (W / 2) + " 6 L" + (W + 40) + " " + RF + ' Z" fill="#6E4F2E" stroke="#3B598F" stroke-width="4" stroke-linejoin="round"/>';
+    s += '<path d="M' + (W / 2) + " 6 L" + (W + 40) + " " + RF + " L" + (W / 2) + " " + RF + ' Z" fill="#5E4326"/>';
+    // the chimney, and the loft junk that never made it down to the sale
+    s += '<rect x="' + (W * 0.7) + '" y="' + (RF * 0.28) + '" width="46" height="' + (RF * 0.5) + '" fill="#9AA5B8" stroke="#3B598F" stroke-width="4"/>';
+    s += '<g transform="translate(' + (W * 0.26) + "," + (RF - 36) + ') scale(0.62)"><use href="#gBox"/></g>';
+    s += '<g transform="translate(' + (W * 0.55) + "," + (RF - 32) + ') scale(0.5)"><use href="#gBox"/></g>';
+    // the rooms: outer wall, ceiling and floor, then party walls making four of them
     s += '<rect x="0" y="' + RF + '" width="' + W + '" height="' + RH + '" fill="#E8DFD0" stroke="#3B598F" stroke-width="4"/>';
-    var w1 = W * 0.37, w2 = W * 0.63;
-    s += '<path d="M' + w1 + " " + RF + " V" + H + " M" + w2 + " " + RF + " V" + H + '" stroke="#3B598F" stroke-width="4"/>';
+    var cuts = [0.26, 0.5, 0.75];
+    cuts.forEach(function (c) {
+      s += '<path d="M' + (W * c) + " " + RF + " V" + H + '" stroke="#3B598F" stroke-width="4"/>';
+    });
+    // a skirting line all the way along, which is what stops the furniture floating
+    s += '<path d="M4 ' + (FL - 12) + " H" + (W - 4) + '" stroke="#C2AE92" stroke-width="8"/>';
     // room one: a bedroom
-    s += '<g transform="translate(' + (W * 0.05) + "," + (RF + RH - 96) + ')">'
-      + '<rect x="0" y="40" width="150" height="52" rx="6" fill="#8FC9F5" stroke="#3B598F" stroke-width="3.5"/>'
-      + '<rect x="0" y="16" width="34" height="76" rx="6" fill="#B98A57" stroke="#3B598F" stroke-width="3.5"/>'
-      + '<rect x="6" y="26" width="22" height="16" rx="3" fill="#F6EFE3" stroke="#3B598F" stroke-width="2.5"/>'
-      + '<rect x="168" y="4" width="52" height="88" rx="4" fill="#8A6238" stroke="#3B598F" stroke-width="3.5"/>'
-      + '<path d="M194 8 V88" stroke="#3B598F" stroke-width="2.5"/>'
+    s += '<g transform="translate(' + (W * 0.03) + "," + (FL - 104) + ')">'
+      + '<rect x="0" y="46" width="156" height="46" rx="5" fill="#8FC9F5" stroke="#3B598F" stroke-width="3.5"/>'
+      + '<rect x="0" y="18" width="30" height="74" rx="5" fill="#B98A57" stroke="#3B598F" stroke-width="3.5"/>'
+      + '<rect x="6" y="28" width="18" height="14" rx="3" fill="#F6EFE3" stroke="#3B598F" stroke-width="2.5"/>'
+      + '<rect x="180" y="4" width="56" height="88" rx="3" fill="#8A6238" stroke="#3B598F" stroke-width="3.5"/>'
+      + '<path d="M208 10 V86" stroke="#3B598F" stroke-width="2.5"/>'
+      + '<circle cx="202" cy="50" r="3" fill="#3B598F"/><circle cx="214" cy="50" r="3" fill="#3B598F"/>'
       + "</g>";
-    // room two: the bathroom
-    s += '<g transform="translate(' + (w1 + W * 0.035) + "," + (RF + RH - 78) + ')">'
-      + '<path d="M0 22 Q0 12 12 12 H92 Q104 12 104 22 V58 Q104 70 92 70 H12 Q0 70 0 58 Z" fill="#F6EFE3" stroke="#3B598F" stroke-width="3.5"/>'
-      + '<path d="M8 26 H96" stroke="#8FC9F5" stroke-width="7" stroke-linecap="round"/>'
-      + '<rect x="132" y="34" width="42" height="14" rx="4" fill="#F6EFE3" stroke="#3B598F" stroke-width="3"/>'
-      + '<path d="M153 48 V70 H144 H162" fill="none" stroke="#3B598F" stroke-width="3"/>'
-      + '<rect x="196" y="30" width="34" height="40" rx="5" fill="#F6EFE3" stroke="#3B598F" stroke-width="3"/>'
+    // room two: the bathroom. A bath, a basin on a pedestal and a loo, all sat down.
+    s += '<g transform="translate(' + (W * cuts[0] + W * 0.03) + "," + (FL - 82) + ')">'
+      + '<path d="M0 26 Q0 14 14 14 H104 Q118 14 118 26 V62 Q118 74 104 74 H14 Q0 74 0 62 Z" fill="#F6EFE3" stroke="#3B598F" stroke-width="3.5"/>'
+      + '<path d="M10 30 H108" stroke="#8FC9F5" stroke-width="9" stroke-linecap="round"/>'
+      + '<path d="M6 74 V82 M112 74 V82" stroke="#3B598F" stroke-width="3"/>'
+      // the basin: bowl on a pedestal, with a tap
+      + '<rect x="150" y="34" width="46" height="16" rx="5" fill="#F6EFE3" stroke="#3B598F" stroke-width="3"/>'
+      + '<path d="M166 50 H180 L178 82 H168 Z" fill="#F6EFE3" stroke="#3B598F" stroke-width="3" stroke-linejoin="round"/>'
+      + '<path d="M173 34 V26 H180" fill="none" stroke="#8A97B2" stroke-width="3" stroke-linecap="round"/>'
+      // and the loo
+      + '<path d="M216 46 Q216 38 226 38 H248 Q258 38 256 48 L252 62 H222 Z" fill="#F6EFE3" stroke="#3B598F" stroke-width="3" stroke-linejoin="round"/>'
+      + '<path d="M228 62 H248 L246 82 H230 Z" fill="#F6EFE3" stroke="#3B598F" stroke-width="3" stroke-linejoin="round"/>'
+      + '<rect x="214" y="14" width="20" height="26" rx="3" fill="#F6EFE3" stroke="#3B598F" stroke-width="3"/>'
       + "</g>";
-    // room three: the box room, which is where all this stock came from
-    s += '<g transform="translate(' + (w2 + W * 0.04) + "," + (RF + RH - 86) + ')">'
-      + '<g transform="scale(0.85)"><use href="#gBox"/></g>'
-      + '<g transform="translate(70,14) scale(0.7)"><use href="#gBox"/></g>'
-      + '<g transform="translate(14,44) scale(0.65)"><use href="#gBox"/></g>'
-      + '<g transform="translate(140,10) scale(0.9)"><use href="#gBooks"/></g>'
-      + '<g transform="translate(96,52) scale(0.75)"><use href="#gRecords"/></g>'
+    // room three: a sitting room, because a house is more than beds and boxes
+    s += '<g transform="translate(' + (W * cuts[1] + W * 0.03) + "," + (FL - 96) + ')">'
+      + '<path d="M0 44 Q0 32 14 32 H128 Q142 32 142 44 V84 H0 Z" fill="#C2703F" stroke="#3B598F" stroke-width="3.5" stroke-linejoin="round"/>'
+      + '<path d="M18 46 H124 M0 62 H142" stroke="#8A4E2A" stroke-width="3.5"/>'
+      + '<path d="M6 84 V92 M136 84 V92" stroke="#3B598F" stroke-width="3"/>'
+      + '<rect x="170" y="28" width="80" height="54" rx="5" fill="#39435C" stroke="#3B598F" stroke-width="3.5"/>'
+      + '<rect x="178" y="35" width="64" height="40" rx="2" fill="#8FC9F5"/>'
+      + '<path d="M204 82 V92 H190 H218" fill="none" stroke="#3B598F" stroke-width="3"/>'
       + "</g>";
-    // a window in each outside wall, so it reads as a house and not a shelf unit
-    [0.16, 0.5, 0.84].forEach(function (f) {
-      s += '<rect x="' + (W * f - 26) + '" y="' + (RF + 26) + '" width="52" height="42" rx="3" fill="#CFE7F8" stroke="#3B598F" stroke-width="3.5"/>';
-      s += '<path d="M' + (W * f) + " " + (RF + 26) + " V" + (RF + 68) + " M" + (W * f - 26) + " " + (RF + 47) + " H" + (W * f + 26) + '" stroke="#3B598F" stroke-width="2.5"/>';
+    // room four: the box room, which is where all this stock came from
+    s += '<g transform="translate(' + (W * cuts[2] + W * 0.035) + "," + (FL - 96) + ')">'
+      + '<g transform="translate(0,44) scale(0.85)"><use href="#gBox"/></g>'
+      + '<g transform="translate(64,52) scale(0.72)"><use href="#gBox"/></g>'
+      + '<g transform="translate(8,4) scale(0.68)"><use href="#gBox"/></g>'
+      + '<g transform="translate(126,40) scale(0.9)"><use href="#gBooks"/></g>'
+      + '<g transform="translate(180,48) scale(0.8)"><use href="#gRecords"/></g>'
+      + "</g>";
+    // a window in the middle of each room, clear of the party walls
+    [0.13, 0.38, 0.62, 0.88].forEach(function (f) {
+      var wx = W * f;
+      s += '<rect x="' + (wx - 28) + '" y="' + (RF + 28) + '" width="56" height="46" rx="3" fill="#CFE7F8" stroke="#3B598F" stroke-width="3.5"/>';
+      s += '<path d="M' + wx + " " + (RF + 28) + " V" + (RF + 74) + " M" + (wx - 28) + " " + (RF + 51) + " H" + (wx + 28) + '" stroke="#3B598F" stroke-width="2.5"/>';
     });
     return s + "</svg>";
   }
@@ -4235,22 +4256,28 @@
     estArt(300, 96, "estBush", 84, 58, "0 0 70 50");
 
     // --- the front of the house, between the street and the garage door ---
+    // it runs up to the same height as the garage ceiling, so the upstairs sits across
+    // the pair of them as one house rather than stopping halfway
     var fw = EST_ROAD_END - EST_STREET_END;
     estAdd("estbit", "left:" + EST_STREET_END + "px;bottom:92px",
-      '<svg width="' + fw + '" height="252" viewBox="0 0 ' + fw + ' 252">'
-      + '<rect x="0" y="0" width="' + fw + '" height="252" fill="#D8C4A8" stroke="#3B598F" stroke-width="4"/>'
+      '<svg width="' + fw + '" height="276" viewBox="0 0 ' + fw + ' 276">'
+      + '<rect x="0" y="0" width="' + fw + '" height="276" fill="#D8C4A8" stroke="#3B598F" stroke-width="4"/>'
       // horizontal siding, the way half these houses are clad
       + '<path d="M0 30 H' + fw + " M0 60 H" + fw + " M0 90 H" + fw + " M0 120 H" + fw
       + " M0 150 H" + fw + " M0 180 H" + fw + " M0 210 H" + fw + '" stroke="#C2AE92" stroke-width="3"/>'
       // the front door, up a step, with the number on it
-      + '<rect x="' + (fw * 0.62) + '" y="106" width="76" height="146" rx="3" fill="#5C7F4E" stroke="#3B598F" stroke-width="4"/>'
-      + '<circle cx="' + (fw * 0.62 + 62) + '" cy="182" r="5" fill="#FFD75E" stroke="#3B598F" stroke-width="2"/>'
-      + '<rect x="' + (fw * 0.62 + 26) + '" y="120" width="24" height="20" rx="2" fill="#CFE7F8" stroke="#3B598F" stroke-width="2.5"/>'
+      + '<rect x="' + (fw * 0.62) + '" y="130" width="76" height="146" rx="3" fill="#5C7F4E" stroke="#3B598F" stroke-width="4"/>'
+      + '<circle cx="' + (fw * 0.62 + 62) + '" cy="206" r="5" fill="#FFD75E" stroke="#3B598F" stroke-width="2"/>'
+      + '<rect x="' + (fw * 0.62 + 26) + '" y="144" width="24" height="20" rx="2" fill="#CFE7F8" stroke="#3B598F" stroke-width="2.5"/>'
+      // a little porch canopy over it, because a flat door on a flat wall looked bare
+      + '<path d="M' + (fw * 0.62 - 18) + ' 130 H' + (fw * 0.62 + 94) + " L" + (fw * 0.62 + 80)
+      + ' 112 H' + (fw * 0.62 - 4) + ' Z" fill="#8A6238" stroke="#3B598F" stroke-width="3.5" stroke-linejoin="round"/>'
       // the front window, with the curtains half shut
-      + '<rect x="' + (fw * 0.14) + '" y="96" width="132" height="98" rx="3" fill="#CFE7F8" stroke="#3B598F" stroke-width="4"/>'
-      + '<path d="M' + (fw * 0.14 + 66) + ' 96 V194" stroke="#3B598F" stroke-width="3"/>'
-      + '<rect x="' + (fw * 0.14 + 6) + '" y="102" width="26" height="86" fill="#E5B0C8" opacity="0.85"/>'
-      + '<rect x="' + (fw * 0.14 + 100) + '" y="102" width="26" height="86" fill="#E5B0C8" opacity="0.85"/>'
+      + '<rect x="' + (fw * 0.14) + '" y="126" width="132" height="98" rx="3" fill="#CFE7F8" stroke="#3B598F" stroke-width="4"/>'
+      + '<path d="M' + (fw * 0.14 + 66) + ' 126 V224" stroke="#3B598F" stroke-width="3"/>'
+      + '<rect x="' + (fw * 0.14 + 6) + '" y="132" width="26" height="86" fill="#E5B0C8" opacity="0.85"/>'
+      + '<rect x="' + (fw * 0.14 + 100) + '" y="132" width="26" height="86" fill="#E5B0C8" opacity="0.85"/>'
+      + '<rect x="' + (fw * 0.14 - 8) + '" y="118" width="148" height="10" rx="3" fill="#C2AE92" stroke="#3B598F" stroke-width="3"/>'
       + "</svg>");
     estArt(EST_STREET_END + 40, 96, "estBush", 96, 66, "0 0 70 50");
     estArt(EST_ROAD_END - 120, 96, "estWheelie", 56, 72, "0 0 48 64");
@@ -4259,10 +4286,11 @@
     var gw = EST_GAR_END - EST_ROAD_END;
     estAdd("estwall", "left:" + EST_ROAD_END + "px;width:" + gw + "px;bottom:92px;height:250px");
     // a ceiling, so inside the garage you are under something rather than under sky
-    estAdd("estroof", "left:" + (EST_ROAD_END - 26) + "px;width:" + (gw + 52) + "px;bottom:342px;height:26px");
-    // and the rest of the house sat on top of it, cut through the same way the garage
-    // is. You are looking into the place, so you may as well see all of it.
-    estAdd("estbit", "left:" + (EST_ROAD_END - 26) + "px;bottom:368px", houseSectionSvg(gw + 52));
+    estAdd("estroof", "left:" + EST_ROAD_END + "px;width:" + gw + "px;bottom:342px;height:26px");
+    // and the upstairs sat across the whole house, front and garage together, cut
+    // through the same way the garage is. Half a house with no roof on it looked daft.
+    var hx = EST_STREET_END, hwid = EST_GAR_END - EST_STREET_END;
+    estAdd("estbit", "left:" + hx + "px;bottom:368px", houseSectionSvg(hwid));
     // and the gutter and downpipe at the garden end, because the details are the thing
     estAdd("estbit", "left:" + (EST_GAR_END - 30) + "px;bottom:96px",
       '<svg width="18" height="300" viewBox="0 0 18 300">'
@@ -4300,9 +4328,11 @@
       estArt(fx, 92, "estFence", 152, 150, "0 0 132 130");
       fx += 150;
     }
-    estArt(EST_GAR_END + 560, 138, "estShed", 200, 200, "0 0 148 150");
-    estArt(EST_GAR_END + 160, 150, "estTree", 150, 244, "0 0 80 130");
-    estArt(EST_GAR_END + 840, 150, "estTree", 116, 188, "0 0 80 130");
+    // everything out here stands on the back edge of the lawn, same as the fence does,
+    // so nothing hangs in the air behind it
+    estArt(EST_GAR_END + 560, 94, "estShed", 200, 200, "0 0 148 150");
+    estArt(EST_GAR_END + 160, 94, "estTree", 150, 244, "0 0 80 130");
+    estArt(EST_GAR_END + 840, 94, "estTree", 116, 188, "0 0 80 130");
     estArt(EST_GAR_END + 380, 96, "estBush", 92, 62, "0 0 70 50");
     estArt(EST_GAR_END + 780, 96, "estBush", 78, 52, "0 0 70 50");
     estArt(EST_GAR_END + 260, 208, "estWash", 260, 72, "0 0 180 50");
@@ -4321,12 +4351,11 @@
       + '<path d="M30 56 Q' + (pw * 0.3) + " 48 " + (pw * 0.52) + " 56 Q" + (pw * 0.74) + " 64 " + (pw - 30)
       + ' 56" fill="none" stroke="#7FD4E4" stroke-width="4" stroke-linecap="round" opacity="0.7"/>'
       + "</svg>");
-    // the ladder out, a lilo nobody has put away, and a pair of sun loungers
-    estAdd("estbit", "left:" + (pxx + pw - 96) + "px;bottom:162px",
-      '<svg width="70" height="76" viewBox="0 0 70 76">'
-      + '<path d="M14 74 V16 Q14 4 34 4 Q54 4 54 16 V30" fill="none" stroke="#CBD2DC" stroke-width="6" stroke-linecap="round"/>'
-      + '<path d="M40 74 V18" fill="none" stroke="#CBD2DC" stroke-width="6" stroke-linecap="round"/>'
-      + '<path d="M16 40 H38 M16 56 H38" stroke="#CBD2DC" stroke-width="5" stroke-linecap="round"/>'
+    // the ladder out, its feet planted on the poolside rather than hanging in the air
+    estAdd("estbit", "left:" + (pxx + pw - 104) + "px;bottom:150px",
+      '<svg width="76" height="80" viewBox="0 0 76 80">'
+      + '<path d="M16 80 V22 Q16 8 38 8 Q60 8 60 22 V40" fill="none" stroke="#CBD2DC" stroke-width="6" stroke-linecap="round"/>'
+      + '<path d="M16 44 H60 M16 62 H60" stroke="#CBD2DC" stroke-width="5" stroke-linecap="round"/>'
       + "</svg>");
     estAdd("estbit", "left:" + (pxx + 120) + "px;bottom:132px",
       '<svg width="120" height="30" viewBox="0 0 120 30">'
