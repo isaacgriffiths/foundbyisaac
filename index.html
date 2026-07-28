@@ -121,7 +121,23 @@
     50% { transform: scale(1.08); background: #FFE9A8; }
   }
   #finds #prestN { font-size: 11px; margin-left: 3px; }
-  #finds #bagChip { font-size: 11px; margin-left: 6px; }
+  /* the bag gets its own pill so the numbers stop running together */
+  #bagPill {
+    background: #FFFFFF;
+    border: 2.5px solid var(--outline);
+    border-radius: 999px;
+    padding: 8px 13px;
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: 14px;
+    color: #142A55;
+    box-shadow: 3px 4px 0 rgb(20 42 85 / 0.35);
+    white-space: nowrap;
+  }
+  #bagPill.full { background: #FFD75E; }
+  /* a number that just changed gets a beat of attention */
+  @keyframes pillBump { 0%, 100% { transform: scale(1); } 40% { transform: scale(1.13); } }
+  #finds.bump, #bagPill.bump { animation: pillBump 0.32s ease; }
 
   #hint {
     position: fixed;
@@ -443,17 +459,36 @@
     to { transform: translateY(118vh) rotate(560deg); opacity: 0.9; }
   }
   .story { display: block; margin-top: 6px; font-size: 12.5px; font-weight: 800; color: #6B3FA0; }
-  #finds .goal { font-size: 11px; font-weight: 800; color: #3D5688; margin-left: 2px; }
-  /* how far through the level you are - rep, not cash */
-  .lvlbar {
-    display: inline-block; vertical-align: middle;
-    width: 40px; height: 7px; margin: -1px 0 0 5px;
-    background: #D7E0EF;
-    border: 1.5px solid var(--outline);
-    border-radius: 999px;
-    overflow: hidden;
+  /* ---------- the level bar: pinned to the very top edge, always in view ---------- */
+  #xp {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 7px;
+    z-index: 22;
+    background: rgb(20 42 85 / 0.28);
+    cursor: default;
   }
-  .lvlbar b { display: block; height: 100%; background: #4B7BE5; transition: width 0.4s ease; }
+  #xp > i {
+    display: block; height: 100%; width: 0;
+    background: linear-gradient(90deg, #4B7BE5, #6FA8FF);
+    box-shadow: 0 0 8px rgb(111 168 255 / 0.8);
+    transition: width 0.5s ease;
+  }
+  /* the level name only surfaces on hover, or for a moment when you rank up */
+  #xp > span {
+    position: absolute;
+    top: 11px; left: 50%; transform: translateX(-50%);
+    background: #142A55; color: #FFFFFF;
+    font-family: var(--display); font-weight: 600; font-size: 12px;
+    border-radius: 0 0 10px 10px;
+    padding: 4px 14px 5px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+  }
+  #xp:hover > span, #xp.show > span { opacity: 1; }
+  #xp.up > i { background: linear-gradient(90deg, #FFC01F, #FFE9A8); box-shadow: 0 0 14px #FFD75E; }
 
   /* mobile: the haggle floats as a card up in the sky, where the screen is empty */
   #barter {
@@ -515,11 +550,10 @@
     .who img { width: 30px; height: 30px; }
     .who .who-name { font-size: 13px; white-space: nowrap; }
     .who .who-sub { display: none; }
-    #finds { padding: 8px 11px; font-size: 12.5px; white-space: nowrap; }
-    #finds .goal { display: none; }
+    #finds, #bagPill { padding: 8px 11px; font-size: 12.5px; white-space: nowrap; }
     #finds #prestN { display: none; }
-    #goalsBtn { display: none; }
-    #trendPill { display: none !important; }
+    /* the progress hub is how the game explains itself, so it stays on small screens */
+    #goalsBtn { padding: 8px 10px; }
     #linksBtn, #whBtn { padding: 8px 11px; font-size: 12.5px; white-space: nowrap; }
     #barter { padding: 12px 13px 13px; }
     #barter .sheet-art { width: 56px; height: 56px; }
@@ -534,6 +568,8 @@
     #hud::after { content: ""; width: 100%; order: 1; }
     #linksBtn { margin-left: auto; }
     #finds { order: 2; margin-left: 0; }
+    #bagPill { order: 2; }
+    #goalsBtn { order: 3; }
     #whBtn { order: 3; margin-left: auto; }
     /* the two-row HUD is taller - drop the haggle card below it */
     #barter { top: calc(116px + env(safe-area-inset-top, 0px)); }
@@ -744,28 +780,6 @@
     margin-bottom: 6px;
   }
 
-  /* trending category pill - sits under the HUD once the game is discovered */
-  #trendPill {
-    position: fixed;
-    /* clears the .who card (12px hud pad + 53px card + 4px drop shadow) */
-    top: 76px; left: 14px;
-    z-index: 19;
-    display: none;
-    align-items: center;
-    gap: 6px;
-    background: #FFFFFF;
-    border: 2.5px solid var(--outline);
-    border-radius: 999px;
-    padding: 6px 13px;
-    font-family: var(--display);
-    font-weight: 600;
-    font-size: 12.5px;
-    color: #142A55;
-    box-shadow: 3px 4px 0 rgb(20 42 85 / 0.35);
-    pointer-events: none;
-  }
-  #trendPill.show { display: flex; }
-  @media (max-width: 480px) { #trendPill { top: 104px; } }
 
   /* link-visit reward modal */
   #rewardPanel .panel-card { text-align: center; }
@@ -959,6 +973,35 @@
   .whposter.blue { background: #4B7BE5; }
   .whposter.blue b { color: #FFFFFF; }
   .whposter.blue span { color: #D5E4FF; }
+
+  /* ---------- the progress hub: level, rep rules, what's hot, jobs ---------- */
+  .pg-lvl {
+    background: #EEF3FC; border: 2.5px solid var(--outline); border-radius: 14px;
+    padding: 12px 14px; margin-bottom: 12px; text-align: center;
+  }
+  .pg-now { display: block; font-family: var(--display); font-weight: 700; font-size: 19px; color: #142A55; }
+  .pg-bar {
+    display: block; height: 12px; margin: 9px 0 8px;
+    background: #D7E0EF; border: 2px solid var(--outline); border-radius: 999px; overflow: hidden;
+  }
+  .pg-bar > i { display: block; height: 100%; background: linear-gradient(90deg, #4B7BE5, #6FA8FF); transition: width 0.5s ease; }
+  .pg-next { display: block; font-size: 12px; font-weight: 800; color: var(--ink-soft); line-height: 1.5; }
+  .pg-next b { color: #142A55; }
+  .pg-h {
+    font-family: var(--display); font-weight: 600; font-size: 11.5px;
+    letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft);
+    margin: 14px 0 7px;
+  }
+  .pg-rep { display: flex; flex-direction: column; gap: 4px; }
+  .pg-rep span { font-size: 12.5px; font-weight: 800; color: #3D5688; }
+  .pg-rep b { display: inline-block; min-width: 26px; color: #1F8A3B; }
+  .pg-trend {
+    margin-top: 12px;
+    background: #FFF6DC; border: 2.5px solid var(--outline); border-radius: 12px;
+    padding: 9px 12px;
+    font-size: 12.5px; font-weight: 800; color: #6B4A00; line-height: 1.45;
+  }
+  .pg-trend b { color: #142A55; }
 
   /* ---------- where to next: the venue picker ---------- */
   /* the level line sits at the top so the route to the next venue is never a mystery */
@@ -1225,15 +1268,17 @@
       <div class="who-sub">HAND-PICKED SECONDHAND FINDS</div>
     </div>
   </div>
-  <div id="finds" title="Your flipping wallet · turn £200 into £10k" hidden>💰 <b id="walletN">£200</b><span id="prestN"></span><span id="bagChip"></span><span class="goal" id="rankN">Boot Sale Newbie</span></div>
+  <div id="finds" title="Your flipping wallet" hidden>💰 <b id="walletN">£200</b><span id="prestN"></span></div>
+  <div id="bagPill" title="What's in your bag this run" hidden>🎒 <b id="bagChip">0/3</b></div>
   <button id="goalsBtn" type="button" hidden>🎯</button>
   <button id="whBtn" type="button" hidden>🏭 Warehouse</button>
   <button id="linksBtn" type="button">Skip to links</button>
 </div>
 
-<div id="hint">Loading the car boot…</div>
+<!-- the level bar runs the width of the screen, so progress is always in the corner of your eye -->
+<div id="xp" hidden><i id="xpFill"></i><span id="xpLabel"></span></div>
 
-<div id="trendPill" aria-hidden="true">🔥 <span id="trendTxt"></span></div>
+<div id="hint">Loading the car boot…</div>
 
 <div id="view">
 
@@ -1987,7 +2032,7 @@
 
 <div id="goalsPanel" role="dialog" aria-label="Goals">
   <div class="panel-card">
-    <h2>🎯 Goals</h2>
+    <h2>🎯 Your progress</h2>
     <div id="goalsRows"></div>
     <button id="closeGoals" type="button">Back to flipping</button>
   </div>
@@ -2416,12 +2461,14 @@
   // pack the orders to get paid, hit £10k, go pro, do it again richer.
   var findsPill = document.getElementById("finds");
   var walletN = document.getElementById("walletN");
-  var rankN = document.getElementById("rankN");
+  var xp = document.getElementById("xp");
+  var xpFill = document.getElementById("xpFill");
+  var xpLabel = document.getElementById("xpLabel");
+  var bagPill = document.getElementById("bagPill");
   var prestN = document.getElementById("prestN");
   var bagChip = document.getElementById("bagChip");
   var whBtn = document.getElementById("whBtn");
   var goalsBtn = document.getElementById("goalsBtn");
-  var trendPill = document.getElementById("trendPill");
   var shopPanel = document.getElementById("shopPanel");
   var shopRows = document.getElementById("shopRows");
   var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -2511,6 +2558,14 @@
   // every other level lifts what turns up on the crates, so a level is felt, not just counted
   function lvlTierBonus() { return Math.floor(lvlIdx / 2); }
 
+  // a pill that just changed gets a beat of attention, so you notice the number move
+  function bump(el) {
+    if (!el || reduceMotion) return;
+    el.classList.remove("bump");
+    void el.offsetWidth; // restart the animation rather than ignoring a repeat
+    el.classList.add("bump");
+  }
+
   function popRep(n, why) {
     var el = document.createElement("div");
     el.className = "pop rep";
@@ -2532,6 +2587,7 @@
           ? "Better stock turns up on the crates from now on. 💎"
           : "One more level and the crates start carrying better stock."), 8000);
       confetti(top ? 34 : 18);
+      flashLevel();
     }
     updLevel();
     save();
@@ -2540,10 +2596,17 @@
   function updLevel() {
     var cur = LEVELS[lvlIdx][0];
     var nxt = lvlIdx + 1 < LEVELS.length ? LEVELS[lvlIdx + 1][0] : null;
-    rankN.innerHTML = "Lv" + (lvlIdx + 1) + " " + LEVELS[lvlIdx][1]
-      + (nxt ? ' <i class="lvlbar"><b style="width:'
-        + Math.max(0, Math.min(100, Math.round(100 * (rep - cur) / (nxt - cur)))) + '%"></b></i>' : " ⭐");
-    rankN.title = nxt ? rep + " / " + nxt + " rep to " + LEVELS[lvlIdx + 1][1] : rep + " rep · top level";
+    var pct = nxt ? Math.max(0, Math.min(100, Math.round(100 * (rep - cur) / (nxt - cur)))) : 100;
+    xpFill.style.width = pct + "%";
+    xpLabel.textContent = "Lv" + (lvlIdx + 1) + " " + LEVELS[lvlIdx][1]
+      + (nxt ? " · " + (nxt - rep) + " rep to Lv" + (lvlIdx + 2) + " " + LEVELS[lvlIdx + 1][1] : " · top level ⭐");
+    xp.title = xpLabel.textContent;
+  }
+  // hold the level name open for a few seconds when you rank up, then let it fade
+  function flashLevel() {
+    xp.classList.add("show", "up");
+    clearTimeout(flashLevel.t);
+    flashLevel.t = setTimeout(function () { xp.classList.remove("show", "up"); }, 5000);
   }
 
   function banner(text, ms) {
@@ -2594,7 +2657,10 @@
       ? (inWh ? "🚗" : "🏭" + (todo ? " " + todo : ""))
       : (inWh ? "🚗 Car boot" : "🏭 Warehouse" + (todo ? " ·" + todo : ""));
     whBtn.classList.toggle("canbuy", (!inWh && todo > 0) || anyAffordable());
-    bagChip.textContent = "🎒" + inv.length + "/" + bagCap();
+    var bagTxt = inv.length + "/" + bagCap();
+    if (bagChip.textContent !== bagTxt) bump(bagPill);
+    bagChip.textContent = bagTxt;
+    bagPill.classList.toggle("full", inv.length >= bagCap());
     buildWh();
   }
 
@@ -2604,7 +2670,9 @@
       wallet += 20;
       banner("🍀 Found a £20 note in an old coat pocket!", 5000);
     }
-    walletN.textContent = fmtC(wallet);
+    var cashTxt = fmtC(wallet);
+    if (walletN.textContent !== cashTxt) bump(findsPill);
+    walletN.textContent = cashTxt;
     var stars = "";
     for (var si = 0; si < prestige; si++) stars += "⭐";
     prestN.textContent = stars;
@@ -2652,8 +2720,38 @@
 
   var goalsPanel = document.getElementById("goalsPanel");
   var goalsRows = document.getElementById("goalsRows");
+  // the one place that explains the whole game: where you are, what moves you forward,
+  // what's hot, and what's worth cash right now
   function buildGoals() {
-    var html = "";
+    var cur = LEVELS[lvlIdx][0];
+    var nxt = lvlIdx + 1 < LEVELS.length ? LEVELS[lvlIdx + 1] : null;
+    var pct = nxt ? Math.max(0, Math.min(100, Math.round(100 * (rep - cur) / (nxt[0] - cur)))) : 100;
+    var nv = nextVenue();
+
+    var html = '<div class="pg-lvl"><span class="pg-now">Lv' + (lvlIdx + 1) + " " + LEVELS[lvlIdx][1] + "</span>"
+      + '<i class="pg-bar"><i style="width:' + pct + '%"></i></i>';
+    html += nxt
+      ? '<span class="pg-next">' + (rep - cur) + " / " + (nxt[0] - cur) + " rep · next up <b>Lv"
+        + (lvlIdx + 2) + " " + nxt[1] + "</b>"
+        + (nv && nv.lvl === lvlIdx + 1 ? ", which opens <b>" + nv.ico + " " + nv.name + "</b> (" + fmtC(nv.fee) + " in)" : "")
+        + "</span>"
+      : '<span class="pg-next">Top level. Every venue is open to you. ⭐</span>';
+    html += "</div>";
+
+    html += '<div class="pg-h">How you earn rep</div><div class="pg-rep">'
+      + '<span><b>+1</b> sell anything at a profit</span>'
+      + '<span><b>+2</b> knock 25%+ off an asking price</span>'
+      + '<span><b>+3</b> sell a Rare · <b>+6</b> a Legendary</span>'
+      + '<span><b>+1</b> leave the packing bench clear</span>'
+      + "</div>";
+
+    if (trend) {
+      var left = Math.max(0, Math.ceil((trendAt + TREND_MS - Date.now()) / 1000));
+      html += '<div class="pg-trend">🔥 Hot right now: <b>' + trend.es[0] + " " + trend.n
+        + "</b> sell for <b>+50%</b> · " + left + "s left</div>";
+    }
+
+    html += '<div class="pg-h">Jobs · cash bonuses</div>';
     activeQ.forEach(function (q) {
       var d = questDef(q.id);
       html += '<div class="quest-row"><span class="quest-ico">' + d.ico + '</span>'
@@ -2705,11 +2803,13 @@
     var nt = CATS[Math.floor(Math.random() * CATS.length)];
     if (trend && nt.n === trend.n) nt = CATS[(CATS.indexOf(nt) + 1) % CATS.length];
     trend = nt;
-    document.getElementById("trendTxt").textContent = trend.es[0] + " " + trend.n + " +50%";
+    trendAt = Date.now(); // so the progress panel can show how long it has left
     if (announce && !whBtn.hidden) banner("🔥 Hot right now: " + trend.n + " · they sell for +50%!", 5000);
+    if (goalsPanel.classList.contains("open")) buildGoals();
   }
+  var TREND_MS = 120000, trendAt = 0;
   rollTrend(false);
-  setInterval(function () { rollTrend(true); }, 120000);
+  setInterval(function () { rollTrend(true); }, TREND_MS);
 
   // ---- seller personalities: every restock, a different sort behind the table ----
   var PERS = [
@@ -2751,9 +2851,10 @@
     var s = linkReward.s;
     linkReward = null;
     findsPill.hidden = false;
+    bagPill.hidden = false;
+    xp.hidden = false;
     whBtn.hidden = false;
     goalsBtn.hidden = false;
-    trendPill.classList.add("show");
     if (visitedLinks.indexOf(s.name) >= 0) {
       var nxt = Math.round(25 * (visitedLinks.length + 1) * proMult());
       updWallet();
@@ -3643,9 +3744,10 @@
   introPanel.addEventListener("click", function (e) { if (e.target === introPanel) closeIntro(); });
   function firstContact() {
     findsPill.hidden = false;
+    bagPill.hidden = false;
+    xp.hidden = false;
     whBtn.hidden = false;
     goalsBtn.hidden = false;
-    trendPill.classList.add("show");
     if (!introSeen) {
       introSeen = true;
       save();
@@ -3676,9 +3778,10 @@
   // returning players pick up right where they left off - HUD straight back on
   if (introSeen) {
     findsPill.hidden = false;
+    bagPill.hidden = false;
+    xp.hidden = false;
     whBtn.hidden = false;
     goalsBtn.hidden = false;
-    trendPill.classList.add("show");
     updWallet();
   }
 
