@@ -201,6 +201,91 @@
   .farlayer { position: absolute; inset: 0; z-index: 1; will-change: transform; transform-origin: left bottom; }
   .bgpitch { position: absolute; }
 
+  /* ---------- the seaside: no rows behind you, just water to the horizon ---------- */
+  /* the three terraced bands become the sea itself, deepest at the horizon, and each
+     band top becomes a line of foam rather than a field edge */
+  /* the sea stands taller than the terraces it replaces, so the horizon sits up where
+     a horizon belongs. These beat the inline geometry the bands are built with. */
+  /* Each band fades from its own colour into the next, so the water reads as one body
+     shelving away rather than three painted stripes. The band top stays a foam line. */
+  body.v-sea .band { border-top-width: 4px; }
+  body.v-sea .band.b1 {
+    bottom: 92px !important; height: 84px !important;
+    background: linear-gradient(#3FAFD0, #6ED0E2);
+    border-top-color: rgb(255 255 255 / 0.5);
+  }
+  body.v-sea .band.b2 {
+    bottom: 176px !important; height: 68px !important;
+    background: linear-gradient(#2E93C4, #3FAFD0);
+    border-top-color: rgb(255 255 255 / 0.4);
+  }
+  body.v-sea .band.b3 {
+    bottom: 244px !important; height: 64px !important;
+    background: linear-gradient(#1D6FA8, #2E93C4);
+    border-top-color: rgb(255 255 255 / 0.34);
+  }
+  /* the water keeps moving even when you don't: a slow breathing shimmer per band */
+  @keyframes seaBreathe { 0%, 100% { opacity: 1; } 50% { opacity: 0.9; } }
+  body.v-sea .band.b1 { animation: seaBreathe 7s ease-in-out infinite; }
+  body.v-sea .band.b2 { animation: seaBreathe 9s ease-in-out infinite -3s; }
+  body.v-sea .band.b3 { animation: seaBreathe 11s ease-in-out infinite -6s; }
+
+  /* everything painted on the water drifts sideways on its own, so the sea has a
+     current running through it rather than only moving when you walk */
+  .seabit { position: absolute; }
+  @keyframes capDrift {
+    0% { transform: translateX(0); opacity: 0.35; }
+    18% { opacity: 0.95; }
+    82% { opacity: 0.9; }
+    100% { transform: translateX(-64px); opacity: 0.3; }
+  }
+  .seacap { animation: capDrift 9s linear infinite; }
+  @keyframes swellRoll {
+    0% { transform: translate3d(0, 0, 0); }
+    100% { transform: translate3d(-52px, 5px, 0); }
+  }
+  .seaswell { animation: swellRoll 11s ease-in-out infinite alternate; }
+  /* islands sit still - they are the one fixed thing out there */
+
+  #surf { position: absolute; inset: 0; z-index: 2; display: none; pointer-events: none; transform-origin: left bottom; will-change: transform; }
+  body.v-sea:not(.in-wh) #surf { display: block; }
+  .breaker { position: absolute; will-change: transform; }
+  /* a wave rears up out at sea, runs in, breaks, and drains back off the sand.
+     The stagger is per wave, set inline, so no two arrive together. */
+  @keyframes breakIn {
+    0%   { transform: translate3d(0, 26px, 0) scaleY(0.55); opacity: 0; }
+    14%  { opacity: 0.9; }
+    46%  { transform: translate3d(0, -6px, 0) scaleY(1.08); opacity: 1; }
+    70%  { transform: translate3d(0, -16px, 0) scaleY(0.9); opacity: 0.8; }
+    100% { transform: translate3d(0, -30px, 0) scaleY(0.6); opacity: 0; }
+  }
+  .breaker.b-wave { animation: breakIn var(--dur, 5s) ease-out infinite var(--d, 0s); transform-origin: 50% 100%; }
+  /* the thin sheet of wash chases the breaker up the sand and slides back down */
+  @keyframes washRun {
+    0%   { transform: translate3d(0, 14px, 0); opacity: 0; }
+    22%  { opacity: 0.85; }
+    52%  { transform: translate3d(0, -14px, 0); opacity: 0.7; }
+    100% { transform: translate3d(0, 10px, 0); opacity: 0; }
+  }
+  .breaker.b-wash { animation: washRun var(--dur, 5s) ease-in-out infinite var(--d, 0s); }
+  /* the standing foam lip breathes in and out rather than running up the sand */
+  @keyframes lipLap { from { transform: translateY(2px); } to { transform: translateY(-4px); } }
+  .breaker.b-lip { animation: lipLap 4.5s ease-in-out infinite alternate; }
+  /* wet sand: the strip the last wave left behind, darker than the dry beach */
+  body.v-sea #ground { box-shadow: inset 0 7px 0 rgb(120 165 175 / 0.35); }
+
+  /* the kite hangs off a line somewhere past the pitches, so it swings rather than flies */
+  .kite { position: absolute; transform-origin: 50% 0%; animation: kiteSwing 6.5s ease-in-out infinite alternate; }
+  @keyframes kiteSwing {
+    from { transform: rotate(-9deg) translateY(0); }
+    to { transform: rotate(10deg) translateY(-16px); }
+  }
+  .gull { position: absolute; animation: gullBob 4.2s ease-in-out infinite alternate; }
+  @keyframes gullBob {
+    from { transform: translate(0, 0); }
+    to { transform: translate(26px, -12px); }
+  }
+
   #world { position: absolute; top: 0; bottom: 0; left: 0; z-index: 3; will-change: transform; transform-origin: left bottom; }
 
   /* ---------- pitches (car + table + sign) ---------- */
@@ -1882,6 +1967,90 @@
         <path d="M16 48 L30 34 L44 48" stroke="#FFFFFF" stroke-width="3" fill="none" stroke-linecap="round"/>
         <path d="M12 62 H48 M12 68 H36" stroke="#3B598F" stroke-width="3" stroke-linecap="round"/>
       </g>
+
+      <!-- ---------- the seaside: nothing trades behind you, it's all water ---------- -->
+      <!-- islands on the horizon, hazed back so they read as miles out -->
+      <g id="seaIsleA">
+        <path d="M2 46 Q16 42 26 30 Q38 12 52 8 Q68 4 82 20 Q94 33 112 40 Q124 44 132 46 Z"
+          fill="#5E7FA8" stroke="#456A94" stroke-width="2"/>
+        <path d="M40 16 Q52 8 64 14 Q56 18 48 18 Z" fill="#7E9BBC"/>
+        <path d="M14 44 Q30 34 44 34 Q30 40 20 46 Z" fill="#4E7195" opacity="0.55"/>
+      </g>
+      <g id="seaIsleB">
+        <path d="M2 34 Q14 30 24 20 Q34 8 46 10 Q58 12 66 24 Q74 32 88 34 Z"
+          fill="#6B8BB2" stroke="#50749E" stroke-width="2"/>
+        <path d="M32 14 Q42 9 50 15 Q42 18 36 18 Z" fill="#88A4C4"/>
+      </g>
+      <!-- a lump of rock with a lighthouse on it, the one landmark out there.
+           The viewBox has room above the rock so the tower stands on the peak instead
+           of being drawn off the top of its own box. -->
+      <g id="seaIsleC">
+        <path d="M2 62 Q18 58 30 46 Q42 34 56 38 Q70 42 78 54 Q84 60 96 62 Z"
+          fill="#5E7FA8" stroke="#456A94" stroke-width="2"/>
+        <path d="M14 60 Q28 50 42 48 Q30 54 22 62 Z" fill="#4E7195" opacity="0.5"/>
+        <!-- the tower sits with its feet in the rock, so it reads as built on it -->
+        <path d="M43 40 L46 14 H54 L57 40 Z" fill="#F6EFE3" stroke="#3E6088" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M44.6 32 H55.4" stroke="#E5484D" stroke-width="4"/>
+        <path d="M45.5 23 H54.5" stroke="#E5484D" stroke-width="4"/>
+        <rect x="44" y="7" width="12" height="8" rx="2" fill="#FFD75E" stroke="#3E6088" stroke-width="2"/>
+        <path d="M43 6 H57" stroke="#3E6088" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M50 2 V6" stroke="#3E6088" stroke-width="2" stroke-linecap="round"/>
+      </g>
+      <!-- a whitecap out on the swell: just a dash of foam with a shadow under it -->
+      <g id="seaCap">
+        <path d="M1 8 Q10 1 20 5 Q30 9 43 5 Q34 13 21 11 Q11 10 1 8 Z" fill="#FFFFFF" opacity="0.92"/>
+        <path d="M4 11 Q16 14 30 10" stroke="#FFFFFF" stroke-width="2" fill="none" opacity="0.5" stroke-linecap="round"/>
+      </g>
+      <!-- the swell rolling in: a long low crest, wider than the caps and softer -->
+      <g id="seaSwell">
+        <path d="M0 12 Q40 2 84 10 Q128 18 172 8 Q216 -2 260 10 L260 20 Q216 10 172 18 Q128 26 84 20 Q40 12 0 20 Z"
+          fill="#FFFFFF" opacity="0.34"/>
+      </g>
+      <!-- the wave that actually breaks on the sand: a body of water with a foam lip
+           and the thin sheet of wash that runs up the beach ahead of it -->
+      <g id="seaBreak">
+        <path d="M0 26 Q60 10 132 21 Q204 32 280 18 L280 52 H0 Z" fill="#6ECBE0"/>
+        <path d="M0 26 Q60 10 132 21 Q204 32 280 18 L280 32 Q204 46 132 35 Q60 24 0 40 Z" fill="#FFFFFF"/>
+        <path d="M0 40 Q52 28 118 37 Q186 46 280 32 L280 44 Q186 58 118 49 Q52 40 0 52 Z" fill="#FFFFFF" opacity="0.82"/>
+        <circle cx="52" cy="28" r="4" fill="#FFFFFF"/>
+        <circle cx="148" cy="24" r="3.2" fill="#FFFFFF"/>
+        <circle cx="232" cy="31" r="4.4" fill="#FFFFFF"/>
+        <circle cx="96" cy="22" r="2.6" fill="#FFFFFF" opacity="0.85"/>
+        <circle cx="196" cy="30" r="2.8" fill="#FFFFFF" opacity="0.85"/>
+      </g>
+      <!-- the permanent lip of foam where the water meets the sand, under the breakers.
+           A thin scalloped edge with the odd bubble, not a painted stripe. -->
+      <g id="seaShore">
+        <path d="M0 9 Q58 2 118 8 Q178 14 238 6 Q298 -2 358 7 Q414 15 470 8
+                 L470 15 Q414 22 358 14 Q298 6 238 13 Q178 21 118 15 Q58 9 0 16 Z"
+          fill="#FFFFFF" opacity="0.85"/>
+        <path d="M0 16 Q40 12 74 17 Q92 25 112 18 Q150 13 186 19 Q206 27 228 20
+                 Q268 15 306 21 Q326 28 348 21 Q408 15 470 20 L470 25 Q408 21 348 27
+                 Q326 33 306 26 Q268 21 228 26 Q206 33 186 25 Q150 20 112 24
+                 Q92 31 74 23 Q40 18 0 22 Z"
+          fill="#FFFFFF" opacity="0.42"/>
+        <circle cx="86" cy="13" r="2.2" fill="#FFFFFF" opacity="0.7"/>
+        <circle cx="264" cy="11" r="1.8" fill="#FFFFFF" opacity="0.65"/>
+        <circle cx="402" cy="14" r="2.4" fill="#FFFFFF" opacity="0.6"/>
+      </g>
+      <!-- the wash: the last thin lick of foam sliding up and back down the sand -->
+      <g id="seaWash">
+        <path d="M0 14 Q66 2 140 11 Q214 20 296 8 L296 24 Q214 34 140 25 Q66 16 0 28 Z"
+          fill="#FFFFFF" opacity="0.78"/>
+      </g>
+      <!-- the kite, flown from somewhere off past the pitches -->
+      <g id="seaKite">
+        <path d="M30 2 L54 34 L30 74 L6 34 Z" fill="#E5484D" stroke="#142A55" stroke-width="3" stroke-linejoin="round"/>
+        <path d="M30 2 L30 74 M6 34 H54" stroke="#142A55" stroke-width="2.5"/>
+        <path d="M30 2 L54 34 L30 34 Z" fill="#FFD75E"/>
+        <path d="M6 34 L30 34 L30 74 Z" fill="#3FC1C9"/>
+        <path d="M30 74 Q22 86 32 96 Q42 106 32 118" fill="none" stroke="#142A55" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M24 88 L38 84 M26 104 L40 100 M28 116 L42 112" stroke="#FFD75E" stroke-width="4" stroke-linecap="round"/>
+      </g>
+      <!-- gulls: two strokes each, which is all a gull has ever been -->
+      <g id="seaGull">
+        <path d="M2 8 Q10 0 17 7 Q24 0 32 8" fill="none" stroke="#F6EFE3" stroke-width="3" stroke-linecap="round"/>
+      </g>
     </defs>
   </svg>
 
@@ -1892,6 +2061,10 @@
   <div class="farlayer" id="far3" aria-hidden="true"></div>
   <div id="whWall" aria-hidden="true"></div>
   <div id="ground"></div>
+  <!-- the shoreline scrolls with the world, not with a far layer, so the surf stays
+       welded to the sand instead of sliding along it. It sits after the ground so the
+       wash actually runs up over the beach rather than under it. -->
+  <div id="surf" aria-hidden="true"></div>
   <div id="whLight" aria-hidden="true"></div>
 
   <div id="world">
@@ -3512,6 +3685,7 @@
   }
   // indoors there is no sky: high hall windows instead, each throwing a shaft of light
   var indoorNow = false; // set by applyVenue - an indoor venue refurnishes the whole scene
+  var seaNow = false;    // and the seaside swaps the rows behind you for open water
   var skyMode = "day", nightNow = false, fullMoon = false;
   // the night sky: a spray of stars and the moon - full and blazing on the lucky
   // nights, a thin crescent otherwise. Rebuilt fresh on every arrival.
@@ -3545,8 +3719,23 @@
     }
     return html;
   }
+  // at the seaside somebody's flying a kite over the beach, and it hangs in the sky
+  // layer so it drifts slowly against the water rather than tracking you
+  function seaSkyHtml() {
+    var html = cloudHtml;
+    for (var k = 0; k < 3; k++) {
+      [[520, 118, 1, 0], [1840, 76, 0.72, -2.6]].forEach(function (kt) {
+        html += '<svg class="kite" style="left:' + (kt[0] + k * CB) + "px;top:" + kt[1]
+          + "px;animation-delay:" + kt[3] + 's" width="' + Math.round(60 * kt[2])
+          + '" height="' + Math.round(120 * kt[2]) + '" viewBox="0 0 60 120"><use href="#seaKite"/></svg>';
+      });
+    }
+    return html;
+  }
   function buildSky() {
-    sky.innerHTML = skyMode === "hall" ? hallSkyHtml() : skyMode === "stars" ? starSkyHtml() : cloudHtml;
+    sky.innerHTML = skyMode === "hall" ? hallSkyHtml()
+      : skyMode === "stars" ? starSkyHtml()
+      : skyMode === "sea" ? seaSkyHtml() : cloudHtml;
   }
   buildSky();
 
@@ -3589,7 +3778,103 @@
     }
     el.innerHTML = html;
   }
+  // ---- the seaside: the rows of pitches behind you are open water instead ----
+  // seed 2 is the horizon (islands), seed 1 the open swell (whitecaps), seed 0 the
+  // water just off the beach (long rolling crests). The breakers themselves are not
+  // in here - they live in #surf, which scrolls with the world so they stay put on
+  // the sand rather than sliding along it.
+  // The sea sets its own heights rather than taking the terrace ones: the horizon is
+  // the top of band 3 at 308, and everything else hangs off that.
+  var SEA_HORIZON = 308;
+  function buildSeaRow(el, scale, bottom, seed) {
+    var html = "";
+    for (var k = 0; k < 3; k++) {
+      var off = k * RB;
+      if (seed === 2) {
+        bottom = SEA_HORIZON - 10; // islands stand on the horizon line
+      } else if (seed === 1) {
+        bottom = 196;              // open water, out past the swell
+      } else {
+        bottom = 112;              // the water just off the beach
+      }
+      if (seed === 2) {
+        // islands, miles out: the same three shapes at different sizes so the
+        // horizon doesn't read as a repeating stamp
+        // opacity drops with distance, so the small ones genuinely sit further out
+        // every island is drawn standing on the bottom edge of its own box, so they all
+        // land on the horizon line. The lighthouse rock just has a taller box.
+        [[60, "seaIsleA", 134, 50, 2.1, 0.9], [640, "seaIsleB", 90, 36, 1.3, 0.66],
+         [1160, "seaIsleC", 98, 64, 2.2, 0.94], [1800, "seaIsleA", 134, 50, 1.15, 0.6],
+         [2260, "seaIsleB", 90, 36, 1.75, 0.8]].forEach(function (s) {
+          html += '<svg class="seabit" style="left:' + (s[0] + off) + "px;bottom:" + bottom
+            + "px;opacity:" + s[5] + '" width="' + Math.round(s[2] * s[4])
+            + '" height="' + Math.round(s[3] * s[4]) + '" viewBox="0 0 ' + s[2] + " " + s[3]
+            + '"><use href="#' + s[1] + '"/></svg>';
+        });
+        // a scatter of tiny caps out on the deep water, so the far band isn't dead flat
+        for (var fc = 0; fc < 9; fc++) {
+          html += '<svg class="seabit seacap" style="left:' + (fc * 290 + 70 + off) + "px;bottom:"
+            + (bottom - 14 - ((fc * 31) % 44)) + "px;opacity:0.5;animation-delay:-" + (fc * 1.1).toFixed(1)
+            + 's" width="32" height="10" viewBox="0 0 44 14"><use href="#seaCap"/></svg>';
+        }
+        // gulls, up over the water
+        [[330, 96], [1020, 132], [1880, 108]].forEach(function (g, gi) {
+          html += '<svg class="seabit gull" style="left:' + (g[0] + off) + "px;bottom:" + (bottom + g[1])
+            + "px;animation-delay:-" + (gi * 1.4) + 's" width="44" height="12" viewBox="0 0 34 12"><use href="#seaGull"/></svg>';
+        });
+      } else if (seed === 1) {
+        // open water: scattered whitecaps drifting across the swell
+        for (var c = 0; c < 11; c++) {
+          var cx = 40 + c * 236 + ((c * 53) % 90);
+          var cs = 0.75 + ((c * 37) % 60) / 100;
+          html += '<svg class="seabit seacap" style="left:' + (cx + off) + "px;bottom:" + (bottom + ((c * 29) % 34))
+            + "px;animation-delay:-" + (c * 0.83).toFixed(2) + 's" width="' + Math.round(58 * cs)
+            + '" height="' + Math.round(18 * cs) + '" viewBox="0 0 44 14"><use href="#seaCap"/></svg>';
+        }
+      } else {
+        // nearer water: long crests rolling toward the beach
+        for (var s2 = 0; s2 < 6; s2++) {
+          html += '<svg class="seabit seaswell" style="left:' + (s2 * 460 - 60 + off) + "px;bottom:"
+            + (bottom + ((s2 * 23) % 40)) + "px;animation-delay:-" + (s2 * 1.9).toFixed(1)
+            + 's" width="470" height="38" viewBox="0 0 260 22"><use href="#seaSwell"/></svg>';
+        }
+        for (var c2 = 0; c2 < 7; c2++) {
+          html += '<svg class="seabit seacap" style="left:' + (c2 * 372 + 120 + off) + "px;bottom:"
+            + (bottom + 6 + ((c2 * 41) % 26)) + "px;animation-delay:-" + (c2 * 1.27).toFixed(2)
+            + 's" width="74" height="24" viewBox="0 0 44 14"><use href="#seaCap"/></svg>';
+        }
+      }
+    }
+    el.innerHTML = html;
+  }
+
+  // the waves that actually break on the beach, welded to the sand
+  function buildSurf() {
+    if (!seaNow) { surf.innerHTML = ""; return; }
+    var html = "";
+    // an unbroken lip of foam along the whole waterline, so there is always a visible
+    // edge where the sea meets the sand even between breakers
+    for (var f = -9; f < 27; f++) {
+      html += '<svg class="breaker b-lip" style="left:' + (f * 460) + 'px;bottom:80px" width="470" height="30" viewBox="0 0 470 30"><use href="#seaShore"/></svg>';
+    }
+    // one set per field repeat, so the shoreline carries on however far you walk
+    for (var k = -1; k < 3; k++) {
+      for (var w = 0; w < 7; w++) {
+        var x = w * 560 + k * 3920;
+        var dur = (4.6 + ((w * 7) % 5) * 0.42).toFixed(2);
+        var del = ((w * 1.63 + (k + 1) * 0.7) % 5).toFixed(2);
+        // they break on the waterline at 92 and the wash runs down onto the sand
+        html += '<svg class="breaker b-wave" style="left:' + x + "px;bottom:78px;--dur:" + dur + "s;--d:-"
+          + del + 's" width="620" height="116" viewBox="0 0 280 52"><use href="#seaBreak"/></svg>';
+        html += '<svg class="breaker b-wash" style="left:' + (x - 50) + "px;bottom:44px;--dur:" + dur + "s;--d:-"
+          + del + 's" width="720" height="58" viewBox="0 0 296 34"><use href="#seaWash"/></svg>';
+      }
+    }
+    surf.innerHTML = html;
+  }
+
   function buildRow(el, scale, bottom, seed) {
+    if (seaNow) return buildSeaRow(el, scale, bottom, seed);
     if (indoorNow) return buildHallRow(el, scale, bottom, seed);
     var pitches = [], x = 30 + seed * 55, i = 0;
     while (x < RB - 220 * scale) {
@@ -4388,7 +4673,26 @@
   var GATE_OFF = [1, 0.6, 0.3, 0];
   function gateFee(v) { return Math.round(v.fee * GATE_OFF[UPG.gate.lvl]); }
   function walkSpeed() { return SPEED * (1 + UPG.boots.lvl * 0.16); }
-  function maxTier() { return Math.min(4, 1 + UPG.van.lvl + lvlTierBonus() + (venue ? VENUES[venue].tier : 0)); }
+  // ---- legendaries: a story, not a drop rate ----
+  // Two gates. The venue caps what can ever appear, so the Sunday Field never turns one
+  // up however tooled up you are. And once you have had one, a good many crates have to
+  // go by before the next, which leaves plenty of room for Rares in between.
+  // The gap stops two landing together; the low roll below keeps it from being a
+  // metronome. Together they work out at roughly one legendary every three trips to
+  // the coast, and a bit better than that at a clearance - with a good half dozen
+  // Rares in between either way.
+  var LEG_GAP = 28;
+  var cratesSince = LEG_GAP; // start ready, so your first trip somewhere good can pay
+  function venueCapT() { return (venue ? VENUES[venue] : VENUES[0]).capT || 4; }
+  function legendaryOk() { return venueCapT() >= 4 && cratesSince >= LEG_GAP; }
+  function noteCrate(it) {
+    cratesSince++;
+    if (it && it.t === 4) cratesSince = 0;
+  }
+  function maxTier() {
+    var v = venue ? VENUES[venue] : VENUES[0];
+    return Math.min(venueCapT(), 1 + UPG.van.lvl + lvlTierBonus() + v.tier);
+  }
   function bagCap() { return [3, 5, 8, 12][UPG.bag.lvl]; }
   function maxListings() { return 2 + UPG.desk.lvl; }
   function deskSpeed() { return 1 + UPG.desk.lvl * 0.35; }
@@ -4958,16 +5262,19 @@
   // crates: how many finds each pitch holds before it's cleaned out - the better the
   // venue, the deeper the pile, so every step up genuinely feels richer
   var VENUES = [
-    { id: "field", cls: "", name: "The Sunday Field", ico: "🌤️", fee: 5, lvl: 0, tier: 0, luck: 1, crates: 1,
+    // capT is the best thing that venue will EVER put on a crate. Legendaries are a
+    // story, not a drop rate: the first three venues top out at Rare no matter how
+    // tooled up you are, and you have to travel for the red glow.
+    { id: "field", cls: "", name: "The Sunday Field", ico: "🌤️", fee: 5, lvl: 0, tier: 0, luck: 1, crates: 1, capT: 3,
       desc: "Home turf. My pitches are here.", stock: "Honest stock, cheap in" },
-    { id: "fair", cls: "v-fair", name: "Indoor Antiques Fair", ico: "🏛️", fee: 15, lvl: 1, tier: 1, luck: 1.5, crates: 2,
+    { id: "fair", cls: "v-fair", name: "Indoor Antiques Fair", ico: "🏛️", fee: 15, lvl: 1, tier: 1, luck: 1.5, crates: 2, capT: 3,
       desc: "Dealers who know exactly what they've got.", stock: "Better stock · 2 crates a pitch" },
-    { id: "night", cls: "v-night", name: "Night Flea Market", ico: "🌙", fee: 25, lvl: 2, tier: 1, luck: 2.2, crates: 2,
+    { id: "night", cls: "v-night", name: "Night Flea Market", ico: "🌙", fee: 25, lvl: 2, tier: 1, luck: 2.2, crates: 2, capT: 3,
       desc: "Torchlight only, and a rum crowd. Don't push your luck.", stock: "Rare finds in the dark · 2 crates · risky" },
-    { id: "sea", cls: "v-sea", name: "Seaside Sunday", ico: "🌊", fee: 35, lvl: 3, tier: 2, luck: 2.6, crates: 3,
-      desc: "Holiday tat and proper maritime finds, side by side.", stock: "Rare and Legendary · 3 crates a pitch" },
-    { id: "estate", cls: "v-estate", name: "Estate Clearance", ico: "🏚️", fee: 60, lvl: 4, tier: 2, luck: 3.4, crates: 3,
-      desc: "A whole house going at once, rain or shine.", stock: "The richest pickings · 3 crates a pitch" }
+    { id: "sea", cls: "v-sea", name: "Seaside Sunday", ico: "🌊", fee: 35, lvl: 3, tier: 2, luck: 2.6, crates: 3, capT: 4,
+      desc: "Holiday tat and proper maritime finds, side by side.", stock: "Rare stock · the odd Legendary · 3 crates" },
+    { id: "estate", cls: "v-estate", name: "Estate Clearance", ico: "🏚️", fee: 60, lvl: 4, tier: 2, luck: 3.4, crates: 3, capT: 4,
+      desc: "A whole house going at once, rain or shine.", stock: "The richest pickings · best shot at a Legendary" }
   ];
   // TEMPORARY: every venue open regardless of level, so the scenery can be reviewed.
   // Flip this back to false to restore the level gates. Nothing else needs changing.
@@ -4997,10 +5304,13 @@
       document.body.classList.toggle("moon-full", fullMoon);
     }
     var indoor = !!(SCENES[V().id] || {}).indoor;
-    var mode = indoor ? "hall" : nightNow ? "stars" : "day";
-    if (indoor !== indoorNow) {
+    var sea = V().id === "sea";
+    var mode = indoor ? "hall" : nightNow ? "stars" : sea ? "sea" : "day";
+    if (indoor !== indoorNow || sea !== seaNow) {
       indoorNow = indoor;
+      seaNow = sea;
       buildRows();
+      buildSurf();
       paintGround();
     }
     if (mode !== skyMode || nightNow) {
@@ -7170,6 +7480,7 @@
 
     function setItem(chosen) {
       it = chosen;
+      noteCrate(it); // every crate dealt counts toward the legendary cooldown
       currentItems[idx] = it;
       name = it.n; emoji = it.e; ask = it.a; value = it.v; quip = it.q; tier = it.t; story = it.h || "";
       pers = pickPers(); // a different sort of seller every restock
@@ -7193,17 +7504,24 @@
       flawUsed = false; cashUsed = false;
     }
     function rollStock() {
-      var mt = maxTier();
+      var mt = maxTier(), cap = venueCapT();
       // the van sets your usual ceiling, but one pitch in twelve turns up something
-      // above your pay grade - without this you'd never see a gold glow before £500
-      var lucky = mt < 4 && Math.random() < 0.085 * V().luck;
-      // once the ceiling is maxed there's nothing above it to bump into, so the same
-      // luck rolls straight legendaries instead - the red glow stays a real sight
-      var lucky4 = mt >= 4 && Math.random() < 0.04 * V().luck;
+      // above your pay grade - without this you'd never see a gold glow before £500.
+      // The bump can never carry you past what the venue itself deals in.
+      var bumpTo = Math.min(cap, mt + 1);
+      var lucky = bumpTo > mt && Math.random() < 0.085 * V().luck;
+      // once the ceiling is maxed there is nothing above it to bump into, so the same
+      // luck rolls straight legendaries instead - and that is the only route to one
+      var lucky4 = mt >= 4 && legendaryOk() && Math.random() < 0.010 * V().luck;
       // The Collector deals in my famous flips and stock above your pay grade, always
-      return isSecret
-        ? (Math.random() < 0.5 ? pickFrom(meItems) : pickItem(Math.min(4, mt + 1), true))
-        : (lucky || lucky4) ? pickItem(Math.min(4, mt + 1), true) : pickItem(mt);
+      var it = isSecret
+        ? (Math.random() < 0.5 ? pickFrom(meItems) : pickItem(bumpTo, true))
+        : lucky4 ? pickItem(4, true)
+          : lucky ? pickItem(bumpTo, true) : pickItem(mt);
+      // the weighted draw can still land on a legendary of its own accord, so the
+      // cooldown is enforced on the way out too, not just on the lucky roll
+      if (it.t === 4 && !legendaryOk()) it = pickItem(Math.min(3, mt));
+      return it;
     }
     function applyTwin() {
       pers = { label: "🧢 knows exactly what it's worth", floorMul: 1, pat: 3 };
@@ -7702,6 +8020,8 @@
       whWall.style.transform = "scale(" + zoom + ") translate3d(" + (-cam * 0.55) + "px,0,0)";
       whLight.style.transform = "scale(" + zoom + ") translate3d(" + (-cam * 0.9) + "px,0,0)";
     }
+    // the shoreline moves with the world, so the surf never slides along the sand
+    if (seaNow) surf.style.transform = "scale(" + zoom + ") translate3d(" + (-wrap(cam, P * 4)) + "px,0,0)";
     far1.style.transform = "scale(" + zoom + ") translate3d(" + (-wrap(cam * 0.15, RB)) + "px,0,0)";
     far2.style.transform = "scale(" + zoom + ") translate3d(" + (-wrap(cam * 0.28, RB)) + "px,0,0)";
     far3.style.transform = "scale(" + zoom + ") translate3d(" + (-wrap(cam * 0.45, RB)) + "px,0,0)";
