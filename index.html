@@ -350,6 +350,35 @@
   .say-btns button:hover { background: #FFE9A8; }
   .say-btns button:disabled { background: #E4E8EF; color: #8A97B2; cursor: not-allowed; }
   .say-btns .bye { background: #F1F6FE; flex: 0 0 auto; }
+  .say-btns .pay-full { background: #F1F6FE; flex: 0 0 auto; }
+  .say-btns .mk-offer { flex: 1 1 100%; font-size: 15px; min-height: 42px; }
+
+  /* the offer stepper: dial in any number, not just the three we picked for you */
+  .say-offer {
+    display: flex; align-items: center; gap: 8px;
+    margin-top: 10px;
+    background: #F1F6FE;
+    border: 2.5px solid var(--outline);
+    border-radius: 999px;
+    padding: 4px;
+  }
+  .say-offer button {
+    flex: 0 0 auto;
+    width: 40px; height: 40px;
+    font-family: var(--display); font-weight: 700; font-size: 22px; line-height: 1;
+    color: #142A55; background: #FFD75E;
+    border: 2.5px solid var(--outline); border-radius: 50%;
+    cursor: pointer; touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .say-offer button:hover:not(:disabled) { background: #FFE9A8; }
+  .say-offer button:disabled { background: #E4E8EF; color: #8A97B2; cursor: not-allowed; }
+  .say-offer .st-val {
+    flex: 1;
+    text-align: center;
+    font-family: var(--display); font-weight: 700; font-size: 24px; color: #142A55;
+    font-variant-numeric: tabular-nums;
+  }
 
   /* the two haggle moves sit apart from the price buttons - they aren't offers */
   .say-moves { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
@@ -1894,10 +1923,14 @@
   </div>
   <div class="say-text"></div>
   <div class="say-price"></div>
+  <div class="say-offer">
+    <button type="button" class="st-dn" aria-label="Lower your offer">−</button>
+    <b class="st-val"></b>
+    <button type="button" class="st-up" aria-label="Raise your offer">+</button>
+  </div>
   <div class="say-btns">
-    <button type="button"></button>
-    <button type="button"></button>
-    <button type="button"></button>
+    <button type="button" class="mk-offer"></button>
+    <button type="button" class="pay-full"></button>
     <button type="button" class="bye">Walk away</button>
   </div>
   <div class="say-moves">
@@ -2140,9 +2173,17 @@
     if (e.key === "Shift") keys.run = true; // hold shift to leg it
     if (e.key === "ArrowLeft" || e.key === "a" || e.key === "A") { keys.left = true; dismissHint(); e.preventDefault(); }
     if (e.key === "ArrowRight" || e.key === "d" || e.key === "D") { keys.right = true; dismissHint(); e.preventDefault(); }
+    // haggle from the keyboard: up/down works the stepper, Enter puts the offer in.
+    // These come first so Enter closes a deal rather than opening the pitch link.
+    var haggling = near && near.isHaggling && near.isHaggling();
+    if (haggling && (e.key === "ArrowUp" || e.key === "ArrowDown")) {
+      e.preventDefault();
+      near.nudge(e.key === "ArrowUp" ? 1 : -1);
+      return;
+    }
+    if (haggling && e.key === "Enter") { e.preventDefault(); near.offerBid(); return; }
     if ((e.key === "e" || e.key === "E" || e.key === "Enter") && near) { if (near.open) near.open(); else openStall(near); }
     if ((e.key === "t" || e.key === "T") && near && near.talk) near.talk();
-    if ((e.key === "1" || e.key === "2" || e.key === "3") && near && near.offerKey) near.offerKey(+e.key - 1);
     if (e.key === "Escape" && near && near.hideSay) near.hideSay();
   });
   window.addEventListener("keyup", function (e) {
@@ -3651,28 +3692,41 @@
       owner: null,
       text: sheetRoot.querySelector(".say-text"),
       price: sheetRoot.querySelector(".say-price"),
+      offRow: sheetRoot.querySelector(".say-offer"),
+      val: sheetRoot.querySelector(".st-val"),
+      dn: sheetRoot.querySelector(".st-dn"),
+      up: sheetRoot.querySelector(".st-up"),
       btnRow: sheetRoot.querySelector(".say-btns"),
-      btns: sheetRoot.querySelectorAll(".say-btns button"),
+      offer: sheetRoot.querySelector(".mk-offer"),
+      payFull: sheetRoot.querySelector(".pay-full"),
+      bye: sheetRoot.querySelector(".bye"),
       art: sheetRoot.querySelector(".sheet-item-use"),
       chip: sheetRoot.querySelector(".tier-chip"),
       moveRow: sheetRoot.querySelector(".say-moves"),
       flaw: sheetRoot.querySelector(".mv-flaw"),
       cash: sheetRoot.querySelector(".mv-cash")
     };
-    Array.prototype.forEach.call(sheet.btns, function (b, bi) {
-      b.addEventListener("click", function (e) {
+    // the sheet is shared, so every control routes through whichever stall owns it
+    function own(fn) {
+      return function (e) { e.stopPropagation(); if (sheet.owner) fn(sheet.owner); };
+    }
+    [[sheet.dn, -1], [sheet.up, 1]].forEach(function (pair) {
+      var el = pair[0], dir = pair[1], hold = null, rep = null;
+      function step() { if (sheet.owner) sheet.owner.nudge(dir); }
+      function stop() { clearTimeout(hold); clearInterval(rep); hold = rep = null; }
+      el.addEventListener("pointerdown", function (e) {
         e.stopPropagation();
-        if (!sheet.owner) return;
-        if (bi === 3) sheet.owner.hideSay();
-        else sheet.owner.makeOffer(+b.value);
+        step();
+        hold = setTimeout(function () { rep = setInterval(step, 90); }, 340);
       });
+      ["pointerup", "pointercancel", "pointerleave"].forEach(function (ev) { el.addEventListener(ev, stop); });
+      window.addEventListener("pointerup", stop);
     });
-    sheet.flaw.addEventListener("click", function (e) {
-      e.stopPropagation(); if (sheet.owner) sheet.owner.pickFault();
-    });
-    sheet.cash.addEventListener("click", function (e) {
-      e.stopPropagation(); if (sheet.owner) sheet.owner.cashInHand();
-    });
+    sheet.offer.addEventListener("click", own(function (o) { o.offerBid(); }));
+    sheet.payFull.addEventListener("click", own(function (o) { o.payFull(); }));
+    sheet.bye.addEventListener("click", own(function (o) { o.hideSay(); }));
+    sheet.flaw.addEventListener("click", own(function (o) { o.pickFault(); }));
+    sheet.cash.addEventListener("click", own(function (o) { o.cashInHand(); }));
     ["pointerdown", "pointerup", "click"].forEach(function (ev) {
       sheetRoot.addEventListener(ev, function (e) { e.stopPropagation(); });
     });
@@ -3688,6 +3742,30 @@
     var it, name, emoji, ask, floor, value, quip, tier, story, estF, pers, persHint;
     var price, patience, maxPat, phase, counters, hideT = null; // phase: 0 fresh, 1 haggling, 2 sold, 3 kicked off
     var flawUsed, cashUsed; // one-shot haggle moves, reset with the stock
+    var bid = 0; // whatever number you've dialled up on the stepper
+
+    // the step scales with the price, so a fiver moves in pounds and a grand moves in twenties
+    function bidStep() {
+      return price < 20 ? 1 : price < 60 ? 2 : price < 200 ? 5 : price < 600 ? 10 : 25;
+    }
+    function bidCap() { return Math.max(1, Math.min(price, wallet)); }
+    function clampBid() { bid = Math.max(1, Math.min(bidCap(), Math.round(bid))); }
+    function nudge(dir) {
+      if (phase !== 1) return;
+      var s = bidStep();
+      // snap to the step grid on the way so the numbers stay tidy
+      bid = dir > 0 ? Math.floor(bid / s) * s + s : Math.ceil(bid / s) * s - s;
+      clampBid();
+      paintOffer(ui());
+    }
+    s.nudge = nudge;
+    function paintOffer(u) {
+      u.val.textContent = fmt(bid);
+      u.offer.textContent = "Offer " + fmt(bid);
+      u.offer.disabled = bid > wallet;
+      u.dn.disabled = bid <= 1;
+      u.up.disabled = bid >= bidCap();
+    }
 
     function fmt(n) { return "£" + n.toLocaleString("en-GB"); }
     function r5(n) { return Math.max(5, Math.round(n / 5) * 5); }
@@ -3717,33 +3795,56 @@
         rareEl.classList.add("t" + tier);
       }
       price = ask; patience = pers.pat; maxPat = pers.pat; phase = 0; counters = 0;
+      bid = Math.max(1, Math.round(ask * 0.6)); // the stepper opens on a sensible lowball
       flawUsed = false; cashUsed = false;
     }
     assignItem();
 
     sayEl.innerHTML = '<div class="say-text"></div><div class="say-price"></div>'
-      + '<div class="say-btns"><button type="button"></button><button type="button"></button>'
-      + '<button type="button"></button><button type="button" class="bye">Walk away</button></div>'
+      + '<div class="say-offer"><button type="button" class="st-dn" aria-label="Lower your offer">−</button>'
+      + '<b class="st-val"></b><button type="button" class="st-up" aria-label="Raise your offer">+</button></div>'
+      + '<div class="say-btns"><button type="button" class="mk-offer"></button>'
+      + '<button type="button" class="pay-full"></button>'
+      + '<button type="button" class="bye">Walk away</button></div>'
       + '<div class="say-moves"><button type="button" class="mv-flaw"></button>'
       + '<button type="button" class="mv-cash"></button></div>';
-    var loc = {
-      text: sayEl.querySelector(".say-text"),
-      price: sayEl.querySelector(".say-price"),
-      btnRow: sayEl.querySelector(".say-btns"),
-      btns: sayEl.querySelectorAll(".say-btns button"),
-      moveRow: sayEl.querySelector(".say-moves"),
-      flaw: sayEl.querySelector(".mv-flaw"),
-      cash: sayEl.querySelector(".mv-cash")
-    };
+    var loc = pickUi(sayEl);
     bindHaggle(loc);
+
+    function pickUi(root) {
+      return {
+        text: root.querySelector(".say-text"),
+        price: root.querySelector(".say-price"),
+        offRow: root.querySelector(".say-offer"),
+        val: root.querySelector(".st-val"),
+        dn: root.querySelector(".st-dn"),
+        up: root.querySelector(".st-up"),
+        btnRow: root.querySelector(".say-btns"),
+        offer: root.querySelector(".mk-offer"),
+        payFull: root.querySelector(".pay-full"),
+        bye: root.querySelector(".bye"),
+        moveRow: root.querySelector(".say-moves"),
+        flaw: root.querySelector(".mv-flaw"),
+        cash: root.querySelector(".mv-cash")
+      };
+    }
     function bindHaggle(u) {
-      Array.prototype.forEach.call(u.btns, function (b, bi) {
-        b.addEventListener("click", function (e) {
+      // press and hold to run the number, because nudging £1 at a time up to £300 is no fun
+      [[u.dn, -1], [u.up, 1]].forEach(function (pair) {
+        var el = pair[0], dir = pair[1], hold = null, rep = null;
+        function stop() { clearTimeout(hold); clearInterval(rep); hold = rep = null; }
+        el.addEventListener("pointerdown", function (e) {
           e.stopPropagation();
-          if (bi === 3) hide();
-          else makeOffer(+b.value);
+          nudge(dir);
+          hold = setTimeout(function () { rep = setInterval(function () { nudge(dir); }, 90); }, 340);
         });
+        ["pointerup", "pointercancel", "pointerleave"].forEach(function (ev) { el.addEventListener(ev, stop); });
+        window.addEventListener("pointerup", stop); // a pointer released off the button must still stop it
+        el.addEventListener("click", function (e) { e.stopPropagation(); });
       });
+      u.offer.addEventListener("click", function (e) { e.stopPropagation(); makeOffer(bid); });
+      u.payFull.addEventListener("click", function (e) { e.stopPropagation(); makeOffer(price); });
+      u.bye.addEventListener("click", function (e) { e.stopPropagation(); hide(); });
       u.flaw.addEventListener("click", function (e) { e.stopPropagation(); pickFault(); });
       u.cash.addEventListener("click", function (e) { e.stopPropagation(); cashInHand(); });
     }
@@ -3774,17 +3875,14 @@
       u.text.innerHTML = html;
       var open = phase === 1;
       u.btnRow.style.display = open ? "flex" : "none";
+      u.offRow.style.display = open ? "flex" : "none";
       u.moveRow.style.display = open ? "flex" : "none";
       u.price.style.display = open ? "block" : "none";
       if (open) {
-        var low = r5(price * 0.55), mid = r5(price * 0.8);
-        var vals = [low, mid, price];
-        var labels = ["Offer " + fmt(low), "Offer " + fmt(mid), "Pay " + fmt(price)];
-        for (var bi = 0; bi < 3; bi++) {
-          u.btns[bi].textContent = labels[bi];
-          u.btns[bi].value = vals[bi];
-          u.btns[bi].disabled = vals[bi] > wallet;
-        }
+        clampBid();
+        paintOffer(u);
+        u.payFull.textContent = "Pay " + fmt(price);
+        u.payFull.disabled = price > wallet;
         u.flaw.textContent = flawUsed ? "🔍 Already picked at it" : "🔍 Point out a flaw";
         u.flaw.disabled = flawUsed;
         var cashAt = cashPrice();
@@ -3870,7 +3968,9 @@
       buzz();
       if (v >= price) return buy(price, "Done!");
       if (v >= floor) {
-        if (price - v <= Math.max(10, Math.round(ask * 0.06))) return buy(v, "Go on then.");
+        // close enough and they'll take it. Scales with the price, so a fiver isn't
+        // auto-accepted at any number the way a flat £10 gap used to allow.
+        if (price - v <= Math.max(1, Math.round(ask * 0.06))) return buy(v, "Go on then.");
         price = Math.max(floor, r5((price + v) / 2));
         counters++;
         render([
@@ -3891,10 +3991,9 @@
     }
     s.makeOffer = makeOffer;
 
-    s.offerKey = function (i) {
-      var u = ui();
-      if (phase === 1 && !u.btns[i].disabled) makeOffer(+u.btns[i].value);
-    };
+    s.offerBid = function () { makeOffer(bid); };
+    s.payFull = function () { makeOffer(price); };
+    s.isHaggling = function () { return phase === 1; };
 
     s.restock = function (force) {
       if (force || phase === 0) { hide(); assignItem(); }
