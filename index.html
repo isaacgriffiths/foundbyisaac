@@ -785,6 +785,17 @@
     #linksBtn, #whBtn { padding: 8px 11px; font-size: 12.5px; white-space: nowrap; }
     /* the tighter padding above took all three under the 44px a fingertip needs */
     #goalsBtn, #linksBtn, #whBtn { min-height: 44px; min-width: 44px; }
+    /* The level chip is centred on the bar, which on a phone puts it straight through
+       "Found by Isaac". There is a clear gap between the name and the Links button, so
+       park it in there instead. The max-width keeps the longest rank off both of them. */
+    #xp > b, #xp > span {
+      left: auto;
+      right: 76px;
+      transform: none;
+      max-width: calc(100vw - 240px);
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
     #barter { padding: 12px 13px 13px; }
     #barter .sheet-art { width: 56px; height: 56px; }
     .pad { width: 56px; height: 56px; font-size: 20px; background: rgb(255 255 255 / 0.88); }
@@ -4187,13 +4198,16 @@
 <div id="linksPanel" role="dialog" aria-label="All my links">
   <div class="panel-card">
     <h2>Found by Isaac</h2>
+    <!-- these open in their own tab, the same way the pitches in the game do. In the
+         same tab they threw you out of your run to go to eBay, and getting back meant
+         the back button. noopener because the new tab must not get at this one. -->
     <ul>
-      <li><a href="https://www.ebay.co.uk/usr/foundbyisaac">eBay Store</a></li>
-      <li><a href="https://www.vinted.co.uk/member/198218005">Vinted</a></li>
-      <li><a href="https://www.youtube.com/@FoundByIsaac">YouTube</a></li>
-      <li><a href="https://www.tiktok.com/@foundbyisaaac">TikTok</a></li>
-      <li><a href="https://www.instagram.com/foundbyisaac">Instagram</a></li>
-      <li><a href="https://www.facebook.com/profile.php?id=61590784979277">Facebook</a></li>
+      <li><a href="https://www.ebay.co.uk/usr/foundbyisaac" target="_blank" rel="noopener noreferrer">eBay Store</a></li>
+      <li><a href="https://www.vinted.co.uk/member/198218005" target="_blank" rel="noopener noreferrer">Vinted</a></li>
+      <li><a href="https://www.youtube.com/@FoundByIsaac" target="_blank" rel="noopener noreferrer">YouTube</a></li>
+      <li><a href="https://www.tiktok.com/@foundbyisaaac" target="_blank" rel="noopener noreferrer">TikTok</a></li>
+      <li><a href="https://www.instagram.com/foundbyisaac" target="_blank" rel="noopener noreferrer">Instagram</a></li>
+      <li><a href="https://www.facebook.com/profile.php?id=61590784979277" target="_blank" rel="noopener noreferrer">Facebook</a></li>
     </ul>
     <button id="closePanel" type="button">Back to the car boot</button>
   </div>
@@ -6306,9 +6320,8 @@
       + "</div>";
 
     if (trend) {
-      var left = Math.max(0, Math.ceil((trendAt + TREND_MS - Date.now()) / 1000));
       html += '<div class="pg-trend">🔥 Hot right now: <b>' + trend.es[0] + " " + trend.n
-        + "</b> sell for <b>+50%</b> · " + left + "s left</div>";
+        + '</b> sell for <b>+50%</b> · <span id="pgTrendLeft">' + trendLeft() + "</span></div>";
     }
 
     html += '<div class="pg-h">Jobs · cash bonuses</div>';
@@ -6342,6 +6355,20 @@
       if (goalsPanel.classList.contains("open")) buildGoals();
     }
   }
+  // How long the hot category has left. The panel is only built when something changes,
+  // so without a tick of its own this number sat frozen at whatever it said when you
+  // opened it - which read as though the clock had stopped.
+  function trendLeft() {
+    var ms = trendAt + TREND_MS - Date.now();
+    if (ms <= 0) return "changing now…";
+    var s = Math.ceil(ms / 1000);
+    return s >= 60 ? Math.floor(s / 60) + "m " + (s % 60) + "s left" : s + "s left";
+  }
+  setInterval(function () {
+    if (!goalsPanel.classList.contains("open")) return;
+    var el = document.getElementById("pgTrendLeft");
+    if (el && trend) el.textContent = trendLeft();
+  }, 1000);
   goalsBtn.addEventListener("click", function () { buildGoals(); goalsPanel.classList.add("open"); });
   document.getElementById("closeGoals").addEventListener("click", function () { goalsPanel.classList.remove("open"); });
   goalsPanel.addEventListener("click", function (e) { if (e.target === goalsPanel) goalsPanel.classList.remove("open"); });
