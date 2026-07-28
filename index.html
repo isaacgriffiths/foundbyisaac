@@ -791,7 +791,7 @@
   .pad.running { background: #FFD75E; box-shadow: 0 0 0 4px rgb(255 215 94 / 0.45), 3px 4px 0 rgb(20 42 85 / 0.35); }
 
   /* ---------- plain links panel + upgrades shop + game intro ---------- */
-  #linksPanel, #shopPanel, #introPanel, #rewardPanel, #goalsPanel, #laptopPanel, #packPanel, #miniPanel, #venuePanel, #dexPanel, #wardPanel {
+  #linksPanel, #shopPanel, #introPanel, #rewardPanel, #goalsPanel, #laptopPanel, #packPanel, #miniPanel, #venuePanel, #dexPanel, #wardPanel, #dexPop {
     position: fixed; inset: 0;
     z-index: 30;
     display: none;
@@ -800,7 +800,8 @@
     background: rgb(13 27 54 / 0.55);
     padding: 20px;
   }
-  #linksPanel.open, #shopPanel.open, #introPanel.open, #rewardPanel.open, #goalsPanel.open, #laptopPanel.open, #packPanel.open, #miniPanel.open, #venuePanel.open, #dexPanel.open, #wardPanel.open { display: flex; }
+  #linksPanel.open, #shopPanel.open, #introPanel.open, #rewardPanel.open, #goalsPanel.open, #laptopPanel.open, #packPanel.open, #miniPanel.open, #venuePanel.open, #dexPanel.open, #wardPanel.open, #dexPop.open { display: flex; }
+  #dexPop { z-index: 31; } /* the record card sits over the index it was opened from */
   #miniPanel { z-index: 32; } /* sits over the bench it was launched from */
   .panel-card {
     width: 100%;
@@ -1594,14 +1595,12 @@
     background: rgb(255 255 255 / 0.85); border-radius: 999px; padding: 0 4px;
   }
   .dex-sp { position: absolute; left: 3px; top: 1px; font-size: 10px; }
-  /* the record card: the whole ledger for one line of stock, pinned to the bottom */
+  .dex-hint { font-size: 11px; font-weight: 800; color: var(--ink-soft); text-align: center; line-height: 1.45; margin-bottom: 10px; }
+  /* the record card: the whole ledger for one line of stock, on its own over the index */
+  #dexPop .dexpop-card { max-width: 400px; }
   .dex-detail {
-    margin-top: 12px; padding: 11px 13px; min-height: 60px;
-    background: #F1F6FE; border: 2.5px solid var(--outline); border-radius: 14px;
-    font-size: 12.5px; font-weight: 700; color: #3D5688; line-height: 1.5;
+    padding: 2px; font-size: 12.5px; font-weight: 700; color: #3D5688; line-height: 1.5;
   }
-  .dex-detail.on { background: #FFFFFF; box-shadow: inset 0 0 0 3px #FFE9A8; }
-  .dex-empty { font-weight: 800; font-size: 12px; color: var(--ink-soft); }
   .dst-head { display: flex; align-items: center; gap: 11px; margin-bottom: 6px; }
   .dst-art {
     width: 52px; height: 52px; flex: 0 0 auto; display: block;
@@ -1645,7 +1644,7 @@
   .ward-note { font-size: 11.5px; font-weight: 800; color: var(--ink-soft); text-align: center; margin-top: 10px; line-height: 1.45; }
   #wardFile { display: none; }
 
-  #closePanel, #closeShop, #closeIntro, #closeReward, #closeGoals, #closeLaptop, #closePack, #closeVenue, #closeDex, #closeWard {
+  #closePanel, #closeShop, #closeIntro, #closeReward, #closeGoals, #closeLaptop, #closePack, #closeVenue, #closeDex, #closeWard, #closeDexPop {
     margin-top: 14px;
     width: 100%;
     font-family: var(--display);
@@ -3420,9 +3419,17 @@
   <div class="panel-card">
     <h2>🗂️ The Collection</h2>
     <div class="dex-sum" id="dexSum"></div>
+    <div class="dex-hint">Tap a find to pull its record. The shapes you can't make out are the ones you've never had through your hands.</div>
     <div id="dexBody"></div>
-    <div class="dex-detail" id="dexDetail"><span class="dex-empty">Tap a find to pull its record. The shapes you can't make out are the ones you've never had through your hands.</span></div>
     <button id="closeDex" type="button">Back to the warehouse</button>
+  </div>
+</div>
+
+<!-- the record card comes up over the index, so you never scroll to read one -->
+<div id="dexPop" role="dialog" aria-label="Find record">
+  <div class="panel-card dexpop-card">
+    <div class="dex-detail" id="dexDetail"></div>
+    <button id="closeDexPop" type="button">Back to the index</button>
   </div>
 </div>
 
@@ -3656,7 +3663,8 @@
   }
 
   window.addEventListener("keydown", function (e) {
-    var openPanels = ["linksPanel", "shopPanel", "rewardPanel", "goalsPanel", "laptopPanel", "packPanel", "dexPanel", "wardPanel"];
+    // dexPop comes first so Escape shuts the record card before the index behind it
+    var openPanels = ["dexPop", "linksPanel", "shopPanel", "rewardPanel", "goalsPanel", "laptopPanel", "packPanel", "dexPanel", "wardPanel"];
     for (var opi = 0; opi < openPanels.length; opi++) {
       var pe = document.getElementById(openPanels[opi]);
       if (pe && pe.classList.contains("open")) {
@@ -5091,7 +5099,7 @@
     inWh = false;
     if (robber) endRobbery(false, ""); // nobody follows you between venues
     document.body.classList.remove("in-wh");
-    ["shopPanel", "laptopPanel", "packPanel", "venuePanel", "dexPanel", "wardPanel"].forEach(function (id) { document.getElementById(id).classList.remove("open"); });
+    ["shopPanel", "laptopPanel", "packPanel", "venuePanel", "dexPanel", "dexPop", "wardPanel"].forEach(function (id) { document.getElementById(id).classList.remove("open"); });
     if (bootPx !== null) px = bootPx;
     target = null; flick = 0;
     restockAll(true);
@@ -5275,11 +5283,7 @@
     return '<span class="dst-k">' + label + '</span><span class="dst-v">' + value + "</span>";
   }
   function paintDexDetail() {
-    if (dexSel < 0 || !items[dexSel] || !dex[dexSel] || !dex[dexSel].n) {
-      dexDetail.classList.remove("on");
-      dexDetail.innerHTML = '<span class="dex-empty">Tap a find to pull its record. The shapes you can\'t make out are the ones you\'ve never had through your hands.</span>';
-      return;
-    }
+    if (dexSel < 0 || !items[dexSel] || !dex[dexSel] || !dex[dexSel].n) return;
     var it = items[dexSel], d = dex[dexSel];
     var TL = { 1: "Find", 2: "Quality", 3: "Rare", 4: "Legendary" };
     var held = d.n - d.sn; // bought but not posted yet: in the bag, listed or on the bench
@@ -5302,7 +5306,6 @@
     if (held > 0) stats += statRow("Still yours", held + " on the books");
     stats += statRow("Books at", fmtC(it.v) + " · seller usually wants " + fmtC(it.a));
 
-    dexDetail.classList.add("on");
     dexDetail.innerHTML = '<div class="dst-head">'
       + '<svg class="dst-art" viewBox="-3 -3 42 42" style="color:' + (it.c || "#8FB7E8") + '"><use href="#' + it.d + '"/></svg>'
       + '<span class="dst-title"><b class="dex-dn">' + it.e + " " + esc(it.n.charAt(0).toUpperCase() + it.n.slice(1)) + "</b>"
@@ -5313,18 +5316,24 @@
       + (it.h ? '<span class="story">📜 ' + esc(it.h) + "</span>" : "");
   }
 
+  // tapping a find brings its record up over the index, so a long grid never has to
+  // be scrolled back down to read one
+  var dexPop = document.getElementById("dexPop");
   dexBody.addEventListener("click", function (e) {
     var b = e.target.closest ? e.target.closest("button[data-i]") : null;
     if (!b || b.disabled) return;
-    var i = +b.getAttribute("data-i");
-    dexSel = dexSel === i ? -1 : i;
+    dexSel = +b.getAttribute("data-i");
     var cells = dexBody.querySelectorAll(".dex-cell");
     for (var c = 0; c < cells.length; c++) cells[c].classList.toggle("sel", +cells[c].getAttribute("data-i") === dexSel);
     paintDexDetail();
+    dexPop.classList.add("open");
   });
+  function closeDexPop() { dexPop.classList.remove("open"); }
+  document.getElementById("closeDexPop").addEventListener("click", closeDexPop);
+  dexPop.addEventListener("click", function (e) { if (e.target === dexPop) closeDexPop(); });
 
   function openDex() { buildDex(); dexPanel.classList.add("open"); }
-  function closeDex() { dexPanel.classList.remove("open"); buildWh(); }
+  function closeDex() { closeDexPop(); dexPanel.classList.remove("open"); buildWh(); }
   document.getElementById("closeDex").addEventListener("click", closeDex);
   dexPanel.addEventListener("click", function (e) { if (e.target === dexPanel) closeDex(); });
 
@@ -6601,18 +6610,18 @@
   var shopTab = "gear";
   var SHOP_TABS = [["gear", "🔧 Gear"], ["staff", "🧑‍🏭 Staff"], ["big", "🏆 Big Stuff"]];
 
-  // one row, whether it's a piece of gear or a member of staff - same shape, same rules
-  function upgRow(k, u, attr) {
+  // one row, whether it's a piece of gear or a member of staff - same shape, same rules.
+  // isStaff picks which handler the button lands in, so every hire has to pass it.
+  function upgRow(k, u, isStaff) {
     var c = nextCost(u);
     var pips = "";
     for (var i = 0; i < u.costs.length; i++) pips += i < u.lvl ? "●" : "○";
     return '<div class="shop-row"><span class="shop-ico">' + u.icon + "</span>"
       + '<span class="shop-info"><span class="shop-name">' + u.name + ' <i class="shop-pips">' + pips + "</i></span>"
       + '<span class="shop-desc">' + u.desc + "</span>"
-      + '<span class="shop-fx">' + (c ? "Next: " + u.fx[u.lvl + 1] : "Now: " + u.fx[u.lvl]) + "</span>"
-      + (attr || "") + "</span>"
+      + '<span class="shop-fx">' + (c ? "Next: " + u.fx[u.lvl + 1] : "Now: " + u.fx[u.lvl]) + "</span></span>"
       + (c
-        ? '<button type="button" class="shop-buy" data-' + (u === STAFF.packer ? "s" : "k") + '="' + k + '"'
+        ? '<button type="button" class="shop-buy" data-' + (isStaff ? "s" : "k") + '="' + k + '"'
           + (wallet < c ? " disabled" : "") + ">" + fmtC(c) + "</button>"
         : '<button type="button" class="shop-buy maxed" disabled>MAX</button>')
       + "</div>";
@@ -6656,7 +6665,7 @@
       html += staffStatus("Shazza", STAFF.lister.lvl, listerAt, listerMs(),
         listings.length < maxListings() ? inv.length : 0,
         "on the shelf", inv.length ? "laptop's full · nothing she can do" : "nothing on the shelf to list");
-      for (var sk in STAFF) html += upgRow(sk, STAFF[sk]);
+      for (var sk in STAFF) html += upgRow(sk, STAFF[sk], true);
     } else {
       // clearing my pitches out of the field: a one-off, and there's no putting them back
       html += '<div class="shop-row"><span class="shop-ico">🚚</span>'
