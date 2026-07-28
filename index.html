@@ -1477,11 +1477,20 @@
         <rect x="101" y="17" width="9" height="13" fill="#B98A57" stroke="#3B598F" stroke-width="2"/>
         <rect x="2" y="30" width="116" height="4" rx="2" fill="#B98A57" stroke="#3B598F" stroke-width="2"/>
       </g>
-      <g id="hallWindow">
-        <path d="M255 140 L395 140 L265 900 L25 900 Z" fill="#FFE9A8" opacity="0.2"/>
-        <rect x="250" y="14" width="150" height="122" rx="8" fill="#FFF3C4" stroke="#3B598F" stroke-width="5" opacity="0.95"/>
-        <path d="M325 18 V132 M254 75 H396" stroke="#3B598F" stroke-width="4"/>
-        <path d="M262 30 L296 24" stroke="#FFFFFF" stroke-width="6" stroke-linecap="round" opacity="0.7"/>
+      <g id="hallWinS">
+        <rect x="2" y="2" width="72" height="48" rx="4" fill="#FFF3C4" stroke="#3B598F" stroke-width="3.5"/>
+        <path d="M38 4 V48 M4 26 H72" stroke="#3B598F" stroke-width="2.5"/>
+        <path d="M8 12 L22 8" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round" opacity="0.7"/>
+      </g>
+      <g id="hallShaft">
+        <path d="M150 0 L224 0 L120 800 L-34 800 Z" fill="#FFE9A8" opacity="0.16"/>
+      </g>
+      <g id="bgPoster">
+        <rect x="2" y="2" width="56" height="74" rx="4" fill="#F6EFE3" stroke="#3B598F" stroke-width="3"/>
+        <rect x="8" y="8" width="44" height="46" rx="2" fill="currentColor" stroke="#3B598F" stroke-width="2"/>
+        <circle cx="30" cy="24" r="8" fill="#FFFFFF" stroke="#3B598F" stroke-width="2"/>
+        <path d="M16 48 L30 34 L44 48" stroke="#FFFFFF" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <path d="M12 62 H48 M12 68 H36" stroke="#3B598F" stroke-width="3" stroke-linecap="round"/>
       </g>
     </defs>
   </svg>
@@ -2251,10 +2260,16 @@
   // indoors there is no sky: high hall windows instead, each throwing a shaft of light
   var indoorNow = false; // set by applyVenue - an indoor venue refurnishes the whole scene
   function hallSkyHtml() {
+    // one unbroken bar of small windows along the top of the hall, sill and all,
+    // with the odd shaft of sun dropping out of it
+    var wins = "";
+    for (var wi = 0; wi < 29; wi++) wins += '<use href="#hallWinS" transform="translate(' + (wi * 100 + 12) + ',6)"/>';
     var html = "";
     for (var hk = 0; hk < 3; hk++) {
-      [60, 560, 1060, 1560, 2060, 2560].forEach(function (wx) {
-        html += '<svg class="hallwin" style="left:' + (wx + hk * CB) + 'px;top:0" width="420" height="900" viewBox="0 0 420 900"><use href="#hallWindow"/></svg>';
+      html += '<svg class="hallwin" style="left:' + (hk * CB) + 'px;top:0" width="' + CB + '" height="72" viewBox="0 0 ' + CB + ' 72">'
+        + '<rect x="0" y="58" width="' + CB + '" height="7" fill="#B98A57" stroke="#3B598F" stroke-width="2.5"/>' + wins + '</svg>';
+      [180, 760, 1340, 1920, 2500].forEach(function (sx) {
+        html += '<svg class="hallwin" style="left:' + (sx + hk * CB) + 'px;top:60" width="280" height="820" viewBox="-40 0 280 820"><use href="#hallShaft"/></svg>';
       });
     }
     return html;
@@ -2277,38 +2292,27 @@
   var carColors = ["#E0938F", "#8FB7E8", "#9CCF9E", "#E8C57F", "#B79FD8", "#8FD0D4", "#EFA98A"];
   var figColors = ["#B23B5E", "#2F5FD0", "#3E8A4C", "#8A5FB0", "#C2703F"];
   var RB = 2600; // background rows repeat every RB px within their own layer
-  // indoors nobody parked on the pitches: ranks of tables instead, with the hall's
-  // own kit - wall bars on the back wall, gym benches - showing between them
+  // indoors nobody trades behind the front row: the hall is just its own kit back
+  // there - wall bars and sports posters on the wall, benches pushed against it
   function buildHallRow(el, scale, bottom, seed) {
-    var slots = [], hx = 40 + seed * 70, hi = 0;
-    while (hx < RB - 240 * scale) {
-      slots.push([Math.round(hx), hi]);
-      hx += (210 + ((hi * 41 + seed * 23) % 70)) * scale;
-      hi++;
-    }
+    if (seed === 0) { el.innerHTML = ""; return; } // the strip behind the pitches stays clear
     var html = "";
     for (var k = 0; k < 3; k++) {
-      slots.forEach(function (p) {
-        var pi = p[1], left = p[0] + k * RB;
-        // the deepest row sits against the wall, so that is where the gym kit lives
-        var kind = seed === 2 ? (pi % 3 === 0 ? "bars" : pi % 3 === 1 ? "pitch" : "bench")
-          : seed === 1 ? (pi % 4 === 3 ? "bench" : "pitch")
-          : "pitch";
-        if (kind === "bars") {
-          html += '<svg class="bgpitch" style="left:' + left + 'px;bottom:' + bottom + 'px" width="' + Math.round(96 * scale) + '" height="' + Math.round(130 * scale) + '" viewBox="0 0 96 130"><use href="#bgWallbars"/></svg>';
-        } else if (kind === "bench") {
-          html += '<svg class="bgpitch" style="left:' + left + 'px;bottom:' + bottom + 'px" width="' + Math.round(120 * scale) + '" height="' + Math.round(36 * scale) + '" viewBox="0 0 120 36"><use href="#bgBench"/></svg>';
-        } else {
-          var tblL = (pi + seed) % 2 ? "bgTableA" : "bgTableB";
-          var tblR = (pi + seed) % 2 ? "bgTableB" : "bgTableA";
-          var fig = (pi * 3 + seed) % 3 !== 0
-            ? '<use href="#bgFig" transform="translate(58,13)" style="color:' + figColors[(pi * 2 + seed) % figColors.length] + '"/>'
-            : "";
-          html += '<svg class="bgpitch" style="left:' + left + 'px;bottom:' + bottom + 'px" width="' + Math.round(136 * scale) + '" height="' + Math.round(50 * scale) + '" viewBox="0 0 136 50">' + fig
-            + '<use href="#' + tblL + '" transform="translate(4,13)"/>'
-            + '<use href="#' + tblR + '" transform="translate(70,13)"/></svg>';
-        }
-      });
+      if (seed === 2) {
+        var bs = scale * 1.5;
+        [60, 700, 1420, 2080].forEach(function (bx) {
+          html += '<svg class="bgpitch" style="left:' + (bx + k * RB) + 'px;bottom:' + bottom + 'px" width="' + Math.round(96 * bs) + '" height="' + Math.round(130 * bs) + '" viewBox="0 0 96 130"><use href="#bgWallbars"/></svg>';
+        });
+        var ps = scale * 1.6;
+        [380, 1010, 1730, 2400].forEach(function (px2, pi) {
+          html += '<svg class="bgpitch" style="left:' + (px2 + k * RB) + 'px;bottom:' + (bottom + 58) + 'px" width="' + Math.round(60 * ps) + '" height="' + Math.round(78 * ps) + '" viewBox="0 0 60 78" ><use href="#bgPoster" style="color:' + figColors[pi % figColors.length] + '"/></svg>';
+        });
+      } else {
+        var ns = scale * 1.35;
+        [220, 860, 1560, 2260].forEach(function (bx) {
+          html += '<svg class="bgpitch" style="left:' + (bx + k * RB) + 'px;bottom:' + bottom + 'px" width="' + Math.round(120 * ns) + '" height="' + Math.round(36 * ns) + '" viewBox="0 0 120 36"><use href="#bgBench"/></svg>';
+        });
+      }
     }
     el.innerHTML = html;
   }
