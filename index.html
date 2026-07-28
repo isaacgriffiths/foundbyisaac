@@ -139,9 +139,11 @@
   @keyframes pillBump { 0%, 100% { transform: scale(1); } 40% { transform: scale(1.13); } }
   #finds.bump, #bagPill.bump { animation: pillBump 0.32s ease; }
 
+  /* up in the sky, under the HUD. Down at the bottom it sat right over the player, the
+     stall cards and the thumb pads, so it hid the thing it was telling you about. */
   #hint {
     position: fixed;
-    bottom: 108px;
+    top: 74px;
     left: 50%;
     transform: translateX(-50%);
     z-index: 20;
@@ -619,6 +621,7 @@
     .pad { width: 56px; height: 56px; font-size: 20px; background: rgb(255 255 255 / 0.88); }
     /* wide prompt bubbles get clipped at the screen edge - let them wrap instead */
     .prompt { white-space: normal; width: max-content; max-width: 230px; }
+    #hint { top: calc(62px + env(safe-area-inset-top, 0px)); }
   }
 
   /* very narrow: wrap the HUD into two rows - name + links on top, cash + warehouse below */
@@ -630,8 +633,9 @@
     #bagPill { order: 2; }
     #goalsBtn { order: 3; }
     #whBtn { order: 3; margin-left: auto; }
-    /* the two-row HUD is taller - drop the haggle card below it */
+    /* the two-row HUD is taller - drop the haggle card and the banner below it */
     #barter { top: calc(116px + env(safe-area-inset-top, 0px)); }
+    #hint { top: calc(112px + env(safe-area-inset-top, 0px)); font-size: 12.5px; padding: 7px 14px; }
   }
 
   /* richer venues lay every crate out at once, each with its own find on top.
@@ -903,6 +907,15 @@
     font-size: 11.5px; font-weight: 800; color: var(--ink-soft);
     text-align: center; line-height: 1.45; margin: 2px 0 8px;
   }
+  /* the contacts book has its own currency, so it gets its own look */
+  .shop-contacts {
+    text-align: center; font-family: var(--display); font-weight: 600; font-size: 15px;
+    color: #6B3FA0; background: #F4E6FF; border: 2.5px dashed #B45AF2;
+    border-radius: 10px; padding: 8px; margin-bottom: 8px;
+  }
+  .shop-contacts b { font-size: 19px; }
+  .shop-buy.book { background: #E3C7FF; }
+  .shop-buy.book:hover:not(:disabled) { background: #F0DEFF; }
   /* the packer's own little status strip, so you can see him working */
   .staff-bar { height: 8px; background: #E4E8EF; border-radius: 999px; overflow: hidden; margin-top: 5px; }
   .staff-bar i { display: block; height: 100%; background: #1F8A3B; border-radius: 999px; transition: width 0.4s linear; }
@@ -4292,8 +4305,58 @@
     desk:   { icon: "📶", name: "Faster Broadband", desc: "More listings, quicker sales", costs: [400, 1000, 2500], lvl: 0,
       fx: ["2 listings at once", "3 listings · a bit quicker", "4 listings · quicker", "5 listings · rapid"] },
     lucky:  { icon: "🍀", name: "Lucky Charm", desc: "Better condition on the things you buy", costs: [400, 1200], lvl: 0,
-      fx: ["1 in 4 finds come up tatty", "tatty finds are rare", "minters twice as common"] }
+      fx: ["1 in 4 finds come up tatty", "tatty finds are rare", "minters twice as common"] },
+    // the late-game sinks: by the Estate Clearance the cash comes in faster than the
+    // early upgrades can swallow it, so these are all priced for that end of the run
+    boots:  { icon: "👟", name: "Steel-toe Trainers", desc: "Cover the field quicker, and outrun trouble", costs: [900, 2400, 6000], lvl: 0,
+      fx: ["a steady plod", "quicker on your feet", "properly quick", "gone before they've moved"] },
+    gate:   { icon: "🧾", name: "Pitch Pass", desc: "A word with the gate man knocks the entry fee down", costs: [1800, 4500, 10000], lvl: 0,
+      fx: ["full whack at every gate", "40% off the gate fee", "70% off the gate fee", "you walk in free"] },
+    torch:  { icon: "🔦", name: "Proper Torch", desc: "See what you're buying at the night market", costs: [1500, 4000], lvl: 0,
+      fx: ["squinting at a phone light", "a decent beam", "the dark barely bites"] },
+    safe:   { icon: "🛡️", name: "Locked Bag", desc: "A robber can have your cash · not your stock", costs: [3500], lvl: 0,
+      fx: ["they take a find and your cash", "they only get the cash"] }
   };
+  // ---- going pro: the gate climbs, and you keep a contacts book that never resets ----
+  // Prestige used to be a flat £10k you could clear in one good run at the Estate
+  // Clearance, which made it a formality. Now each one costs more than the last, and
+  // what you bank on the way out buys permanent upgrades that survive every reset.
+  var PRO_GATES = [10000, 30000, 75000, 160000, 300000, 550000, 1000000];
+  function proGate() {
+    return prestige < PRO_GATES.length
+      ? PRO_GATES[prestige]
+      : PRO_GATES[PRO_GATES.length - 1] * Math.pow(2, prestige - PRO_GATES.length + 1);
+  }
+  // bank well past the gate and you walk away with more contacts. Squared, so doubling
+  // your bank is nowhere near doubling your reward - but pushing on is always worth it.
+  function contactsFor(w) { return Math.max(1, Math.floor(Math.sqrt(w / proGate()) * 2)); }
+  // the bank you'd need for one more contact than you'd get right now, so the shop can
+  // put a real number on "hang on a bit longer" rather than a vague nudge
+  function nextContactAt(w) {
+    var n = contactsFor(w) + 1;
+    return Math.ceil(proGate() * (n / 2) * (n / 2) / 100) * 100;
+  }
+
+  var contacts = 0;
+  var BOOK = {
+    float:  { icon: "💷", name: "A float to start on", desc: "Every fresh start begins with more behind you",
+      costs: [1, 2, 4], lvl: 0, fx: ["start on £200", "start on £750", "start on £2,000", "start on £5,000"] },
+    motor:  { icon: "🚐", name: "You kept the van", desc: "The good van comes with you into the next run",
+      costs: [2, 4], lvl: 0, fx: ["start with nothing but a bag", "start at Van 1", "start at Van 2"] },
+    bench:  { icon: "🧰", name: "You kept the bench", desc: "The bag and the broadband come with you too",
+      costs: [3], lvl: 0, fx: ["start from scratch", "start at Bag 1 and Broadband 1"] },
+    nose:   { icon: "👃", name: "A nose for a shiny", desc: "You spot the ones nobody else does. Forever.",
+      costs: [2, 3, 5], lvl: 0, fx: ["shinies are rare", "half again as often", "twice as often", "three times as often"] },
+    name:   { icon: "🤝", name: "Your name goes ahead of you", desc: "Sellers have heard of you before you open your mouth",
+      costs: [2, 3, 5], lvl: 0, fx: ["nobody knows you", "sellers go 4% lower", "8% lower", "13% lower"] },
+    margin: { icon: "📈", name: "The margins you're known for", desc: "Everything you ever sell fetches more",
+      costs: [3, 5, 8], lvl: 0, fx: ["·", "+20% on every sale", "+45% on every sale", "+75% on every sale"] }
+  };
+  var BOOK_FLOAT = [200, 750, 2000, 5000];
+  var BOOK_MARGIN = [0, 0.2, 0.45, 0.75];
+  var BOOK_NOSE = [1, 1.5, 2, 3];
+  var BOOK_NAME = [1, 0.96, 0.92, 0.87];
+  function bookFloat() { return BOOK_FLOAT[BOOK.float.lvl]; }
   // ---- staff: people who do the boring bit for you, worse than you would ----
   // Barry works the bench on his own while you're out. He is slower than you and he
   // does not do presentation, so a parcel he packs earns the sale and nothing on top.
@@ -4320,8 +4383,11 @@
   var packerAt = 0, listerAt = 0; // when each of them finishes what they're on
   function packerMs() { return PACKER_MS[STAFF.packer.lvl] || 0; }
   function listerMs() { return LISTER_MS[STAFF.lister.lvl] || 0; }
-  var PRO_AT = 10000;
-  function proMult() { return 1 + prestige * 0.5; }
+  function proMult() { return 1 + prestige * 0.5 + BOOK_MARGIN[BOOK.margin.lvl]; }
+  // how much of the gate fee you still have to find at the turnstile
+  var GATE_OFF = [1, 0.6, 0.3, 0];
+  function gateFee(v) { return Math.round(v.fee * GATE_OFF[UPG.gate.lvl]); }
+  function walkSpeed() { return SPEED * (1 + UPG.boots.lvl * 0.16); }
   function maxTier() { return Math.min(4, 1 + UPG.van.lvl + lvlTierBonus() + (venue ? VENUES[venue].tier : 0)); }
   function bagCap() { return [3, 5, 8, 12][UPG.bag.lvl]; }
   function maxListings() { return 2 + UPG.desk.lvl; }
@@ -4335,12 +4401,21 @@
 
   var SAVE_KEY = "fbi-flip-v1";
   function rnd(v, fallback) { return isFinite(v) ? Math.round(v) : fallback; }
+  // the first six gear upgrades have their own save keys from the original build, so
+  // everything added since goes in one bag rather than growing the top level further
+  function gearLvls() { return { bo: UPG.boots.lvl, ga: UPG.gate.lvl, to: UPG.torch.lvl, sa: UPG.safe.lvl }; }
+  function bookLvls() {
+    var o = {};
+    for (var k in BOOK) o[k] = BOOK[k].lvl;
+    return o;
+  }
   function save() {
     try {
       localStorage.setItem(SAVE_KEY, JSON.stringify({
         w: wallet, p: prestige, i: introSeen ? 1 : 0, pk: packed, rp: rep,
         vn: venue, tp: Object.keys(tipsSeen),
         t: UPG.tongue.lvl, e: UPG.eye.lvl, v: UPG.van.lvl, b: UPG.bag.lvl, d: UPG.desk.lvl, l: UPG.lucky.lvl,
+        g: gearLvls(), ct: contacts, bk: bookLvls(),
         lk: visitedLinks, q: activeQ, inv: inv, li: listings, or: orders,
         dx: dex, ft: fit, of: ownedFits, ok: ownedKit, av: avatarSrc, pf: photoPaid ? 1 : 0, nl: noLinks ? 1 : 0, vs: vests,
         pl: STAFF.packer.lvl, pa: packerAt, ll: STAFF.lister.lvl, la: listerAt,
@@ -4359,6 +4434,13 @@
       if (sv.tp && sv.tp.length) sv.tp.forEach(function (k) { tipsSeen[k] = 1; });
       UPG.tongue.lvl = +sv.t || 0; UPG.eye.lvl = +sv.e || 0; UPG.van.lvl = +sv.v || 0;
       UPG.bag.lvl = +sv.b || 0; UPG.desk.lvl = +sv.d || 0; UPG.lucky.lvl = +sv.l || 0;
+      var capLvl = function (u, n) { return Math.max(0, Math.min(u.costs.length, +n || 0)); };
+      if (sv.g) {
+        UPG.boots.lvl = capLvl(UPG.boots, sv.g.bo); UPG.gate.lvl = capLvl(UPG.gate, sv.g.ga);
+        UPG.torch.lvl = capLvl(UPG.torch, sv.g.to); UPG.safe.lvl = capLvl(UPG.safe, sv.g.sa);
+      }
+      contacts = Math.max(0, Math.round(+sv.ct || 0));
+      if (sv.bk) for (var bkk in BOOK) BOOK[bkk].lvl = capLvl(BOOK[bkk], sv.bk[bkk]);
       if (sv.lk && sv.lk.length) visitedLinks = sv.lk.slice(0, 12);
       if (sv.q && sv.q.length) savedQ = sv.q;
       var okItem = function (e) { return e && items[+e.i] && +e.paid >= 0; };
@@ -4568,7 +4650,8 @@
     var k;
     for (k in UPG) { var c = nextCost(UPG[k]); if (c && wallet >= c) return true; }
     for (k in STAFF) { var s = nextCost(STAFF[k]); if (s && wallet >= s) return true; }
-    return wallet >= PRO_AT;
+    for (k in BOOK) { var bc = nextCost(BOOK[k]); if (bc && contacts >= bc) return true; }
+    return wallet >= proGate();
   }
 
   function pendingOffers() {
@@ -4603,9 +4686,9 @@
     for (var si = 0; si < prestige; si++) stars += "⭐";
     prestN.textContent = stars;
     // £10k is still the prestige gate, but it's a cash milestone now, not a rank
-    if (wallet >= PRO_AT && !updWallet.toldPro) {
+    if (wallet >= proGate() && !updWallet.toldPro) {
       updWallet.toldPro = true;
-      banner("🏆 £10,000! GO PRO is waiting in the warehouse Upgrades Corner ⬆️", 9000);
+      banner("🏆 " + fmtC(proGate()) + " banked! GO PRO is waiting in the Upgrades Corner ⬆️ · the longer you leave it, the more contacts you walk away with 📒", 9000);
       confetti(34);
     }
     updLevel();
@@ -5072,8 +5155,10 @@
     var shopReady = false, k;
     for (k in UPG) { var c = nextCost(UPG[k]); if (c && wallet >= c) shopReady = true; }
     for (k in STAFF) { var sc = nextCost(STAFF[k]); if (sc && wallet >= sc) shopReady = true; }
-    setSign("whShop", wallet >= PRO_AT ? "Go pro! ⬆️" : shopReady ? "Spend it ⬆️" : "Nothing yet ⬆️",
-      wallet >= PRO_AT || shopReady);
+    var bookReady = false;
+    for (k in BOOK) { var bc = nextCost(BOOK[k]); if (bc && contacts >= bc) bookReady = true; }
+    setSign("whShop", wallet >= proGate() ? "Go pro! ⬆️" : bookReady ? "📒 Contacts to spend" : shopReady ? "Spend it ⬆️" : "Nothing yet ⬆️",
+      wallet >= proGate() || shopReady || bookReady);
     var f = dexFound();
     setSign("whDex", f.n + "/" + DEX_TOTAL + " 🗂️", false);
     // the wardrobe nags only while there's something new you can actually afford
@@ -5112,8 +5197,8 @@
     restockAll(true);
     // leaving with nothing sat unpacked is worth something
     if (packedThisVisit > 0 && orders.length === 0) awardRep(1, "bench left clear");
-    // the gate takes its cut, and the bag only holds so much
-    wallet = Math.max(0, wallet - v.fee);
+    // the gate takes its cut, unless you've had a word with the gate man
+    wallet = Math.max(0, wallet - gateFee(v));
     updWallet();
     save();
     updBadges();
@@ -5153,7 +5238,8 @@
     robber = null;
     if (caught) {
       var lossTxt = "";
-      if (inv.length) {
+      // a locked bag means they get the notes in your hand and nothing else
+      if (inv.length && !UPG.safe.lvl) {
         var stolen = inv.splice(Math.floor(Math.random() * inv.length), 1)[0];
         lossTxt = items[stolen.i].n + " and ";
       }
@@ -5193,7 +5279,7 @@
         + (open ? '<span class="v-stat">' + v.stock
             + (lvlIdx < v.lvl ? ' <i class="v-peek">preview · normally Lv' + (v.lvl + 1) + "</i>" : "")
             + "</span>" : "") + "</span>"
-        + '<span class="v-fee">' + (open ? fmtC(v.fee) : "Lv" + (v.lvl + 1)) + "</span></button>";
+        + '<span class="v-fee">' + (open ? (gateFee(v) ? fmtC(gateFee(v)) : "FREE") : "Lv" + (v.lvl + 1)) + "</span></button>";
     }).join("");
   }
   function openVenues() { buildVenues(); venuePanel.classList.add("open"); }
@@ -6643,9 +6729,9 @@
 
   // ---- upgrades corner ----
   var proArm = false, wipeArm = false, nlArm = false;
-  // three pages, because one scroll of everything had stopped being readable
+  // four pages, because one scroll of everything had stopped being readable
   var shopTab = "gear";
-  var SHOP_TABS = [["gear", "🔧 Gear"], ["staff", "🧑‍🏭 Staff"], ["big", "🏆 Big Stuff"]];
+  var SHOP_TABS = [["gear", "🔧 Gear"], ["staff", "🧑‍🏭 Staff"], ["book", "📒 Contacts"], ["big", "🏆 Big Stuff"]];
 
   // one row, whether it's a piece of gear or a member of staff - same shape, same rules.
   // isStaff picks which handler the button lands in, so every hire has to pass it.
@@ -6680,7 +6766,8 @@
     var k;
     if (id === "gear") { for (k in UPG) { var c = nextCost(UPG[k]); if (c && wallet >= c) return true; } return false; }
     if (id === "staff") { for (k in STAFF) { var s = nextCost(STAFF[k]); if (s && wallet >= s) return true; } return false; }
-    return wallet >= PRO_AT || (!noLinks && wallet >= NOLINKS_COST);
+    if (id === "book") { for (k in BOOK) { var bc = nextCost(BOOK[k]); if (bc && contacts >= bc) return true; } return false; }
+    return wallet >= proGate() || (!noLinks && wallet >= NOLINKS_COST);
   }
 
   function buildShop() {
@@ -6703,6 +6790,24 @@
         listings.length < maxListings() ? inv.length : 0,
         "on the shelf", inv.length ? "laptop's full · nothing she can do" : "nothing on the shelf to list");
       for (var sk in STAFF) html += upgRow(sk, STAFF[sk], true);
+    } else if (shopTab === "book") {
+      // the only things in the game that survive going pro, bought with contacts
+      html += '<div class="shop-contacts">📒 <b>' + contacts + "</b> contact" + (contacts === 1 ? "" : "s")
+        + " in the book</div>";
+      html += '<div class="shop-page-note">Everything else on these pages goes when you sell up and go pro. This page never does. Contacts come from going pro, and the more you bank before you go, the more you earn.</div>';
+      for (var bk in BOOK) {
+        var bu = BOOK[bk], bc = nextCost(bu), bpips = "";
+        for (var bi = 0; bi < bu.costs.length; bi++) bpips += bi < bu.lvl ? "●" : "○";
+        html += '<div class="shop-row"><span class="shop-ico">' + bu.icon + "</span>"
+          + '<span class="shop-info"><span class="shop-name">' + bu.name + ' <i class="shop-pips">' + bpips + "</i></span>"
+          + '<span class="shop-desc">' + bu.desc + "</span>"
+          + '<span class="shop-fx">' + (bc ? "Next: " + bu.fx[bu.lvl + 1] : "Now: " + bu.fx[bu.lvl]) + "</span></span>"
+          + (bc
+            ? '<button type="button" class="shop-buy book" data-b="' + bk + '"'
+              + (contacts < bc ? " disabled" : "") + ">📒 " + bc + "</button>"
+            : '<button type="button" class="shop-buy maxed" disabled>MAX</button>')
+          + "</div>";
+      }
     } else {
       // clearing my pitches out of the field: a one-off, and there's no putting them back
       html += '<div class="shop-row"><span class="shop-ico">🚚</span>'
@@ -6720,11 +6825,20 @@
           : '<button type="button" class="shop-buy" data-k="nolinks"' + (wallet < NOLINKS_COST ? " disabled" : "") + ">"
             + (nlArm ? "Sure?" : fmtC(NOLINKS_COST)) + "</button>")
         + "</div>";
+      // the gate climbs every time, and what you bank over it is what buys the book
+      var gate = proGate(), canPro = wallet >= gate;
       html += '<div class="shop-row"><span class="shop-ico">🌟</span>'
-        + '<span class="shop-info"><span class="shop-name">Go Pro</span>'
-        + '<span class="shop-desc">Reset everything · keep +50% profit forever</span></span>'
-        + '<button type="button" class="shop-buy pro" data-k="pro"' + (wallet < PRO_AT ? " disabled" : "") + ">"
-        + (wallet < PRO_AT ? "£10k" : proArm ? "Sure?" : "GO PRO") + "</button></div>";
+        + '<span class="shop-info"><span class="shop-name">Go Pro'
+        + (prestige ? ' <i class="shop-pips">×' + prestige + "</i>" : "") + "</span>"
+        + '<span class="shop-desc">' + (proArm
+          ? "Sell up. Cash, stock, gear and staff all go. Your level, your collection, your wardrobe and your contacts book stay."
+          : "Sell the lot and start again · +50% on every sale, forever") + "</span>"
+        + '<span class="shop-fx">' + (canPro
+          ? "Going now earns 📒 " + contactsFor(wallet) + " contact" + (contactsFor(wallet) === 1 ? "" : "s")
+            + " · hang on for " + fmtC(nextContactAt(wallet)) + " and it's one more"
+          : "Needs " + fmtC(gate) + " banked · you have " + fmtC(wallet)) + "</span></span>"
+        + '<button type="button" class="shop-buy pro" data-k="pro"' + (canPro ? "" : " disabled") + ">"
+        + (canPro ? (proArm ? "Sure?" : "GO PRO") : fmtC(gate)) + "</button></div>";
       // a way out for anyone who wants a clean slate - two taps, and it says so plainly
       html += '<div class="shop-row wipe-row"><span class="shop-ico">🧹</span>'
         + '<span class="shop-info"><span class="shop-name">Start over</span>'
@@ -6749,17 +6863,30 @@
   }
 
   function goPro() {
+    // what you walk away with is what buys the permanent stuff, so bank it before you go
+    var earned = contactsFor(wallet);
+    contacts += earned;
     prestige++;
-    wallet = 200; packed = 0;
+    packed = 0;
     inv = []; listings = []; orders = []; visitedLinks = [];
     updSecret(); // going pro starts the grand tour over, so The Collector packs up too
-    for (var k in UPG) UPG[k].lvl = 0;
+    var k;
+    for (k in UPG) UPG[k].lvl = 0;
+    for (k in STAFF) STAFF[k].lvl = 0; // the staff go with the business you just sold
+    packerAt = 0; listerAt = 0;
+    // the contacts book is the bit that survives: the float, the van, the bench
+    wallet = bookFloat();
+    UPG.van.lvl = BOOK.motor.lvl;
+    if (BOOK.bench.lvl) { UPG.bag.lvl = 1; UPG.desk.lvl = 1; }
     updWallet.toldPro = false; // rep and level survive prestige · that's your career, not your float
+    shopTab = "book";
     updWallet();
     buildShop();
     restockAll(true);
     confetti(40);
-    banner("🌟 Gone pro! Everything sells for x" + proMult() + " · back to £200, and the pitch visit bonuses reset too. Do it again!", 9000);
+    banner("🌟 Sold up and gone pro! +" + earned + " contact" + (earned > 1 ? "s" : "")
+      + " 📒 · everything sells for x" + proMult().toFixed(2)
+      + " · you start again on " + fmtC(wallet) + ". Next gate: " + fmtC(proGate()) + ".", 11000);
   }
 
   shopRows.addEventListener("click", function (e) {
@@ -6782,6 +6909,23 @@
       buildShop();
       banner(su.icon + " " + (su.lvl === 1 ? su.name + " starts today · " : su.name + " Lv" + su.lvl + " · ")
         + su.fx[su.lvl], 6000);
+      return;
+    }
+    // the contacts book runs on its own currency, and it never resets
+    var bk2 = b.getAttribute("data-b");
+    if (bk2 && BOOK[bk2]) {
+      var bu2 = BOOK[bk2], bc2 = nextCost(bu2);
+      if (!bc2 || contacts < bc2) return;
+      contacts -= bc2;
+      bu2.lvl++;
+      // anything that changes how you start only bites on the next run, except the
+      // three that are live right away
+      if (bk2 === "motor") UPG.van.lvl = Math.max(UPG.van.lvl, bu2.lvl);
+      if (bk2 === "bench") { UPG.bag.lvl = Math.max(UPG.bag.lvl, 1); UPG.desk.lvl = Math.max(UPG.desk.lvl, 1); }
+      updWallet();
+      buildShop();
+      save();
+      banner(bu2.icon + " " + bu2.name + " · " + bu2.fx[bu2.lvl] + " 📒", 6500);
       return;
     }
     var k = b.getAttribute("data-k");
@@ -7021,11 +7165,12 @@
       // and a flask of tea gets a value out of anyone
       var K = perks();
       persHint = (pers.hint || K.hint) ? r5(value * (0.9 + Math.random() * 0.2)) : 0;
-      floor = r5(it.f * (0.9 + Math.random() * 0.2) * (1 - 0.08 * UPG.tongue.lvl) * pers.floorMul * K.floorMul);
+      floor = r5(it.f * (0.9 + Math.random() * 0.2) * (1 - 0.08 * UPG.tongue.lvl)
+        * pers.floorMul * K.floorMul * BOOK_NAME[BOOK.name.lvl]);
       estF = 0.85 + Math.random() * 0.3; // eagle eye lvl 1 sees a rough estimate
       // a shiny can land on any tier. The seller has no idea, so the price is unchanged,
       // which is the whole thrill: you can see it from across the field and they can't.
-      shiny = Math.random() < (0.035 + UPG.lucky.lvl * 0.015);
+      shiny = Math.random() < (0.035 + UPG.lucky.lvl * 0.015) * BOOK_NOSE[BOOK.nose.lvl];
       price = ask; patience = maxPat = pers.pat + K.pat; phase = 0; counters = 0;
       // the night crowd are a shiftier bunch: firmer floors and shorter fuses
       if (VENUES[venue] && VENUES[venue].id === "night" && !isSecret) {
@@ -7494,7 +7639,7 @@
     if (dir !== 0) { target = null; flick = 0; }
 
     if (dir !== 0) {
-      px += dir * SPEED * (keys.run ? 1.9 : 1) * dt;
+      px += dir * walkSpeed() * (keys.run ? 1.9 : 1) * dt;
     } else if (dragging && dragMoved > 10) {
       // position is driven directly by the finger
       flick = 0;
@@ -7505,7 +7650,7 @@
       flick = 0;
       var d = target - px;
       if (Math.abs(d) < 8) target = null;
-      else px += (d > 0 ? 1 : -1) * SPEED * dt;
+      else px += (d > 0 ? 1 : -1) * walkSpeed() * dt;
     }
 
     if (inWh) px = Math.max(WH_MIN, Math.min(WH_MAX, px)); // the warehouse has walls
@@ -7562,7 +7707,9 @@
     if (nightNow && !inWh) {
       var tsx = Math.round((px - cam) * zoom), tsy = Math.round(view.clientHeight - 118 * zoom);
       var gx = tsx + face * Math.round(64 * zoom);
-      var lay = ["radial-gradient(ellipse " + Math.round(340 * zoom) + "px " + Math.round(240 * zoom) + "px at "
+      // a proper torch throws the pool wider, so more of the pitch is buyable at a glance
+      var beam = 1 + UPG.torch.lvl * 0.42;
+      var lay = ["radial-gradient(ellipse " + Math.round(340 * beam * zoom) + "px " + Math.round(240 * beam * zoom) + "px at "
         + gx + "px " + tsy + "px, rgba(0,0,0,0) 0%, rgba(0,0,0,0.08) 30%, rgba(0,0,0,0.45) 58%, #000 88%)"];
       // any open card is cut clean out of the dark, so it always reads at full brightness.
       // Only with intersect: the default `add` would sum the layers and black the lot out.
