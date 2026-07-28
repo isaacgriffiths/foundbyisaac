@@ -5800,6 +5800,78 @@
   function pickFrom(a) { return a[Math.floor(Math.random() * a.length)]; }
 
   var SAVE_KEY = "fbi-flip-v1";
+
+  // ---- hanging on to the save ----
+  // localStorage is the live copy, but browsers throw it away. Safari bins everything a
+  // site has stored after seven days without a visit, and Chrome evicts it when the disk
+  // gets tight. Neither asks first. So: ask to be exempt from that, and keep a second
+  // copy somewhere else, ready to put back if the first one ever goes missing.
+  var storageOk = (function () {
+    try {
+      localStorage.setItem("fbi-probe", "1");
+      var ok = localStorage.getItem("fbi-probe") === "1";
+      localStorage.removeItem("fbi-probe");
+      return ok;
+    } catch (err) { return false; }
+  })();
+
+  // Persistent storage is a request, not a setting. Chrome decides on how much you've
+  // used the site, Safari wants a tap first. So ask on load, then again on the first few
+  // taps, and stop the moment it says yes.
+  var persistLeft = 4;
+  function askPersist() {
+    if (persistLeft <= 0 || !navigator.storage || !navigator.storage.persist) return;
+    persistLeft--;
+    try {
+      navigator.storage.persist().then(function (granted) {
+        if (granted) persistLeft = 0;
+      }, function () {});
+    } catch (err) {}
+  }
+  askPersist();
+  ["pointerdown", "keydown"].forEach(function (ev) {
+    window.addEventListener(ev, askPersist, { passive: true });
+  });
+
+  // The second copy. IndexedDB is not immune to any of the above, but two copies in two
+  // stores beats one, and the recovery below is what actually earns its keep.
+  var DB_NAME = "fbi-flip", DB_STORE = "save", DB_ROW = "v1";
+  var mirrorDb = null, mirrorOn = false, mirrorPend = null, mirrorAt = 0, mirrorTimer = 0;
+  var MIRROR_MS = 4000;
+  function withDb(fn) {
+    if (!window.indexedDB) { fn(null); return; }
+    if (mirrorDb) { fn(mirrorDb); return; }
+    try {
+      var rq = indexedDB.open(DB_NAME, 1);
+      rq.onupgradeneeded = function () { rq.result.createObjectStore(DB_STORE); };
+      rq.onsuccess = function () { mirrorDb = rq.result; fn(mirrorDb); };
+      rq.onerror = function () { fn(null); };
+      rq.onblocked = function () { fn(null); };
+    } catch (err) { fn(null); }
+  }
+  // save() fires on every wallet change and every 1200ms of walking, which is far more
+  // often than a backup needs writing, so the copy trails it by a few seconds.
+  function mirror(txt, atOnce) {
+    if (!mirrorOn || wiping) return;
+    mirrorPend = txt;
+    if (atOnce) { flushMirror(); return; }
+    if (mirrorTimer) return;
+    mirrorTimer = setTimeout(flushMirror, Math.max(0, MIRROR_MS - (Date.now() - mirrorAt)));
+  }
+  function flushMirror() {
+    clearTimeout(mirrorTimer);
+    mirrorTimer = 0;
+    if (!mirrorOn || wiping || mirrorPend === null) return;
+    mirrorAt = Date.now();
+    var txt = mirrorPend;
+    mirrorPend = null;
+    withDb(function (db) {
+      if (!db) return;
+      try { db.transaction(DB_STORE, "readwrite").objectStore(DB_STORE).put(txt, DB_ROW); }
+      catch (err) {}
+    });
+  }
+
   function rnd(v, fallback) { return isFinite(v) ? Math.round(v) : fallback; }
   // the first six gear upgrades have their own save keys from the original build, so
   // everything added since goes in one bag rather than growing the top level further
@@ -5816,7 +5888,7 @@
   function save() {
     if (wiping) return;
     try {
-      localStorage.setItem(SAVE_KEY, JSON.stringify({
+      var txt = JSON.stringify({
         w: wallet, p: prestige, i: introSeen ? 1 : 0, pk: packed, rp: rep,
         vn: venue, tp: Object.keys(tipsSeen),
         t: UPG.tongue.lvl, e: UPG.eye.lvl, v: UPG.van.lvl, b: UPG.bag.lvl, d: UPG.desk.lvl, l: UPG.lucky.lvl,
@@ -5828,13 +5900,19 @@
         mn: { o: manor ? 1 : 0, s: studyLvls(), f: meal, d: manorDay, i: inManor ? 1 : 0, x: rnd(inManor ? px : manorPx, MANOR_SPAWN) },
         // where you were stood, so a refresh puts you back rather than at the start of the row
         iw: inWh ? 1 : 0, x: rnd((inWh || inManor) && bootPx != null ? bootPx : px, 2320), wx: rnd(inWh ? px : whPx, 585)
-      }));
+      });
+      // the backup goes out even if the write above failed, because a full quota is
+      // exactly when you most want the other copy
+      try { localStorage.setItem(SAVE_KEY, txt); } catch (err) {}
+      mirror(txt);
     } catch (err) {}
   }
-  var savedQ = null;
+  var savedQ = null, rawSave = null, hadSave = false;
   try {
-    var sv = JSON.parse(localStorage.getItem(SAVE_KEY));
+    rawSave = localStorage.getItem(SAVE_KEY);
+    var sv = JSON.parse(rawSave);
     if (sv) {
+      hadSave = true;
       wallet = +sv.w || 200; prestige = +sv.p || 0; introSeen = !!sv.i; packed = +sv.pk || 0;
       rep = Math.max(0, +sv.rp || 0);
       savedVenue = +sv.vn || 0;
@@ -5909,6 +5987,45 @@
       }
     }
   } catch (err) {}
+
+  // ---- putting it back ----
+  // If the live copy has gone and the backup hasn't, the backup goes into its place and
+  // the page starts again on it. Nothing may write to the backup until this has had its
+  // say, or the fresh game we're currently sat in would overwrite the thing we came for.
+  var RECOVER_FLAG = "fbi-recovered";
+  function sessGet(k) { try { return sessionStorage.getItem(k); } catch (err) { return null; } }
+  function sessSet(k, v) { try { sessionStorage.setItem(k, v); } catch (err) {} }
+  (function recoverSave() {
+    // a save on disk means there is nothing to put back, so just seed the backup from it
+    if (hadSave) { mirrorOn = true; mirror(rawSave, true); return; }
+    // one go per session. A backup that can't be loaded must not cause a reload loop
+    if (!window.indexedDB || sessGet(RECOVER_FLAG)) { mirrorOn = true; return; }
+    var settled = false;
+    var open = function () { if (!settled) { settled = true; mirrorOn = true; } };
+    var bail = setTimeout(open, 2500); // a database that never answers can't hold this shut
+    withDb(function (db) {
+      if (!db || settled) { clearTimeout(bail); open(); return; }
+      var rq;
+      try { rq = db.transaction(DB_STORE, "readonly").objectStore(DB_STORE).get(DB_ROW); }
+      catch (err) { clearTimeout(bail); open(); return; }
+      rq.onerror = function () { clearTimeout(bail); open(); };
+      rq.onsuccess = function () {
+        clearTimeout(bail);
+        if (settled) return;
+        var txt = rq.result, good = false;
+        try { good = !!(txt && JSON.parse(txt)); } catch (err) {}
+        if (!good) { open(); return; }
+        settled = true;
+        sessSet(RECOVER_FLAG, "1");
+        try { localStorage.setItem(SAVE_KEY, txt); } catch (err) { mirrorOn = true; return; }
+        // the same guard Start over uses: the reload fires pagehide, which would
+        // otherwise save the empty game we're stood in over what we just put back
+        wiping = true;
+        location.reload();
+      };
+    });
+  })();
+
   // one of everything, and how many of those can come up shiny (all of them)
   var DEX_TOTAL = items.length;
   // Each record is the whole trading history of one line of stock:
@@ -7574,9 +7691,14 @@
   // and a tab closed or reloaded between ticks still lands you back on the spot. Which
   // of these actually fires depends on the browser, so hang the save on all of them.
   ["pagehide", "beforeunload", "blur"].forEach(function (ev) {
-    window.addEventListener(ev, function () { save(); });
+    window.addEventListener(ev, function () { save(); flushMirror(); });
   });
-  document.addEventListener("visibilitychange", function () { if (document.hidden) save(); });
+  document.addEventListener("visibilitychange", function () { if (document.hidden) { save(); flushMirror(); } });
+  // and if the browser won't hold anything for us at all, say so, rather than let
+  // somebody play an evening in a private tab and lose the lot when they close it
+  if (!storageOk) setTimeout(function () {
+    banner("⚠️ This browser won't let the game save · in a private tab your progress goes when you close it", 12000);
+  }, 3000);
 
   // ---- the laptop: auctions on eBay, listings and cheeky offers on Vinted ----
   var laptopPanel = document.getElementById("laptopPanel");
@@ -8812,8 +8934,27 @@
     // drop the save and reload - rebuilding from defaults beats resetting 20 variables
     // by hand. The flag goes up first so the reload's own pagehide can't put it back.
     wiping = true;
+    mirrorOn = false;
+    clearTimeout(mirrorTimer);
+    mirrorTimer = 0;
+    mirrorPend = null;
     try { localStorage.removeItem(SAVE_KEY); } catch (err) {}
-    location.reload();
+    // the backup goes with it, and the flag stops the recovery on the way back in -
+    // a wipe that helpfully restored everything a second later would be no wipe at all
+    sessSet(RECOVER_FLAG, "1");
+    var went = false;
+    var go = function () { if (!went) { went = true; location.reload(); } };
+    setTimeout(go, 1200); // whatever the database does, the reset still happens
+    withDb(function (db) {
+      if (!db) { go(); return; }
+      try {
+        var tx = db.transaction(DB_STORE, "readwrite");
+        tx.objectStore(DB_STORE)["delete"](DB_ROW);
+        tx.oncomplete = go;
+        tx.onerror = go;
+        tx.onabort = go;
+      } catch (err) { go(); }
+    });
   }
 
   function goPro() {
