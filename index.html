@@ -5665,12 +5665,33 @@
   // whole reason a million is worth finding.
   var MANSION_COST = 1000000;
   var manor = false;
-  // TEMPORARY: the house is open to everyone from the off, so it can be walked round
-  // and reviewed without banking a million first. Flip this to false to put it back
-  // behind the price. Nothing else needs changing - buying it still works exactly as it
-  // did, and the shop row still says what it costs.
-  var MANOR_PEEK = true;
+  // The house is behind its price: nothing about it exists until you have bought it.
+  // Flip this to true to open it to everyone for a look round without banking a
+  // million first. Nothing else needs changing either way.
+  var MANOR_PEEK = false;
   function hasManor() { return manor || MANOR_PEEK; }
+
+  // ---- what the estate pays you for owning it ----
+  // Land, tenants, whatever it is - a house like that earns while you are out working
+  // a field. It piles up while you are away, but only so far: a week's worth is plenty
+  // to come back to, and past that it would pay better to not play.
+  var MANOR_RENT = 10000, MANOR_RENT_CAP = 7;
+  var manorDay = 0;
+  function dayNo() { return Math.floor(Date.now() / 86400000); }
+  // how many days of it are sat on the hall table. Owned, not peeked - a look round
+  // the house does not come with the income.
+  function rentDays() {
+    if (!manor) return 0;
+    return Math.max(0, Math.min(MANOR_RENT_CAP, dayNo() - manorDay));
+  }
+  function collectRent() {
+    var n = rentDays();
+    if (!n) return 0;
+    manorDay = dayNo();
+    wallet += n * MANOR_RENT;
+    updWallet();
+    return n;
+  }
   // The Study is the permanent half of the house. It takes cash rather than contacts,
   // because by the time the front door is yours cash is the thing you have too much of.
   var STUDY = {
@@ -5804,7 +5825,7 @@
         dx: dex, ft: fit, of: ownedFits, ok: ownedKit, av: avatarSrc, pf: photoPaid ? 1 : 0, nl: noLinks ? 1 : 0, vs: vests,
         pl: STAFF.packer.lvl, pa: packerAt, ll: STAFF.lister.lvl, la: listerAt,
         // the house and everything in it, in one bag rather than five more top-level keys
-        mn: { o: manor ? 1 : 0, s: studyLvls(), f: meal, i: inManor ? 1 : 0, x: rnd(inManor ? px : manorPx, MANOR_SPAWN) },
+        mn: { o: manor ? 1 : 0, s: studyLvls(), f: meal, d: manorDay, i: inManor ? 1 : 0, x: rnd(inManor ? px : manorPx, MANOR_SPAWN) },
         // where you were stood, so a refresh puts you back rather than at the start of the row
         iw: inWh ? 1 : 0, x: rnd((inWh || inManor) && bootPx != null ? bootPx : px, 2320), wx: rnd(inWh ? px : whPx, 585)
       }));
@@ -5834,6 +5855,7 @@
         if (sv.mn.f && mealDef(sv.mn.f.id) && +sv.mn.f.runs > 0) {
           meal = { id: sv.mn.f.id, runs: Math.min(6, Math.round(+sv.mn.f.runs)) };
         }
+        manorDay = isFinite(+sv.mn.d) ? Math.round(+sv.mn.d) : dayNo() - 1;
         if (isFinite(+sv.mn.x)) savedManorPx = +sv.mn.x;
         savedInManor = !!sv.mn.i;
       }
@@ -6582,7 +6604,10 @@
     document.body.classList.toggle("has-manor", hasManor());
     // buildWh runs on every wallet change, including ones before the stations are wired
     if (whStations) whStations.forEach(function (s) { if (s.isManor) s.locked = !hasManor(); });
-    if (hasManor()) setSign("whManor", mealNow() ? "The house 🏛️" : "Up to the house 🏛️", false);
+    if (hasManor()) {
+      var rd = rentDays();
+      setSign("whManor", rd ? fmtC(rd * MANOR_RENT) + " waiting ✉️" : "Up to the house 🏛️", !!rd);
+    }
   }
 
   // ---- dressing the house: panelling, portraits, and light that costs money ----
@@ -6697,8 +6722,22 @@
     px = manorPx !== null ? Math.max(MANOR_MIN, Math.min(MANOR_MAX, manorPx)) : MANOR_SPAWN;
     target = null; flick = 0;
     updBadges();
+    // the post is on the mat: the estate has been earning while you were out
+    var rent = collectRent();
+    var rentTxt = rent
+      ? "✉️ " + fmtC(rent * MANOR_RENT) + " on the hall table"
+        + (rent > 1 ? " · " + rent + " days of it" : "")
+        + " · the estate pays " + fmtC(MANOR_RENT) + " a day whether you turn up or not. "
+      : "";
+    if (rent) confetti(rent > 1 ? 30 : 14);
     save();
-    tip("manor", "🏛️ Your house. Nothing in here is for sale and nothing in here is stock · 🃏 the card room takes real money · 🍽️ the dining room sets you up for the next few runs · 🥃 the study keeps things forever · 🚪 the door puts you back to work", 13000);
+    // the tour and the rent share one line at the top, so one cannot wipe the other.
+    // The first time through they go out together; after that it is just the money.
+    if (tipsSeen.manor) {
+      if (rent) banner(rentTxt, 9500);
+    } else {
+      tip("manor", rentTxt + "🏛️ Your house. Nothing in here is for sale and nothing in here is stock · 🃏 the card room takes real money · 🍽️ the dining room sets you up for the next few runs · 🥃 the study keeps things forever · 🚪 the door puts you back to work", 14000);
+    }
   }
   function exitManor() {
     if (!inManor) return;
@@ -8731,8 +8770,8 @@
             ? "A million pounds, gone in one go. The house is yours for good after that."
             : "A card room, a dining room and a study. No crates, no haggling, no stalls.") + "</span>"
         + '<span class="shop-fx">' + (manor
-          ? "Yours · and it stays yours through every reset"
-          : "Play for real money · eat well · and the study keeps things forever") + "</span></span>"
+          ? "Pays " + fmtC(MANOR_RENT) + " a day · and it stays yours through every reset"
+          : "Pays " + fmtC(MANOR_RENT) + " a day · play for real money · eat well · the study keeps things forever") + "</span></span>"
         + (manor
           ? '<button type="button" class="shop-buy maxed" disabled>YOURS</button>'
           : '<button type="button" class="shop-buy pro" data-k="manor"' + (wallet < MANSION_COST ? " disabled" : "") + ">"
@@ -8874,6 +8913,7 @@
       mnArm = false;
       wallet -= MANSION_COST;
       manor = true;
+      manorDay = dayNo() - 1; // one day of it is on the mat before you even get there
       document.body.classList.add("has-manor");
       updWallet();
       buildShop();
