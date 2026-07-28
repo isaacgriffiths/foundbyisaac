@@ -562,7 +562,7 @@
     border: 2px solid var(--outline);
     border-radius: 999px;
     padding: 7px 11px;
-    min-height: 34px;
+    min-height: 44px;
     cursor: pointer;
     flex: 1 1 auto;
     -webkit-tap-highlight-color: transparent;
@@ -571,7 +571,7 @@
   .say-btns button:disabled { background: #E4E8EF; color: #8A97B2; cursor: not-allowed; }
   .say-btns .bye { background: #F1F6FE; flex: 0 0 auto; }
   .say-btns .pay-full { background: #F1F6FE; flex: 0 0 auto; }
-  .say-btns .mk-offer { flex: 1 1 100%; font-size: 15px; min-height: 42px; }
+  .say-btns .mk-offer { flex: 1 1 100%; font-size: 15px; min-height: 46px; }
 
   /* the offer stepper: dial in any number, not just the three we picked for you */
   .say-offer {
@@ -584,7 +584,7 @@
   }
   .say-offer button {
     flex: 0 0 auto;
-    width: 40px; height: 40px;
+    width: 48px; height: 48px;
     font-family: var(--display); font-weight: 700; font-size: 22px; line-height: 1;
     color: #142A55; background: #FFD75E;
     border: 2.5px solid var(--outline); border-radius: 50%;
@@ -611,7 +611,7 @@
     border: 2px dashed var(--outline);
     border-radius: 999px;
     padding: 6px 10px;
-    min-height: 32px;
+    min-height: 48px;
     cursor: pointer;
     flex: 1 1 auto;
     -webkit-tap-highlight-color: transparent;
@@ -769,7 +769,7 @@
   #barter .say-btns { margin-top: 12px; gap: 8px; }
   #barter .say-btns button { min-height: 48px; font-size: 15px; flex: 1 1 44%; }
   #barter .say-moves { margin-top: 8px; gap: 8px; }
-  #barter .say-moves button { min-height: 42px; font-size: 13px; flex: 1 1 44%; }
+  #barter .say-moves button { min-height: 46px; font-size: 13px; flex: 1 1 44%; }
 
   /* small screens keep the bare minimum: name, wallet, warehouse, links */
   @media (max-width: 640px) {
@@ -783,6 +783,8 @@
     /* the progress hub is how the game explains itself, so it stays on small screens */
     #goalsBtn { padding: 8px 10px; }
     #linksBtn, #whBtn { padding: 8px 11px; font-size: 12.5px; white-space: nowrap; }
+    /* the tighter padding above took all three under the 44px a fingertip needs */
+    #goalsBtn, #linksBtn, #whBtn { min-height: 44px; min-width: 44px; }
     #barter { padding: 12px 13px 13px; }
     #barter .sheet-art { width: 56px; height: 56px; }
     .pad { width: 56px; height: 56px; font-size: 20px; background: rgb(255 255 255 / 0.88); }
@@ -827,7 +829,7 @@
   }
   .say-swap button:disabled { background: #E4E8EF; color: #A9B6CC; cursor: default; }
   .say-swap b { font-family: var(--display); font-weight: 600; font-size: 12.5px; color: #3D5688; }
-  #barter .say-swap button { width: 42px; height: 42px; font-size: 22px; }
+  #barter .say-swap button { width: 46px; height: 46px; font-size: 22px; }
 
   .rare.sold .rare-item { animation: none; filter: none; }
   .rare.sold .spark { display: none; }
@@ -1518,6 +1520,7 @@
     background: #1F8A3B; color: #FFFFFF;
     border: 2.5px solid var(--outline); border-radius: 10px;
     padding: 8px 13px;
+    min-height: 44px;
     box-shadow: 0 3px 0 var(--outline);
   }
   .mn-buy:disabled { background: #B6BECC; box-shadow: 0 3px 0 #8A97B2; }
@@ -1531,6 +1534,7 @@
     background: #F1F6FE; color: #142A55;
     border: 2.5px solid var(--outline); border-radius: 999px;
     padding: 9px 4px;
+    min-height: 44px;
   }
   .mn-chip.on { background: #E5484D; color: #FFF3E2; box-shadow: inset 0 -3px 0 rgb(20 42 85 / 0.3); }
   .mn-chip:disabled { opacity: 0.42; }
@@ -1643,7 +1647,7 @@
     margin-top: 14px; width: 100%;
     font-family: var(--display); font-weight: 600; font-size: 13px; color: var(--ink-soft);
     background: #F1F6FE; border: 2px dashed var(--outline); border-radius: 12px;
-    padding: 9px; cursor: pointer;
+    padding: 9px; min-height: 44px; cursor: pointer;
   }
   .mini-stage { position: relative; user-select: none; -webkit-user-select: none; touch-action: none; }
   .mini-stage.bad { animation: miniShake 0.2s; }
@@ -1869,14 +1873,6 @@
   .htag.ok { background: #9BE3B0; }
   .htag.no { background: #F3A9AC; }
 
-  /* straighten the photo */
-  .crop .cphoto {
-    width: 160px; height: 116px; margin: 18px auto 14px;
-    display: grid; place-items: center; font-size: 42px;
-    background: #8FC9F5; border: 3px solid var(--outline); border-radius: 8px;
-    box-shadow: 3px 5px 0 rgb(20 42 85 / 0.2);
-  }
-
   /* pop the bubble wrap */
   .bub .bgrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; max-width: 280px; margin: 0 auto; }
   .bb {
@@ -1969,7 +1965,7 @@
   .lp-btns button {
     font-family: var(--display); font-weight: 600; font-size: 12.5px; color: #142A55;
     background: #FFD75E; border: 2px solid var(--outline); border-radius: 999px;
-    padding: 7px 11px; min-height: 34px; cursor: pointer; flex: 1 1 auto;
+    padding: 7px 11px; min-height: 44px; cursor: pointer; flex: 1 1 auto;
     -webkit-tap-highlight-color: transparent;
   }
   .lp-btns button:hover:not(:disabled) { background: #FFE9A8; }
@@ -2102,6 +2098,7 @@
     border: 2.5px solid var(--outline);
     border-radius: 12px;
     padding: 10px;
+    min-height: 44px;
     cursor: pointer;
   }
   /* the laptop card has no side padding, so its close button carries its own margins
@@ -2110,6 +2107,22 @@
 
   /* panels must never overflow a small screen */
   .panel-card { max-height: calc(100dvh - 40px); overflow-y: auto; }
+
+  /* The card scrolls, and the close button is the last thing inside it - so on the long
+     panels it ended up miles below the fold. The collection's sat at y 6497 on a 664px
+     phone, and there is no Escape key on a phone to fall back on. So the way out sticks
+     to the bottom of the card and stays under your thumb however far down the list you
+     are. The shadow keeps the list from bleeding through as it scrolls underneath. */
+  #closePanel, #closeShop, #closeGoals, #closeLaptop, #closePack,
+  #closeVenue, #closeDex, #closeWard, #closeDexPop, #closeCasino,
+  #closeDine, #closeStudy {
+    position: sticky;
+    bottom: 0;
+    z-index: 2;
+    box-shadow: 0 -10px 0 6px #FFFFFF;
+  }
+  /* the laptop card is edge to edge, so its shadow has to cover the full width */
+  #closeLaptop { box-shadow: 0 -10px 0 22px #FFFFFF; }
 
   @media (prefers-reduced-motion: reduce) {
     .stall.near .prompt, #player.walking .p-figure, #player.walking .p-bod g, .cloud, .npc svg, .npc::after, .rare .rare-item, .rare .spark, .confetto, #whBtn.canbuy, .whlamp .lit, .whstation.todo .aboard { animation: none; }
@@ -8358,31 +8371,6 @@
     };
   }
 
-  // 12. dexterity - the photo went in wonky, drag it level
-  function gCrop() {
-    return {
-      title: "🖼️ Straighten the photo", hint: "Drag left and right until it sits level, then Done", cls: "crop",
-      start: function (host, done) {
-        var ang = (8 + Math.random() * 14) * (Math.random() < 0.5 ? -1 : 1);
-        host.innerHTML = '<div class="cphoto">🏺</div><button type="button" class="lstop">Done</button>';
-        var ph = host.querySelector(".cphoto"), lastX = null;
-        ph.style.transform = "rotate(" + ang + "deg)";
-        host.addEventListener("pointerdown", function (e) { lastX = e.clientX; });
-        host.addEventListener("pointermove", function (e) {
-          if (lastX === null) return;
-          ang += (e.clientX - lastX) * 0.12;
-          lastX = e.clientX;
-          ph.style.transform = "rotate(" + ang + "deg)";
-        });
-        ["pointerup", "pointercancel"].forEach(function (ev) { host.addEventListener(ev, function () { lastX = null; }); });
-        host.querySelector(".lstop").addEventListener("pointerdown", function (e) {
-          e.stopPropagation();
-          done(Math.max(0, 1 - Math.abs(ang) / 10));
-        });
-      }
-    };
-  }
-
   // 13. pure joy - nobody has ever skipped bubble wrap
   function gBubble() {
     return {
@@ -8555,7 +8543,9 @@
   // parcels play the same. The draw is stored on the order so it survives a reload.
   // New games join at the END of PACK_POOL: saved orders store pool indexes.
   var PACK_POOL = [gFold, gPickBox, gWeigh, gTape, gLabel, gBubble, gFragile, gPeanut, gPostcode];
-  var LIST_POOL = [gType, gFocus, gWipe, gLight, gScam, gHash, gCrop];
+  // Unlike PACK_POOL these are picked fresh every time and never stored by index, so
+  // this list can lose an entry without disturbing a single save.
+  var LIST_POOL = [gType, gFocus, gWipe, gLight, gScam, gHash];
   // tape (3) and label (4) need a steady pointer - too fiddly on a phone, so touch
   // screens swap them out (including inside orders saved on a desktop)
   var PACK_TOUCH_SWAP = { 3: 5, 4: 6 };
