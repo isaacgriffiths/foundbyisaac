@@ -383,10 +383,10 @@
   .pitch-svg .sc-in { display: none; }
   body.v-fair .pitch-svg .sc-out { display: none; }
   body.v-fair .pitch-svg .sc-in { display: inline; }
-  /* nobody parks a car in the garage on clearance day, or on the lawn: those pitches
-     are all trestle tables. The two out front keep their motors on the drive. */
-  .stall.est-in .pitch-svg .sc-out { display: none; }
-  .stall.est-in .pitch-svg .sc-in { display: inline; }
+  /* nobody drives a car onto their own front lawn on clearance day: it is trestle
+     tables the whole way along, on the drive, in the garage and out the back */
+  body.est .pitch-svg .sc-out { display: none; }
+  body.est .pitch-svg .sc-in { display: inline; }
 
   .stall .shadow, .whstation .shadow {
     position: absolute;
@@ -1117,13 +1117,14 @@
     --band3: #F0E1B6; --band3e: #C6B482;
     --tuft: rgb(168 144 92 / 0.7);
   }
+  /* clearance day is a nice day: proper blue sky, the sort that gets people out */
   body.v-estate {
-    --sky-top: #7C9ACA; --sky-bottom: #CBD9E8;
-    --grass: #4C6B4E; --grass-edge: #31492F;
+    --sky-top: #3FA9E8; --sky-bottom: #BFE4F5;
+    --grass: #5E9152; --grass-edge: #43703A;
     --band1: #557655; --band1e: #33502F;
     --band2: #5F8158; --band2e: #3D5A38;
     --band3: #6B8D62; --band3e: #476641;
-    --tuft: rgb(49 73 47 / 0.7);
+    --tuft: rgb(120 168 104 / 0.8);
   }
   /* the night market is lit by torches, so the finds carry further than the field does */
   body.v-night .cloud { opacity: 0.25; }
@@ -4092,8 +4093,12 @@
   // Everything else in the game is an endless field that wraps. This is one house, so
   // it has ends: you walk in off the road at one side and run out of garden at the
   // other. Zone edges are world x, and the whole set piece is drawn once.
-  var EST_ROAD_END = 1180;    // pavement runs to here, then the garage swallows you
-  var EST_GAR_END = 2460;     // and the back door puts you out in the garden
+  // You face the house the whole way along. The road is not something you walk across:
+  // it runs away from you at the left-hand end, and you look down it, houses shrinking
+  // along it. Everything after that is the frontage, the garage and the back garden.
+  var EST_STREET_END = 640;   // as far right as you can still see down the road
+  var EST_ROAD_END = 1180;    // the frontage gives way to the open garage door
+  var EST_GAR_END = 2460;     // and the side door puts you out in the back garden
   var EST_END = 3620;         // the bottom of the garden, and the end of the map
   var EST_MIN = 150, EST_MAX = EST_END - 170, EST_SPAWN = 560;
   var estateNow = false, estateBuilt = false;
@@ -4112,40 +4117,152 @@
       '<svg width="' + w + '" height="' + h + '" viewBox="' + vb + '"><use href="#' + id + '"/></svg>');
   }
 
+  // The road seen down its length, drawn in one panel with a real vanishing point.
+  // Near end on the right where you're stood, everything narrowing away to the left.
+  function streetSvg() {
+    var W = 1460, H = 300;      // the panel, in world units
+    var VX = 210, VY = 96;      // where it all disappears to
+    // a point t of the way from the near edge to the vanishing point
+    function px2(t, yNear) { return [W - (W - VX) * t, yNear + (VY - yNear) * t]; }
+    function wedge(yA, yB, tEnd) {
+      var a1 = px2(0, yA), a2 = px2(tEnd, yA), b2 = px2(tEnd, yB), b1 = px2(0, yB);
+      return "M" + a1 + " L" + a2 + " L" + b2 + " L" + b1 + " Z";
+    }
+    var s = '<svg width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + " " + H + '">';
+    // everything below the horizon is ground. The wedges all converge on the vanishing
+    // point, so without this the corner beyond it would be a hole showing sky.
+    s += '<rect x="0" y="' + VY + '" width="' + W + '" height="' + (H - VY) + '" fill="#6EA35E"/>';
+    // the far side of the road: a green strip and the neighbours' frontages
+    s += '<path d="' + wedge(96, 150, 1) + '" fill="#6EA35E"/>';
+    s += '<path d="' + wedge(150, 232, 1) + '" fill="#6E7686"/>';          // tarmac
+    s += '<path d="' + wedge(150, 156, 1) + '" fill="#59606E"/>';          // far kerb
+    // the dashes down the middle, shrinking away with everything else
+    for (var d = 0; d < 9; d++) {
+      var t0 = d / 9 * 0.92, t1 = t0 + 0.035;
+      var m0 = px2(t0, 194), m1 = px2(t1, 194), m2 = px2(t1, 199), m3 = px2(t0, 199);
+      s += '<path d="M' + m0 + " L" + m1 + " L" + m2 + " L" + m3 + ' Z" fill="#F6EFE3" opacity="0.85"/>';
+    }
+    s += '<path d="' + wedge(232, 244, 1) + '" fill="#CBD2DC"/>';          // near kerb
+    s += '<path d="' + wedge(244, 262, 1) + '" fill="#6EA35E"/>';          // verge
+    s += '<path d="' + wedge(262, 288, 1) + '" fill="#C6CAD2"/>';          // the pavement
+    s += '<path d="' + wedge(288, H, 1) + '" fill="#6EA35E"/>';            // and grass again
+    // houses down the far side, shrinking as they go. Nothing in front of you - they
+    // belong to the road, so they follow it away.
+    var tints = ["#E8D6B8", "#D8C4A8", "#E0CFC0", "#CFBDA6", "#E6D9C4"];
+    for (var h = 0; h < 6; h++) {
+      var t = 0.06 + h * 0.155;
+      var p = px2(t, 150), sc = (1 - t) * 1.05;
+      var hw = Math.round(180 * sc), hh = Math.round(166 * sc);
+      s += '<g transform="translate(' + Math.round(p[0] - hw) + "," + Math.round(p[1] - hh) + ") scale(" + sc.toFixed(3)
+        + ')" style="color:' + tints[h % tints.length] + '" opacity="' + (0.94 - t * 0.3).toFixed(2)
+        + '"><use href="#estHouse"/></g>';
+      // a tree between each pair, the way suburban streets always have
+      var tp = px2(t + 0.075, 250), ts = (1 - t - 0.075) * 1.15;
+      s += '<g transform="translate(' + Math.round(tp[0] - 40 * ts) + "," + Math.round(tp[1] - 130 * ts)
+        + ") scale(" + ts.toFixed(3) + ')"><use href="#estTree"/></g>';
+    }
+    // a lamp post on the near pavement, up at the front where it reads biggest
+    s += '<g transform="translate(' + (W - 330) + ',176) scale(1.5)"><use href="#estLamp"/></g>';
+    return s + "</svg>";
+  }
+
+  // The house sat on top of the garage, cut through so you can see into it: three
+  // rooms upstairs and the roof over them. Same doll's-house cutaway as the garage.
+  function houseSectionSvg(W) {
+    var RH = 210, RF = 150;              // room height, then the roof above it
+    var H = RH + RF;
+    var s = '<svg width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + " " + H + '">';
+    // the roof first, so the rooms sit in front of its underside
+    s += '<path d="M-30 ' + RF + " L" + (W / 2) + " 4 L" + (W + 30) + " " + RF + ' Z" fill="#6E4F2E" stroke="#3B598F" stroke-width="4" stroke-linejoin="round"/>';
+    s += '<path d="M' + (W / 2) + " 4 L" + (W + 30) + " " + RF + " L" + (W / 2) + " " + RF + ' Z" fill="#5E4326"/>';
+    // the loft, with the junk that never made it down to the sale
+    s += '<path d="M-30 ' + RF + " L" + (W + 30) + " " + RF + '" stroke="#3B598F" stroke-width="4"/>';
+    s += '<g transform="translate(' + (W * 0.3) + "," + (RF - 34) + ') scale(0.6)"><use href="#gBox"/></g>';
+    s += '<g transform="translate(' + (W * 0.62) + "," + (RF - 30) + ') scale(0.5)"><use href="#gBox"/></g>';
+    // the rooms: outer walls, floor, and two party walls making three of them
+    s += '<rect x="0" y="' + RF + '" width="' + W + '" height="' + RH + '" fill="#E8DFD0" stroke="#3B598F" stroke-width="4"/>';
+    var w1 = W * 0.37, w2 = W * 0.63;
+    s += '<path d="M' + w1 + " " + RF + " V" + H + " M" + w2 + " " + RF + " V" + H + '" stroke="#3B598F" stroke-width="4"/>';
+    // room one: a bedroom
+    s += '<g transform="translate(' + (W * 0.05) + "," + (RF + RH - 96) + ')">'
+      + '<rect x="0" y="40" width="150" height="52" rx="6" fill="#8FC9F5" stroke="#3B598F" stroke-width="3.5"/>'
+      + '<rect x="0" y="16" width="34" height="76" rx="6" fill="#B98A57" stroke="#3B598F" stroke-width="3.5"/>'
+      + '<rect x="6" y="26" width="22" height="16" rx="3" fill="#F6EFE3" stroke="#3B598F" stroke-width="2.5"/>'
+      + '<rect x="168" y="4" width="52" height="88" rx="4" fill="#8A6238" stroke="#3B598F" stroke-width="3.5"/>'
+      + '<path d="M194 8 V88" stroke="#3B598F" stroke-width="2.5"/>'
+      + "</g>";
+    // room two: the bathroom
+    s += '<g transform="translate(' + (w1 + W * 0.035) + "," + (RF + RH - 78) + ')">'
+      + '<path d="M0 22 Q0 12 12 12 H92 Q104 12 104 22 V58 Q104 70 92 70 H12 Q0 70 0 58 Z" fill="#F6EFE3" stroke="#3B598F" stroke-width="3.5"/>'
+      + '<path d="M8 26 H96" stroke="#8FC9F5" stroke-width="7" stroke-linecap="round"/>'
+      + '<rect x="132" y="34" width="42" height="14" rx="4" fill="#F6EFE3" stroke="#3B598F" stroke-width="3"/>'
+      + '<path d="M153 48 V70 H144 H162" fill="none" stroke="#3B598F" stroke-width="3"/>'
+      + '<rect x="196" y="30" width="34" height="40" rx="5" fill="#F6EFE3" stroke="#3B598F" stroke-width="3"/>'
+      + "</g>";
+    // room three: the box room, which is where all this stock came from
+    s += '<g transform="translate(' + (w2 + W * 0.04) + "," + (RF + RH - 86) + ')">'
+      + '<g transform="scale(0.85)"><use href="#gBox"/></g>'
+      + '<g transform="translate(70,14) scale(0.7)"><use href="#gBox"/></g>'
+      + '<g transform="translate(14,44) scale(0.65)"><use href="#gBox"/></g>'
+      + '<g transform="translate(140,10) scale(0.9)"><use href="#gBooks"/></g>'
+      + '<g transform="translate(96,52) scale(0.75)"><use href="#gRecords"/></g>'
+      + "</g>";
+    // a window in each outside wall, so it reads as a house and not a shelf unit
+    [0.16, 0.5, 0.84].forEach(function (f) {
+      s += '<rect x="' + (W * f - 26) + '" y="' + (RF + 26) + '" width="52" height="42" rx="3" fill="#CFE7F8" stroke="#3B598F" stroke-width="3.5"/>';
+      s += '<path d="M' + (W * f) + " " + (RF + 26) + " V" + (RF + 68) + " M" + (W * f - 26) + " " + (RF + 47) + " H" + (W * f + 26) + '" stroke="#3B598F" stroke-width="2.5"/>';
+    });
+    return s + "</svg>";
+  }
+
   function buildEstate() {
     if (estateBuilt) return;
     estateBuilt = true;
 
-    // --- the floors, one per zone, laid end to end with no gaps ---
-    estAdd("estfloor pave", "left:-600px;width:" + (EST_ROAD_END + 600) + "px");
-    estAdd("estfloor conc", "left:" + EST_ROAD_END + "px;width:" + (EST_GAR_END - EST_ROAD_END) + "px");
+    // --- what you're stood on: verge and path at the street end, then the drive,
+    //     then the garage floor, then the lawn out the back ---
+    estAdd("estfloor lawn", "left:-800px;width:" + (EST_STREET_END + 800) + "px");
+    estAdd("estfloor conc", "left:" + EST_STREET_END + "px;width:" + (EST_GAR_END - EST_STREET_END) + "px");
     estAdd("estfloor lawn", "left:" + EST_GAR_END + "px;width:" + (EST_END - EST_GAR_END + 700) + "px");
+    // the path across the front, between the verge and the drive
+    estAdd("estbit", "left:-800px;bottom:44px;width:" + (EST_STREET_END + 810) + "px;height:26px;"
+      + "background:#C6CAD2;border-top:3px solid #9AA0AC;border-bottom:3px solid #9AA0AC");
 
-    // --- out front: the road, the kerb, and the houses opposite ---
-    estAdd("estfloor road", "left:-600px;width:" + (EST_ROAD_END + 600) + "px;bottom:92px;height:74px");
-    estAdd("estkerb", "left:-600px;width:" + (EST_ROAD_END + 600) + "px");
-    // parked cars along the far kerb, and the clutter of a normal street
-    [[-460, "bgVan", "#E8C57F"], [-40, "bgSaloon", "#8FB7E8"], [430, "bgHatch", "#9CCF9E"],
-     [880, "bgPickup", "#E0938F"]].forEach(function (c) {
-      estArt(c[0], 118, c[1], 150, 78, "0 0 100 52", "color:" + c[2]);
-    });
-    estArt(-250, 96, "estLamp", 62, 132, "0 0 46 98");
-    estArt(700, 96, "estLamp", 62, 132, "0 0 46 98");
-    estArt(250, 96, "estWheelie", 56, 72, "0 0 48 64");
-    estArt(1010, 96, "estWheelie", 56, 72, "0 0 48 64");
+    // --- the street, running away from you. This is the whole point of the left end:
+    //     you are looking down the road, not standing across it. ---
+    estAdd("estbit", "left:-820px;bottom:92px", streetSvg());
+    estArt(-120, 96, "estWheelie", 56, 72, "0 0 48 64");
+    estArt(300, 96, "estBush", 84, 58, "0 0 70 50");
+
+    // --- the front of the house, between the street and the garage door ---
+    var fw = EST_ROAD_END - EST_STREET_END;
+    estAdd("estbit", "left:" + EST_STREET_END + "px;bottom:92px",
+      '<svg width="' + fw + '" height="252" viewBox="0 0 ' + fw + ' 252">'
+      + '<rect x="0" y="0" width="' + fw + '" height="252" fill="#D8C4A8" stroke="#3B598F" stroke-width="4"/>'
+      // horizontal siding, the way half these houses are clad
+      + '<path d="M0 30 H' + fw + " M0 60 H" + fw + " M0 90 H" + fw + " M0 120 H" + fw
+      + " M0 150 H" + fw + " M0 180 H" + fw + " M0 210 H" + fw + '" stroke="#C2AE92" stroke-width="3"/>'
+      // the front door, up a step, with the number on it
+      + '<rect x="' + (fw * 0.62) + '" y="106" width="76" height="146" rx="3" fill="#5C7F4E" stroke="#3B598F" stroke-width="4"/>'
+      + '<circle cx="' + (fw * 0.62 + 62) + '" cy="182" r="5" fill="#FFD75E" stroke="#3B598F" stroke-width="2"/>'
+      + '<rect x="' + (fw * 0.62 + 26) + '" y="120" width="24" height="20" rx="2" fill="#CFE7F8" stroke="#3B598F" stroke-width="2.5"/>'
+      // the front window, with the curtains half shut
+      + '<rect x="' + (fw * 0.14) + '" y="96" width="132" height="98" rx="3" fill="#CFE7F8" stroke="#3B598F" stroke-width="4"/>'
+      + '<path d="M' + (fw * 0.14 + 66) + ' 96 V194" stroke="#3B598F" stroke-width="3"/>'
+      + '<rect x="' + (fw * 0.14 + 6) + '" y="102" width="26" height="86" fill="#E5B0C8" opacity="0.85"/>'
+      + '<rect x="' + (fw * 0.14 + 100) + '" y="102" width="26" height="86" fill="#E5B0C8" opacity="0.85"/>'
+      + "</svg>");
+    estArt(EST_STREET_END + 40, 96, "estBush", 96, 66, "0 0 70 50");
+    estArt(EST_ROAD_END - 120, 96, "estWheelie", 56, 72, "0 0 48 64");
 
     // --- the garage: back wall, roof, and the two open ends you walk through ---
     var gw = EST_GAR_END - EST_ROAD_END;
     estAdd("estwall", "left:" + EST_ROAD_END + "px;width:" + gw + "px;bottom:92px;height:250px");
     // a ceiling, so inside the garage you are under something rather than under sky
-    estAdd("estroof", "left:" + (EST_ROAD_END - 26) + "px;width:" + (gw + 52) + "px;bottom:342px;height:46px");
-    // a flat roof with an overhanging fascia, which is what a garage actually has. A
-    // pitch across a span this wide came out as a wedge filling half the sky.
-    estAdd("estbit", "left:" + (EST_ROAD_END - 60) + "px;bottom:388px",
-      '<svg width="' + (gw + 120) + '" height="34" viewBox="0 0 ' + (gw + 120) + ' 34">'
-      + '<rect x="0" y="8" width="' + (gw + 120) + '" height="26" fill="#8A8F9C" stroke="#59606E" stroke-width="4"/>'
-      + '<rect x="0" y="0" width="' + (gw + 120) + '" height="12" rx="3" fill="#B9BDC6" stroke="#59606E" stroke-width="4"/>'
-      + "</svg>");
+    estAdd("estroof", "left:" + (EST_ROAD_END - 26) + "px;width:" + (gw + 52) + "px;bottom:342px;height:26px");
+    // and the rest of the house sat on top of it, cut through the same way the garage
+    // is. You are looking into the place, so you may as well see all of it.
+    estAdd("estbit", "left:" + (EST_ROAD_END - 26) + "px;bottom:368px", houseSectionSvg(gw + 52));
     // and the gutter and downpipe at the garden end, because the details are the thing
     estAdd("estbit", "left:" + (EST_GAR_END - 30) + "px;bottom:96px",
       '<svg width="18" height="300" viewBox="0 0 18 300">'
@@ -4183,31 +4300,53 @@
       estArt(fx, 92, "estFence", 152, 150, "0 0 132 130");
       fx += 150;
     }
-    estArt(EST_GAR_END + 640, 138, "estShed", 200, 200, "0 0 148 150");
-    estArt(EST_GAR_END + 190, 150, "estTree", 150, 244, "0 0 80 130");
-    estArt(EST_GAR_END + 980, 150, "estTree", 116, 188, "0 0 80 130");
-    estArt(EST_GAR_END + 420, 96, "estBush", 92, 62, "0 0 70 50");
-    estArt(EST_GAR_END + 890, 96, "estBush", 78, 52, "0 0 70 50");
-    estArt(EST_GAR_END + 300, 208, "estWash", 260, 72, "0 0 180 50");
-    estArt(EST_GAR_END - 120, 96, "estHedge", 110, 44, "0 0 88 36");
+    estArt(EST_GAR_END + 560, 138, "estShed", 200, 200, "0 0 148 150");
+    estArt(EST_GAR_END + 160, 150, "estTree", 150, 244, "0 0 80 130");
+    estArt(EST_GAR_END + 840, 150, "estTree", 116, 188, "0 0 80 130");
+    estArt(EST_GAR_END + 380, 96, "estBush", 92, 62, "0 0 70 50");
+    estArt(EST_GAR_END + 780, 96, "estBush", 78, 52, "0 0 70 50");
+    estArt(EST_GAR_END + 260, 208, "estWash", 260, 72, "0 0 180 50");
+    estArt(EST_GAR_END + 60, 96, "estMower", 108, 78, "0 0 88 62");
 
+    // --- and right at the bottom of the garden, the pool ---
+    // it sits back on the lawn rather than across the path, so you walk past it and
+    // not through it
+    var pw = 560, pxx = EST_END - pw - 40;
+    estAdd("estbit", "left:" + pxx + "px;bottom:96px",
+      '<svg width="' + pw + '" height="92" viewBox="0 0 ' + pw + ' 92">'
+      + '<rect x="0" y="0" width="' + pw + '" height="92" rx="18" fill="#C6CAD2" stroke="#8A8F9C" stroke-width="5"/>'
+      + '<rect x="14" y="12" width="' + (pw - 28) + '" height="68" rx="12" fill="#2E93C4" stroke="#1D6FA8" stroke-width="4"/>'
+      + '<path d="M30 34 Q' + (pw * 0.28) + " 24 " + (pw * 0.5) + " 34 Q" + (pw * 0.72) + " 44 " + (pw - 30)
+      + ' 34" fill="none" stroke="#7FD4E4" stroke-width="5" stroke-linecap="round" opacity="0.9"/>'
+      + '<path d="M30 56 Q' + (pw * 0.3) + " 48 " + (pw * 0.52) + " 56 Q" + (pw * 0.74) + " 64 " + (pw - 30)
+      + ' 56" fill="none" stroke="#7FD4E4" stroke-width="4" stroke-linecap="round" opacity="0.7"/>'
+      + "</svg>");
+    // the ladder out, a lilo nobody has put away, and a pair of sun loungers
+    estAdd("estbit", "left:" + (pxx + pw - 96) + "px;bottom:162px",
+      '<svg width="70" height="76" viewBox="0 0 70 76">'
+      + '<path d="M14 74 V16 Q14 4 34 4 Q54 4 54 16 V30" fill="none" stroke="#CBD2DC" stroke-width="6" stroke-linecap="round"/>'
+      + '<path d="M40 74 V18" fill="none" stroke="#CBD2DC" stroke-width="6" stroke-linecap="round"/>'
+      + '<path d="M16 40 H38 M16 56 H38" stroke="#CBD2DC" stroke-width="5" stroke-linecap="round"/>'
+      + "</svg>");
+    estAdd("estbit", "left:" + (pxx + 120) + "px;bottom:132px",
+      '<svg width="120" height="30" viewBox="0 0 120 30">'
+      + '<ellipse cx="60" cy="18" rx="56" ry="11" fill="#FFD75E" stroke="#142A55" stroke-width="3"/>'
+      + '<ellipse cx="60" cy="15" rx="34" ry="6" fill="#FFE9A8"/>'
+      + "</svg>");
+    [pxx - 210, pxx - 90].forEach(function (lx, li) {
+      estAdd("estbit", "left:" + lx + "px;bottom:96px",
+        '<svg width="104" height="56" viewBox="0 0 104 56">'
+        + '<path d="M4 44 H92 L96 52 H0 Z" fill="' + (li ? "#3FC1C9" : "#E5484D") + '" stroke="#142A55" stroke-width="3" stroke-linejoin="round"/>'
+        + '<path d="M62 44 L92 14 L100 22 L78 44 Z" fill="' + (li ? "#3FC1C9" : "#E5484D") + '" stroke="#142A55" stroke-width="3" stroke-linejoin="round"/>'
+        + '<path d="M12 52 V56 M88 52 V56" stroke="#142A55" stroke-width="3"/>'
+        + "</svg>");
+    });
   }
 
-  // The houses opposite go in far2, so they hang back behind the road and drift as you
-  // walk. far2 runs at 0.28 parallax, so they only need to cover a bit over a quarter
-  // of the walk, and the garage wall covers them once you are inside.
-  function buildEstateRow(el, seed) {
-    if (seed !== 1) { el.innerHTML = ""; return; }
-    var tints = ["#E8D6B8", "#D8C4A8", "#E0CFC0", "#CFBDA6", "#E6D9C4", "#DACBB4"];
-    var html = "";
-    for (var i = -2; i < 12; i++) {
-      var x = i * 216;
-      html += '<svg class="bgpitch" style="left:' + x + 'px;bottom:150px;color:' + tints[(i + 2) % tints.length]
-        + '" width="212" height="196" viewBox="0 0 180 166"><use href="#estHouse"/></svg>';
-      html += '<svg class="bgpitch" style="left:' + (x + 168) + 'px;bottom:146px" width="70" height="30" viewBox="0 0 88 36"><use href="#estHedge"/></svg>';
-    }
-    el.innerHTML = html;
-  }
+  // Nothing goes in the far layers at a house clearance. The neighbours belong to the
+  // road, so they live in the street panel and follow it away; over the back fence
+  // there is nothing but sky.
+  function buildEstateRow(el) { el.innerHTML = ""; }
 
   function buildRow(el, scale, bottom, seed) {
     if (estateNow) return buildEstateRow(el, seed);
@@ -4257,8 +4396,6 @@
       s.k = 0;
       s.x0 = s.x = left + s.el.offsetWidth / 2;
       s.el.style.left = left + "px";
-      // anything past the garage door is trestle tables, not a car boot
-      s.el.classList.toggle("est-in", estateNow && left >= EST_ROAD_END - 60);
     });
   }
   // the link pitches are the real ones; The Collector doesn't count toward the grand tour
@@ -5635,7 +5772,10 @@
   function V() { return VENUES[venue]; }
   // a saved venue only stands up if you're still high enough level for it
   if (VENUES[savedVenue] && lvlIdx >= VENUES[savedVenue].lvl) venue = savedVenue;
-  function venueOpen(v) { return UNLOCK_ALL || lvlIdx >= v.lvl; }
+  // Going pro puts your level back to nothing, so the ladder means something the second
+  // time round. What it does not do is send you back to one venue: once you have sold up
+  // even once, the Antiques Fair stays open, so a fresh run always has somewhere to go.
+  function venueOpen(v) { return UNLOCK_ALL || lvlIdx >= v.lvl || (prestige > 0 && v.lvl <= 1); }
   // deliberately ignores the unlock override, so the progress line still reads correctly
   function nextVenue() {
     for (var i = 0; i < VENUES.length; i++) if (lvlIdx < VENUES[i].lvl) return VENUES[i];
@@ -7557,7 +7697,14 @@
     wallet = bookFloat();
     UPG.van.lvl = BOOK.motor.lvl;
     if (BOOK.bench.lvl) { UPG.bag.lvl = 1; UPG.desk.lvl = 1; }
-    updWallet.toldPro = false; // rep and level survive prestige · that's your career, not your float
+    // the career goes with the business too: you are a nobody again, working your way
+    // back up through the venues. The Fair stays open so you are never stuck at one.
+    rep = 0;
+    lvlIdx = 0;
+    venue = Math.min(venue, 1);
+    applyVenue();
+    updLevel();
+    updWallet.toldPro = false;
     shopTab = "book";
     updWallet();
     buildShop();
