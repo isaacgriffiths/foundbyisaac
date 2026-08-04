@@ -2131,17 +2131,26 @@
      panels it ended up miles below the fold. The collection's sat at y 6497 on a 664px
      phone, and there is no Escape key on a phone to fall back on. So the way out sticks
      to the bottom of the card and stays under your thumb however far down the list you
-     are. The shadow keeps the list from bleeding through as it scrolls underneath. */
+     are. The shadow keeps the list from bleeding through as it scrolls underneath.
+
+     That shadow has to reach exactly as far up as the button's own top margin and not a
+     pixel further. At -10px with 6px of spread it reached 16px into a 14px gap, so it
+     painted over the bottom border of whatever sat above it - which is how the email row
+     came to look sliced off along its bottom edge. -8px and 6px lands flush on 14. */
   #closePanel, #closeShop, #closeGoals, #closeLaptop, #closePack,
   #closeVenue, #closeDex, #closeWard, #closeDexPop, #closeCasino,
   #closeDine, #closeStudy {
     position: sticky;
     bottom: 0;
     z-index: 2;
-    box-shadow: 0 -10px 0 6px #FFFFFF;
+    box-shadow: 0 -8px 0 6px #FFFFFF;
   }
-  /* the laptop card is edge to edge, so its shadow has to cover the full width */
-  #closeLaptop { box-shadow: 0 -10px 0 22px #FFFFFF; }
+  /* The laptop card is edge to edge, so its shadow was spread 22px to cover the full
+     width - but spread goes up as well as sideways, so it reached 32px into a 12px gap
+     and sliced the bottom off the listing above it, the same way it did to the email.
+     The rows are inset to exactly the button's own width, so 6px of spread already
+     covers them, and -6px lands the top of the shadow flush on the 12px gap. */
+  #closeLaptop { box-shadow: 0 -6px 0 6px #FFFFFF; }
 
   /* Every hover state in one place, and behind a real pointer. On a phone a tap leaves
      :hover stuck on whatever you touched, so the row you just opened Instagram from sat
