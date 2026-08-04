@@ -99,7 +99,6 @@
     cursor: pointer;
     box-shadow: 3px 4px 0 rgb(20 42 85 / 0.35);
   }
-  #linksBtn:hover { background: #FFE9A8; }
 
   #whBtn, #goalsBtn {
     pointer-events: auto;
@@ -114,7 +113,6 @@
     cursor: pointer;
     box-shadow: 3px 4px 0 rgb(20 42 85 / 0.35);
   }
-  #whBtn:hover, #goalsBtn:hover { background: #DFF6F8; }
   #whBtn.canbuy { animation: shopPulse 1s ease-in-out infinite; }
   @keyframes shopPulse {
     0%, 100% { transform: scale(1); }
@@ -567,7 +565,6 @@
     flex: 1 1 auto;
     -webkit-tap-highlight-color: transparent;
   }
-  .say-btns button:hover { background: #FFE9A8; }
   .say-btns button:disabled { background: #E4E8EF; color: #8A97B2; cursor: not-allowed; }
   .say-btns .bye { background: #F1F6FE; flex: 0 0 auto; }
   .say-btns .pay-full { background: #F1F6FE; flex: 0 0 auto; }
@@ -591,7 +588,6 @@
     cursor: pointer; touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
   }
-  .say-offer button:hover:not(:disabled) { background: #FFE9A8; }
   .say-offer button:disabled { background: #E4E8EF; color: #8A97B2; cursor: not-allowed; }
   .say-offer .st-val {
     flex: 1;
@@ -616,7 +612,6 @@
     flex: 1 1 auto;
     -webkit-tap-highlight-color: transparent;
   }
-  .say-moves button:hover:not(:disabled) { background: #F1F6FE; color: #142A55; }
   .say-moves button:disabled { opacity: 0.45; cursor: not-allowed; }
 
   /* how much rope the seller has left */
@@ -1009,9 +1004,6 @@
     margin-bottom: 16px;
   }
   .panel-card ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
-  /* the email sits apart from the shops and socials - it is how you reach me, not browse me */
-  .panel-card a.lk-mail { margin-top: 4px; font-size: 15px; background: #FFF6DC; border-style: dashed; }
-  .panel-card a.lk-mail:hover, .panel-card a.lk-mail:focus-visible { background: #FFE9A8; border-style: solid; }
   .panel-card a {
     display: block;
     text-align: center;
@@ -1025,7 +1017,13 @@
     border-radius: 12px;
     padding: 11px;
   }
-  .panel-card a:hover, .panel-card a:focus-visible { background: #FFE9A8; }
+  /* The email sits apart from the shops and socials - it is how you reach me, not how you
+     browse me. The separating is done by a rule ABOVE the row: a dashed border drawn round
+     the row itself read as a broken edge, because the close button sits directly under it
+     and the two dashed-and-yellow blocks ran together. */
+  .panel-card li.lk-row { margin-top: 4px; padding-top: 14px; border-top: 2px dashed #C2CBDA; }
+  .panel-card a.lk-mail { font-size: 15px; }
+  .panel-card a:focus-visible { background: #FFE9A8; }
   .shop-row { display: flex; align-items: center; gap: 11px; padding: 10px 2px; border-bottom: 2px dashed #E4E8EF; }
   .shop-row:last-child { border-bottom: 0; }
   .shop-ico { font-size: 25px; flex: 0 0 auto; }
@@ -1047,14 +1045,12 @@
     flex: 0 0 auto;
     -webkit-tap-highlight-color: transparent;
   }
-  .shop-buy:hover:not(:disabled) { background: #FFE9A8; }
   .shop-buy:disabled { background: #E4E8EF; color: #8A97B2; cursor: not-allowed; }
   .shop-buy.maxed { background: #DFF3E1; color: #1F8A3B; }
   .shop-buy.pro:not(:disabled) { background: #E3C7FF; }
   /* the wipe sits apart from things you buy, and looks like it means it */
   .wipe-row { border-top: 2px dashed #C2CBDA; margin-top: 6px; padding-top: 12px; }
   .shop-buy.wipe { background: #F1F6FE; color: #8A3B14; border-color: #C2703F; }
-  .shop-buy.wipe:hover:not(:disabled) { background: #E5484D; color: #FFFFFF; border-color: var(--outline); }
   .shop-pro-note {
     text-align: center;
     font-family: var(--display);
@@ -1109,7 +1105,6 @@
   }
   .shop-contacts b { font-size: 19px; }
   .shop-buy.book { background: #E3C7FF; }
-  .shop-buy.book:hover:not(:disabled) { background: #F0DEFF; }
   /* the packer's own little status strip, so you can see him working */
   .staff-bar { height: 8px; background: #E4E8EF; border-radius: 999px; overflow: hidden; margin-top: 5px; }
   .staff-bar i { display: block; height: 100%; background: #1F8A3B; border-radius: 999px; transition: width 0.4s linear; }
@@ -1631,7 +1626,6 @@
     cursor: pointer; font: inherit;
     -webkit-tap-highlight-color: transparent;
   }
-  .venue-row:hover:not(:disabled) { background: #FFF6DC; }
   .venue-row:disabled { background: #F4F6FA; border-style: dashed; cursor: not-allowed; }
   .venue-row .v-ico { font-size: 30px; flex: 0 0 auto; }
   .venue-row .v-info { flex: 1; min-width: 0; }
@@ -1994,7 +1988,6 @@
     padding: 7px 11px; min-height: 44px; cursor: pointer; flex: 1 1 auto;
     -webkit-tap-highlight-color: transparent;
   }
-  .lp-btns button:hover:not(:disabled) { background: #FFE9A8; }
   .lp-btns button:disabled { background: #E4E8EF; color: #8A97B2; cursor: not-allowed; }
   .tag-mint { font-size: 11px; font-weight: 800; color: #1F8A3B; }
   .tag-tat { font-size: 11px; font-weight: 800; color: #D33036; }
@@ -2149,6 +2142,25 @@
   }
   /* the laptop card is edge to edge, so its shadow has to cover the full width */
   #closeLaptop { box-shadow: 0 -10px 0 22px #FFFFFF; }
+
+  /* Every hover state in one place, and behind a real pointer. On a phone a tap leaves
+     :hover stuck on whatever you touched, so the row you just opened Instagram from sat
+     there glowing yellow like it was selected, long after you came back. (hover: hover)
+     keeps the mouse behaviour and gives touch nothing to get stuck on. Focus styles stay
+     outside this block - a keyboard still needs to show where it is. */
+  @media (hover: hover) {
+    #linksBtn:hover { background: #FFE9A8; }
+    #whBtn:hover, #goalsBtn:hover { background: #DFF6F8; }
+    .say-btns button:hover { background: #FFE9A8; }
+    .say-offer button:hover:not(:disabled) { background: #FFE9A8; }
+    .say-moves button:hover:not(:disabled) { background: #F1F6FE; color: #142A55; }
+    .panel-card a:hover { background: #FFE9A8; }
+    .shop-buy:hover:not(:disabled) { background: #FFE9A8; }
+    .shop-buy.wipe:hover:not(:disabled) { background: #E5484D; color: #FFFFFF; border-color: var(--outline); }
+    .shop-buy.book:hover:not(:disabled) { background: #F0DEFF; }
+    .venue-row:hover:not(:disabled) { background: #FFF6DC; }
+    .lp-btns button:hover:not(:disabled) { background: #FFE9A8; }
+  }
 
   @media (prefers-reduced-motion: reduce) {
     .stall.near .prompt, #player.walking .p-figure, #player.walking .p-bod g, .cloud, .npc svg, .npc::after, .rare .rare-item, .rare .spark, .confetto, #whBtn.canbuy, .whlamp .lit, .whstation.todo .aboard { animation: none; }
@@ -4226,7 +4238,7 @@
       <li><a href="https://www.tiktok.com/@foundbyisaaac" target="_blank" rel="noopener noreferrer">TikTok</a></li>
       <li><a href="https://www.instagram.com/foundbyisaac" target="_blank" rel="noopener noreferrer">Instagram</a></li>
       <li><a href="https://www.facebook.com/profile.php?id=61590784979277" target="_blank" rel="noopener noreferrer">Facebook</a></li>
-      <li><a class="lk-mail" href="mailto:foundbyisaac@gmail.com">✉️ foundbyisaac@gmail.com</a></li>
+      <li class="lk-row"><a class="lk-mail" href="mailto:foundbyisaac@gmail.com">✉️ foundbyisaac@gmail.com</a></li>
     </ul>
     <button id="closePanel" type="button">🕹️ Close to play the flip game</button>
   </div>
