@@ -997,7 +997,21 @@
     box-shadow: 6px 8px 0 rgb(20 42 85 / 0.4);
   }
   .panel-card h2 { font-family: var(--display); font-weight: 700; font-size: 22px; color: #142A55; margin-bottom: 14px; text-align: center; }
+  /* the links panel is the front door, so it carries the strapline the HUD does */
+  #linksPanel h2 { margin-bottom: 4px; }
+  .lk-sub {
+    text-align: center;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin-bottom: 16px;
+  }
   .panel-card ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  /* the email sits apart from the shops and socials - it is how you reach me, not browse me */
+  .panel-card a.lk-mail { margin-top: 4px; font-size: 15px; background: #FFF6DC; border-style: dashed; }
+  .panel-card a.lk-mail:hover, .panel-card a.lk-mail:focus-visible { background: #FFE9A8; border-style: solid; }
   .panel-card a {
     display: block;
     text-align: center;
@@ -4196,9 +4210,12 @@
   </div>
 </div>
 
-<div id="linksPanel" role="dialog" aria-label="All my links">
+<!-- this opens over the car boot the moment you land · the links are the point of the
+     site, so they get the first screen and the game waits behind them -->
+<div id="linksPanel" class="open" role="dialog" aria-label="All my links">
   <div class="panel-card">
     <h2>Found by Isaac</h2>
+    <p class="lk-sub">Hand-picked secondhand finds</p>
     <!-- these open in their own tab, the same way the pitches in the game do. In the
          same tab they threw you out of your run to go to eBay, and getting back meant
          the back button. noopener because the new tab must not get at this one. -->
@@ -4209,10 +4226,21 @@
       <li><a href="https://www.tiktok.com/@foundbyisaaac" target="_blank" rel="noopener noreferrer">TikTok</a></li>
       <li><a href="https://www.instagram.com/foundbyisaac" target="_blank" rel="noopener noreferrer">Instagram</a></li>
       <li><a href="https://www.facebook.com/profile.php?id=61590784979277" target="_blank" rel="noopener noreferrer">Facebook</a></li>
+      <li><a class="lk-mail" href="mailto:foundbyisaac@gmail.com">✉️ foundbyisaac@gmail.com</a></li>
     </ul>
-    <button id="closePanel" type="button">Back to the car boot</button>
+    <button id="closePanel" type="button">🕹️ Close to play the flip game</button>
   </div>
 </div>
+<script>
+  // wired here rather than down in the game script: the panel is already open in the
+  // markup, so the way out has to work from the first paint, whatever the game is doing
+  (function () {
+    var lp = document.getElementById("linksPanel");
+    function shut() { lp.classList.remove("open"); }
+    document.getElementById("closePanel").addEventListener("click", shut);
+    lp.addEventListener("click", function (e) { if (e.target === lp) shut(); });
+  })();
+</script>
 
 <div id="shopPanel" role="dialog" aria-label="Upgrades shop">
   <div class="panel-card">
@@ -4974,7 +5002,7 @@
   var compactHud = window.matchMedia("(max-width: 640px)");
   var linksBtn = document.getElementById("linksBtn");
   function applyHudLabels() {
-    linksBtn.textContent = compactHud.matches ? "Links" : "Skip to links";
+    linksBtn.textContent = compactHud.matches ? "Links" : "My links";
   }
   applyHudLabels();
 
@@ -9786,9 +9814,14 @@
     if (st.restock) st.restock();
   }, 35000);
 
-  document.getElementById("linksBtn").addEventListener("click", function () { panel.classList.add("open"); });
-  document.getElementById("closePanel").addEventListener("click", function () { panel.classList.remove("open"); });
-  panel.addEventListener("click", function (e) { if (e.target === panel) panel.classList.remove("open"); });
+  // the close button is already wired next to the panel itself so it works from first
+  // paint · all that is left here is the wording, which changes once you are inside:
+  // on arrival it is the door into the game, after that it is the door back out
+  var closePanelBtn = document.getElementById("closePanel");
+  document.getElementById("linksBtn").addEventListener("click", function () {
+    closePanelBtn.textContent = "Back to the car boot";
+    panel.classList.add("open");
+  });
 
   window.addEventListener("resize", function () { viewW = view.clientWidth; computeZoom(); applyHudLabels(); updBadges(); });
 
