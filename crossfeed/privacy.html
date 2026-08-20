@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy policy &middot; Crossfeed</title>
+<meta name="description" content="Privacy policy for Crossfeed, a social media analytics app.">
+<style>
+  :root { color-scheme: light dark; }
+  body { max-width: 42rem; margin: 0 auto; padding: 2.5rem 1.25rem 4rem;
+         font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif; }
+  h1 { font-size: 1.75rem; margin-bottom: .25rem; }
+  h2 { font-size: 1.1rem; margin-top: 2rem; }
+  .updated { opacity: .65; font-size: .9rem; margin-top: 0; }
+  ul, ol { padding-left: 1.25rem; }
+  nav { margin-top: 2.5rem; font-size: .9rem; }
+  footer { margin-top: 1.5rem; font-size: .9rem; opacity: .65; }
+</style>
+</head>
+<body>
+<h1>Privacy policy</h1>
+<p class="updated">Crossfeed &middot; last updated 20 August 2026</p>
+
+<p>Crossfeed is a social media analytics app. It reads the statistics of posts
+you have already published on platforms you choose to connect, and shows them in
+one place. It does not post on your behalf.</p>
+
+<h2>What we collect</h2>
+<ul>
+  <li><strong>Your account.</strong> The email address you sign in with.</li>
+  <li><strong>Connected platform accounts.</strong> When you connect TikTok,
+      Instagram, YouTube or Facebook, we store the access token that platform
+      issues, together with the account's public handle, display name and
+      avatar URL.</li>
+  <li><strong>Post metrics.</strong> For posts you have already published, we
+      store the post's identifier, caption, thumbnail URL, publication time and
+      its metrics &mdash; views, likes, comments, shares, reach, watch time and
+      similar &mdash; as reported by the platform.</li>
+</ul>
+
+<h2>Why we store snapshots</h2>
+<p>Three of the four platforms report only a running total, with no history, and
+Instagram deletes story insights twenty-four hours after posting with no way to
+retrieve them afterwards. Crossfeed therefore records the numbers periodically
+and keeps those readings, so that trends over time can be shown at all. Each
+reading is stored as a new record; existing readings are never altered.</p>
+
+<h2>What we do not do</h2>
+<ul>
+  <li>We do not sell or rent your data, and we do not share it with advertisers
+      or data brokers.</li>
+  <li>We do not read your private messages, and we do not request permission
+      to.</li>
+  <li>We do not use your content to train machine learning models.</li>
+  <li>We do not show you advertising.</li>
+</ul>
+
+<h2>Where it is held</h2>
+<p>Data is held in a Supabase project (PostgreSQL, hosted on Amazon Web
+Services) and is protected by row-level security, so that each account can read
+only its own rows. Access tokens are held separately, readable only by the
+server processes that refresh metrics, and are never sent to the app on your
+phone.</p>
+
+<h2>Who we share it with</h2>
+<p>Only the platforms themselves, when requesting your statistics from them, and
+our hosting provider, which stores the data on our behalf. We disclose data to
+anyone else only where the law requires it.</p>
+
+<h2>How long we keep it</h2>
+<p>Metrics are kept for as long as your account exists, because their value is
+the history. Disconnecting a platform deletes its access token immediately.
+Deleting your account deletes everything.</p>
+
+<h2>Your rights</h2>
+<p>You can disconnect any platform at any time from within the app, which
+revokes our access and deletes the stored token. You can request a copy of your
+data, or its deletion, by writing to the address below; see also the
+<a href="delete-data.html">deletion instructions</a>.</p>
+
+<h2>Children</h2>
+<p>Crossfeed is not intended for use by anyone under 13, and we do not knowingly
+collect data from children.</p>
+
+<h2>Changes</h2>
+<p>If this policy changes materially, the date above changes and the app will
+tell you the next time you open it.</p>
+
+<nav>
+  <a href="privacy.html">Privacy policy</a> &middot;
+  <a href="terms.html">Terms of service</a> &middot;
+  <a href="delete-data.html">Deleting your data</a>
+</nav>
+<footer>Contact: <a href="mailto:isaacgriffiths001@gmail.com">isaacgriffiths001@gmail.com</a></footer>
+</body>
+</html>
