@@ -27,6 +27,17 @@ It is hosted on GitHub Pages from `main` with the `CNAME` in this repo pointing 
 
 `MANSION-HANDOFF.md` is a design brief for a planned late-game area that has not been built yet. It documents the depth convention, the save format, the perk system and the mini-game harness in more detail than this file.
 
+## Making it your own
+
+Everything that says "Isaac" is in `index.html`; there is no config file.
+
+- **Links.** Search for `id="linksPanel"`. The list there is the whole point of the page; swap in your own shops and socials. The pitches inside the game use the same URLs, so search for `ebay.co.uk` to find every place a link is used.
+- **Name and blurb.** Search for `Found by Isaac`, and update the description and Open Graph meta tags at the top of the file.
+- **Avatar.** Replace `avatar.jpg`. It is the favicon, the share image and the player.
+- **Domain.** Put your own domain in `CNAME`, or delete the file to serve from `<user>.github.io`.
+- **Save key.** Optional, but changing `SAVE_KEY` avoids inheriting a save from another copy of the game on the same origin.
+- `crossfeed/` and `MANSION-HANDOFF.md` are specific to my setup and can be deleted.
+
 ## Working on it
 
 Serve the folder and open it in a browser:
